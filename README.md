@@ -16,7 +16,6 @@
 ## Структура репозитория
 
 - `specs/` - директория со всеми спецификациями
-- `specs/README.md` - процесс создания и утверждения спецификаций
 
 ## Каталог спецификаций
 
@@ -38,7 +37,7 @@
 | [SRS-022](specs/SRS-022%20Fallback.md) | Fallback | ✅ |
 | [SRS-023](specs/SRS-023%20Load%20Balancing%20Patterns.md) | Load Balancing Patterns | ✅ |
 | [SRS-024](specs/SRS-024%20Auto-scaling.md) | Auto-scaling | ✅ |
-| SRS-027 | Rate Limiting | ❌ Планируется |
+| [SRS-027](specs/SRS-027%20Rate%20Limiting.md) | Rate Limiting | ✅ |
 | [SRS-028](specs/SRS-028%20Database%20Connection%20Pooling.md) | Database Connection Pooling | ✅ |
 
 ### Безопасность (Security)
@@ -67,8 +66,8 @@
 ### Статус реализации
 
 - **Всего спецификаций в реестре**: 37
-- **Найдено в репозитории**: 26 (70%)
-- **Отсутствует**: 11 (30%)
+- **Найдено в репозитории**: 27 (73%)
+- **Отсутствует**: 10 (27%)
 
 ## Как использовать
 
@@ -79,10 +78,6 @@
 - `PROPOSED` - предложена к применению
 - `APPROVED` - одобрена и рекомендуется к использованию
 - `DEPRECATED` - не рекомендуется к применению
-
-## Внесение вклада
-
-См. спецификацию [specs/README.md](specs/README.md) для информации о процессе создания новых спецификаций.
 
 ---
 
