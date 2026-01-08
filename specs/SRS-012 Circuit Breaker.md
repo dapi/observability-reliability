@@ -1,4 +1,4 @@
-# SFS-012 Circuia Breaker
+# SRS-012 Circuia Breaker
 
 Защита от перегрузки (circuit breaker)
 

@@ -1,4 +1,4 @@
-# SFS-022 Fallback
+# SRS-022 Fallback
 
 ##  Резервная логика получения ответа (fallback)
 

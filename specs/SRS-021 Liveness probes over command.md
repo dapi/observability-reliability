@@ -1,4 +1,4 @@
-# SFS-021 Liveness probes over commands
+# SRS-021 Liveness probes over commands
 
 ## Мотивация
 

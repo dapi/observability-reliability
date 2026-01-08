@@ -1,4 +1,4 @@
-# SFS-008 Logging (Журналирование)
+# SRS-008 Logging (Журналирование)
 
 Этот документ описывает принципы ведения лога приложения.
 
@@ -17,7 +17,7 @@
 9. Избегать многострочных сообщений
 10. Не писать в сообщения пароли и другую чувствительную информацию
 11. Категорировать сообщения по уровнять (INFO, ERROR, DEBUG и тд)
-12. Приложение пишет в лог о своем завершени и причине [см Graceful shutdown](https://github.com/safeblock-com/wiki/blob/main/specs/SFS-014%20Graceful%20Shutdown.md)
+12. Приложение пишет в лог о своем завершени и причине [см Graceful shutdown](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-014%20Graceful%20Shutdown.md)
 
 # Форматы записей в логе
 

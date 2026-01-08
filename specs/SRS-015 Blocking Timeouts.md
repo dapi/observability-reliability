@@ -1,4 +1,4 @@
-# SFS-015 Blocking Timeouts
+# SRS-015 Blocking Timeouts
 
 При взаимодействии необходимо предусмотреть настраиваемые таймауты как на стороне провайдера сервиса, так и на стороне потребителя сервиса. Следует предусмотреть значения по умолчанию для таймаутов.
 
@@ -13,4 +13,4 @@
 
 # Дополнительно
 
-См также [SFS-20 Retryier](https://github.com/safeblock-com/wiki/blob/main/specs/SFS-020%20Retryier.md)
+См также [SRS-20 Retryier](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-020%20Retryier.md)

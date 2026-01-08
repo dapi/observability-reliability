@@ -1,4 +1,4 @@
-# SFS-009 Error Tracking
+# SRS-009 Error Tracking
 
 Приложения сообщают о возникших исключениях в Sentry.
 
@@ -28,7 +28,7 @@ curl -XPORT http://service/error?key=KEY
 * `/error` - настраиваемый через переменную окружения `TEST_ERROR_PATH` путь. По-умолчанию
   значение `/error`
 * `KEY` - значение ключа настраиваемое через переменную окружения
-  `TEST_ERROR_KEY`. Значение по-умолачнию `SFS-009`.
+  `TEST_ERROR_KEY`. Значение по-умолачнию `SRS-009`.
 
 # Сервис с метриками по HTTP
 
