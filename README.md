@@ -44,6 +44,8 @@
 
 | Спецификация | Название | Статус |
 |-------------|----------|--------|
+| [SRS-029](specs/SRS-029%20Secrets%20Management.md) | Secrets Management | ✅ |
+| [SRS-031](specs/SRS-031%20Audit%20Logging.md) | Audit Logging | ✅ |
 | [SRS-040](specs/SRS-040%20Service%20Authentication.md) | Service Authentication | ✅ |
 | [SRS-041](specs/SRS-041%20Authorization%20Pattern.md) | Authorization Pattern | ✅ |
 
@@ -62,12 +64,21 @@
 | SRS-019 | Stand-Independent Images | ✅ |
 | SRS-021 | Liveness probes over command | ✅ |
 | [SRS-026](specs/SRS-026%20Alerting%20Rules.md) | Alerting Rules | ✅ |
+| [SRS-032](specs/SRS-032%20SLI%20SLO%20SLA.md) | SLI/SLO/SLA | ✅ |
+| [SRS-033](specs/SRS-033%20Synthetic%20Monitoring.md) | Synthetic Monitoring | ✅ |
+
+### DevOps & Operations
+
+| Спецификация | Название | Статус |
+|-------------|----------|--------|
+| [SRS-034](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | On-Call & Incident Response | ✅ |
+| [SRS-035](specs/SRS-035%20Database%20Migrations.md) | Database Migrations | ✅ |
 
 ### Статус реализации
 
-- **Всего спецификаций в реестре**: 37
-- **Найдено в репозитории**: 27 (73%)
-- **Отсутствует**: 10 (27%)
+- **Всего спецификаций в реестре**: 41
+- **Найдено в репозитории**: 37 (90%)
+- **Отсутствует**: 4 (10%)
 
 ## Как использовать
 
