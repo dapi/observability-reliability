@@ -674,7 +674,7 @@ storage_cost_analysis:
       cost_per_tb: $23
       monthly: $1150
 
-    aws_s3_clacier_deep:
+    aws_s3_glacier_deep:
       size_tb: 500
       cost_per_tb: $0.99
       monthly: $495

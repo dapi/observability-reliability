@@ -14,7 +14,7 @@ If the application supports the HTTP protocol for business functions, it allows
 testing the sending of test messages to sentry through a special request:
 
 ```
-curl -XPORT http://service/error?key=KEY
+curl -XPOST http://service/error?key=KEY
 ```
 
 As a result of this request, a message is sent to Sentry and a response is received with

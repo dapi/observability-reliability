@@ -52,8 +52,8 @@ When shedding load, return:
 
 Track and expose metrics:
 ```
-lload_shedding_requests_total (counter)
-lload_shedding_requests_rejected (counter)
+load_shedding_requests_total (counter)
+load_shedding_requests_rejected (counter)
 current_active_requests (gauge)
 request_queue_length (gauge)
 resource_utilization (gauge)

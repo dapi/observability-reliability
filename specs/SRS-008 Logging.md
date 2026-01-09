@@ -11,7 +11,7 @@ This document describes the principles of application logging.
 4. Messages are written to the log in a SINGLE line (avoid multi-line messages).
 5. The length of a record should not exceed 10Kb.
 6. Add `correlation_id` to messages
-7. Split messages larger than 10Gb into parts and search by `correlation_id`
+7. Split messages larger than 10Kb into parts and search by `correlation_id`
 8. Limit log fields to only the most necessary
 9. Avoid multi-line messages
 10. Do not write passwords and other sensitive information in messages
@@ -49,7 +49,7 @@ Any other fields are also allowed.
 Example:
 
 ```
-{"timestamp":"2024-12-12T19:31:35+00:00","message":"Starting Blockbery v1.2.3","level": "INFO", "extra":"Other info"}
+{"timestamp":"2024-12-12T19:31:35+00:00","message":"Starting Blockberry v1.2.3","level": "INFO", "extra":"Other info"}
 ```
 ## Date/Timestamp
 
