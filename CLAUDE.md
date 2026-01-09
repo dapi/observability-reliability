@@ -14,11 +14,36 @@ This is the Site Reliability Specifications (SRS) repository - a collection of t
 - Specifications support versioning: `SRS-XXX-Y` where Y is the version number
 - Status workflow: DRAFT → PROPOSED → APPROVED → DEPRECATED
 - Written in Russian and English
-- **IMPORTANT**: Files with Russian titles must use `.ru.md` extension (e.g., `SRS-XXX Title in English.ru.md`)
+
+## Multilingual Documentation Rules
+
+### File Naming Conventions
+- **English specifications**: `SRS-XXX Title.md` (default)
+- **Russian specifications**: `SRS-XXX Title.ru.md` (with `.ru.md` extension)
+- **English README**: `README.md`
+- **Russian README**: `README.ru.md`
+
+### Link Rules
+- **README.md (English)** must link to English specifications (`.md` files)
+- **README.ru.md (Russian)** must link to Russian specifications (`.ru.md` files)
+- Each README should include a language switcher link at the top:
+  - English README: `:ru: [Русская версия](README.ru.md)`
+  - Russian README: `:gb: [English version](README.md)`
+
+### Creating Bilingual Specifications
+1. Create the English version first: `SRS-XXX Title.md`
+2. Create the Russian version: `SRS-XXX Title.ru.md`
+3. Both files should have the same structure but in respective languages
+4. Update both README files with links to the appropriate language version
+
+### Updating Specifications
+When updating content:
+- Update both language versions to maintain consistency
+- Ensure links in both README files point to correct language versions
 
 ## Key Specifications
 
-The repository contains 23 specifications covering:
+The repository contains 38 specifications covering:
 - **Microservices patterns**: Circuit Breaker (SRS-012), Retry mechanisms (SRS-020), Fallback (SRS-022)
 - **Observability**: Logging (SRS-008), Error Tracking (SRS-009), Liveness Probes (SRS-010, SRS-021)
 - **Reliability**: Graceful Shutdown (SRS-014), Jobs Management (SRS-001), Blocking Timeouts (SRS-015), Idempotency, Rate Limiting
