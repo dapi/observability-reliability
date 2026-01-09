@@ -13,4 +13,4 @@
 
 # Дополнительно
 
-См также [SRS-20 Retryier](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-020%20Retryier.md)
+См. также [SRS-020 Retryier](SRS-020%20Retryier.ru.md)

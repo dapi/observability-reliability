@@ -17,4 +17,4 @@ It is recommended to use retry functionality for data read operations (typically
 
 Number of retries and intervals should be managed through environment variables.
 
-See also [SRS-015 Blocking Timeouts](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-015%20Blocking%20Timeouts.md)
+See also [SRS-015 Blocking Timeouts](SRS-015%20Blocking%20Timeouts.md)

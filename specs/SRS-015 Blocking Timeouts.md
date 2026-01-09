@@ -13,4 +13,4 @@ Using a timeout on the service consumer side allows regulating the response wait
 
 # Additionally
 
-See also [SRS-20 Retryier](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-020%20Retryier.md)
+See also [SRS-020 Retryier](SRS-020%20Retryier.md)

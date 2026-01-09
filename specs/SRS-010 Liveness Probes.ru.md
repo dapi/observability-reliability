@@ -47,7 +47,7 @@ HTTP-запрос должен укладываться в `30ms` и не зав
 
 <img src="https://andrewlock.net/content/images/2020/k8s_probes.svg" />
 
-* SRS-021 Liveness probes over commands - https://github.com/safeblock-com/wiki/blob/main/docs/specs/SRS-021%20Leveness%20probes%20over%20command.md
+* [SRS-021 Liveness probes over command](SRS-021%20Liveness%20probes%20over%20command.ru.md)
 
 * [What is difference in Liveness Probe, Readiness Probe and Startup Probe in Kubernetes?](https://medium.com/@edu.ukulelekim/what-is-difference-in-liveness-probe-readiness-probe-and-startup-probe-in-kubernetes-e116c4563c13)
 * https://faun.pub/the-difference-between-liveness-readiness-and-startup-probes-781bd3141079

@@ -16,7 +16,7 @@ This document describes the principles of application logging.
 9. Avoid multi-line messages
 10. Do not write passwords and other sensitive information in messages
 11. Categorize messages by level (INFO, ERROR, DEBUG, etc.)
-12. The application writes to the log about its termination and reason [see Graceful shutdown](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-014%20Graceful%20Shutdown.md)
+12. The application writes to the log about its termination and reason [see SRS-014 Graceful Shutdown](SRS-014%20Graceful%20Shutdown.md)
 
 # Log record formats
 

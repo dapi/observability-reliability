@@ -17,5 +17,5 @@
 
 Количество повторов и инртервалы должны управляться через переменные окружения.
 
-См также [SRS-015 Blocking Timeouts](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-015%20Blocking%20Timeouts.md)
+См. также [SRS-015 Blocking Timeouts](SRS-015%20Blocking%20Timeouts.ru.md)
 
