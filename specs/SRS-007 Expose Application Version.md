@@ -30,6 +30,6 @@ curl http://localhost/version
 For example:
 
 ```sh
-X-App-Name: safeblock
+X-App-Name: myapp
 X-App-Version: v0.1.0
 ```

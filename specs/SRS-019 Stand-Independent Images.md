@@ -17,11 +17,12 @@ This leads to the following:
 * No ability to redeploy the current version of the application with new configuration/settings.
 * No ability to redeploy the same code with different configuration, as the repository stores both pipeline changes and the code itself.
 * The build and deployment process represents a single process, which deprives the ability to do them separately. To deploy an application of the required version, it needs to be built, which requires a stand for building and doesn't guarantee the same result.
+* No centralized configuration management. To change a variable value (e.g., node address), you need to find all repositories where it's used, change the value in each one, rebuild and redeploy each application. Expected mechanism: change configuration in one place (infrastructure repository) and deploy to required stands with a single command.
 * Violates 12factor in sections https://12factor.net/config and https://12factor.net/build-release-run (which leads to the problems described here)
 
 ## How build and deployment currently works
 
-[<img width="1416" alt="Screenshot 2024-12-17 at 08 43 48" src="https://github.com/user-attachments/assets/fc5d3a2c-b57c-48e0-81ac-4a47e78865db" />](https://excalidraw.com/#json=XSEy0-xqU1gjkf1pRQKHx,Pcg95F9reWodOyJPvQqbkw)
+<img width="1416" alt="Screenshot 2024-12-17 at 08 43 48" src="https://github.com/user-attachments/assets/fc5d3a2c-b57c-48e0-81ac-4a47e78865db" />
 
 ## What is proposed to be done
 
@@ -84,7 +85,3 @@ APP_CONFIG_ENCODED_NODES_LIST:, VITE_NODE_URL_ETH:, VITE_NODE_URL_BSC:, VITE_NOD
 [<img width="1886" alt="Screenshot 2024-12-17 at 13 16 46" src="https://github.com/user-attachments/assets/2c82e8e7-b9c7-44df-a691-ccdef5e90429" />](https://docs.google.com/spreadsheets/d/1hg1KAWH6n70XV_ryseQ8d85daG76vz2A8rcely_d0xc/edit?usp=sharing)
 
 
-# Links
-
-* [Excalidraw](https://excalidraw.com/#json=QB0LU8A8K-Xtk6c2G7HCh,8rmtvOhzSuy0sXshvMtahg)
-* https://wiki.safeblock.work/adr/006-exclude-stand-dependent-envs-from-the-build/

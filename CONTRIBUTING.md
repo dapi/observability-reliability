@@ -1,6 +1,6 @@
 # Contributing to Site Reliability Specifications
 
-Thank you for your interest in contributing to the SafeBlock Site Reliability Specifications! This document provides guidelines and processes for contributing to the project.
+Thank you for your interest in contributing to the Site Reliability Specifications! This document provides guidelines and processes for contributing to the project.
 
 ---
 
@@ -657,4 +657,4 @@ By contributing, you agree that your contributions will be licensed under the pr
 
 ---
 
-**Thank you for contributing to SafeBlock Site Reliability Specifications!**
+**Thank you for contributing to Site Reliability Specifications!**
