@@ -410,6 +410,28 @@ Total: 38 specifications
 
 ---
 
+## Отраслевые стандарты и ресурсы
+
+Наши спецификации основаны на следующих отраслевых стандартах и best practices:
+
+| Стандарт/Ресурс | Описание | Ссылка |
+|----------------|----------|--------|
+| **Google SRE Book** | Библия Site Reliability Engineering от Google. Основа для SLI/SLO, Error Budgets, мониторинга | [sre.google/sre-book](https://sre.google/sre-book) |
+| **AWS Well-Architected Framework** | Рекомендации AWS по построению надежных, безопасных и эффективных систем | [aws.amazon.com/architecture/well-architected](https://aws.amazon.com/architecture/well-architected) |
+| **CNCF Cloud Native** | Cloud Native Patterns и best practices от Cloud Native Computing Foundation | [cncf.io](https://www.cncf.io) |
+| **The DevOps Handbook** | Комплексный гайд по DevOps практикам и культуре | [itrevolution.com/devops-handbook](https://itrevolution.com/devops-handbook) |
+| **ITIL 4** | IT Service Management framework (ITSM) | [axelos.com/itil](https://www.axelos.com/itil) |
+| **Site Reliability Workbook** | Практическое руководство по внедрению SRE от Google | [sre.google/workbook](https://sre.google/workbook) |
+
+### Дополнительные ресурсы
+
+- **Prometheus Best Practices** - [prometheus.io/docs](https://prometheus.io/docs)
+- **OpenTelemetry** - Стандарт для Observability (Tracing, Metrics, Logging) - [opentelemetry.io](https://opentelemetry.io)
+- **Kubernetes Best Practices** - [kubernetes.io/docs/concepts/cluster-administration](https://kubernetes.io/docs/concepts/cluster-administration)
+- **OWASP Top 10** - Security best practices - [owasp.org](https://owasp.org)
+
+---
+
 *Последний анализ: 09.01.2026 | Аналитик: Senior SRE Engineer*
 
 ---
