@@ -96,8 +96,28 @@ This repository contains practical guides (specifications) for building reliable
 **Good to know:**
 - [Jobs](specs/SRS-001%20Jobs%20Management.md), [Probes](specs/SRS-010%20Liveness%20Probes.md), [Metrics](specs/SRS-006%20Metrics%20Collection.md), [Secrets](specs/SRS-029%20Secrets%20Management.md), [Versioning](specs/SRS-005%20Application%20Versioning.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.md)
 
-**Not a priority (DevOps/SRE scope):**
-- [Auto-scaling](specs/SRS-024%20Auto-scaling.md), [Alerting](specs/SRS-026%20Alerting%20Rules.md), [Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md), [On-Call](specs/SRS-034%20On-Call%20&%20Incident%20Response.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.md), [Images](specs/SRS-019%20Stand-Independent%20Images.md)
+### Architect Summary
+
+**Must study:**
+- State architecture: [Stateless Services](specs/SRS-002%20Stateless%20Services.md), [Scaling and State](specs/SRS-003%20Scaling%20and%20State.md)
+- System protection: [Load Shedding](specs/SRS-013%20Load%20Shedding.md), [Load Balancing](specs/SRS-023%20Load%20Balancing%20Patterns.md), [API Gateway](specs/SRS-038%20API%20Gateway.md)
+- Observability: [Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.md), [SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.md)
+
+**Good to know:**
+- All developer specifications (for code review and technical leadership)
+- [Auto-scaling](specs/SRS-024%20Auto-scaling.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.md)
+
+### SRE/DevOps Summary
+
+**Must study:**
+- Infrastructure: [Auto-scaling](specs/SRS-024%20Auto-scaling.md), [Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.md)
+- Monitoring: [Alerting Rules](specs/SRS-026%20Alerting%20Rules.md), [Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md), [Metrics](specs/SRS-006%20Metrics%20Collection.md)
+- Processes: [On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.md), [SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.md)
+- Security: [Secrets Management](specs/SRS-029%20Secrets%20Management.md)
+
+**Good to know:**
+- [Probes](specs/SRS-010%20Liveness%20Probes.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.md), [Versioning](specs/SRS-005%20Application%20Versioning.md)
+- Reliability patterns (to understand application behavior): [Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md), [Retry](specs/SRS-020%20Retryier.md), [Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.md)
 
 ## How to Use
 

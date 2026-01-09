@@ -96,8 +96,28 @@
 **Знать поверхностно:**
 - [Jobs](specs/SRS-001%20Jobs%20Management.ru.md), [Probes](specs/SRS-010%20Liveness%20Probes.ru.md), [Metrics](specs/SRS-006%20Metrics%20Collection.ru.md), [Secrets](specs/SRS-029%20Secrets%20Management.ru.md), [Versioning](specs/SRS-005%20Application%20Versioning.ru.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.ru.md)
 
-**Не приоритетно (зона DevOps/SRE):**
-- [Auto-scaling](specs/SRS-024%20Auto-scaling.ru.md), [Alerting](specs/SRS-026%20Alerting%20Rules.ru.md), [Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.ru.md), [On-Call](specs/SRS-034%20On-Call%20&%20Incident%20Response.ru.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.ru.md), [Images](specs/SRS-019%20Stand-Independent%20Images.ru.md)
+### Резюме для архитектора
+
+**Обязательно изучить:**
+- Архитектура состояния: [Stateless Services](specs/SRS-002%20Stateless%20Services.ru.md), [Scaling and State](specs/SRS-003%20Scaling%20and%20State.ru.md)
+- Защита системы: [Load Shedding](specs/SRS-013%20Load%20Shedding.ru.md), [Load Balancing](specs/SRS-023%20Load%20Balancing%20Patterns.ru.md), [API Gateway](specs/SRS-038%20API%20Gateway.ru.md)
+- Observability: [Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.ru.md), [SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.ru.md)
+
+**Знать поверхностно:**
+- Все спецификации для разработчика (для code review и технического руководства)
+- [Auto-scaling](specs/SRS-024%20Auto-scaling.ru.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.ru.md)
+
+### Резюме для SRE/DevOps
+
+**Обязательно изучить:**
+- Инфраструктура: [Auto-scaling](specs/SRS-024%20Auto-scaling.ru.md), [Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.ru.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.ru.md)
+- Мониторинг: [Alerting Rules](specs/SRS-026%20Alerting%20Rules.ru.md), [Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.ru.md), [Metrics](specs/SRS-006%20Metrics%20Collection.ru.md)
+- Процессы: [On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.ru.md), [SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.ru.md)
+- Безопасность: [Secrets Management](specs/SRS-029%20Secrets%20Management.ru.md)
+
+**Знать поверхностно:**
+- [Probes](specs/SRS-010%20Liveness%20Probes.ru.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.ru.md), [Versioning](specs/SRS-005%20Application%20Versioning.ru.md)
+- Паттерны надёжности (для понимания поведения приложений): [Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.ru.md), [Retry](specs/SRS-020%20Retryier.ru.md), [Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.ru.md)
 
 ## Как использовать
 
