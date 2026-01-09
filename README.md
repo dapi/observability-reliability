@@ -81,10 +81,11 @@ This repository contains practical guides (specifications) for building reliable
 | [SRS-043 Chaos Engineering](specs/SRS-043%20Chaos%20Engineering.md) | P2 | High | SRE | Requires Chaos Mesh/Litmus setup and Game Days |
 | [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.md) | P2 | High | Architect | Requires Istio/Linkerd setup and traffic management understanding |
 | [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.md) | P2 | Medium | FinOps/SRE | Cloud cost management, tagging, budgeting |
+| [SRS-046 Multi-Region DR](specs/SRS-046%20Multi-Region%20DR.md) | P2 | High | Architect | RTO/RPO, cross-region replication, failover strategies |
 
 ### Implementation Status
 
-- **Total specifications in repository**: 42
+- **Total specifications in repository**: 43
 - **Coverage**: 100%
 
 ### Developer Summary
@@ -257,7 +258,7 @@ Priority 3 (Nice to have - 5 specs)
 +-- Performance (3)
 +-- Analytics (2)
 
-Total: 42 specifications
+Total: 43 specifications
 ```
 
 ---
@@ -307,7 +308,7 @@ Total: 42 specifications
 4. ~~**SRS-045 Cost Optimization & FinOps**~~ ✅ CREATED
    - Tagging strategies, Cost allocation, RI/Spot, Anomaly detection, Budgeting
 
-5. **SRS-046 Multi-Region & Disaster Recovery** (missing)
+5. ~~**SRS-046 Multi-Region & Disaster Recovery**~~ ✅ CREATED
    - RTO/RPO calculations and targets
    - Cross-region replication strategies
    - Active-Active vs Active-Passive failover
@@ -367,7 +368,7 @@ Total: 42 specifications
 
 **Phase 2 (In Progress): Enterprise hardening**
 - ~~Create SRS-045 Cost Optimization & FinOps~~ ✅
-- Create SRS-046 Multi-Region DR
+- ~~Create SRS-046 Multi-Region DR~~ ✅
 - Create SRS-047 Capacity Planning
 - Create SRS-048 Security Monitoring
 - Expand SRS-011 (Distributed Tracing) - add Sampling
@@ -382,13 +383,13 @@ Total: 42 specifications
 
 #### Catalog Quality Metrics
 
-- **Total specifications:** 42 (100%)
+- **Total specifications:** 43 (100%)
 - **Bilingual:** 100% (Russian + English)
 - **Average specification length:** 650+ lines
 - **Production-ready examples:** 95%+
-- **Level 5/5 depth:** 8 specifications (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh)
+- **Level 5/5 depth:** 9 specifications (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR)
 - **Numerical metrics:** 87% contain specific numbers and formulas
-- **Tooling covered:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash
+- **Tooling covered:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner
 
 #### Maintenance Recommendations
 

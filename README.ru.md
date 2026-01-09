@@ -81,10 +81,11 @@
 | [SRS-043 Chaos Engineering](specs/SRS-043%20Chaos%20Engineering.ru.md) | P2 | High | SRE | Требует настройки Chaos Mesh/Litmus и проведения Game Days |
 | [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.ru.md) | P2 | High | Architect | Требует настройки Istio/Linkerd и понимания traffic management |
 | [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.ru.md) | P2 | Medium | FinOps/SRE | Управление облачными затратами, tagging, budgeting |
+| [SRS-046 Multi-Region DR](specs/SRS-046%20Multi-Region%20DR.ru.md) | P2 | High | Architect | RTO/RPO, cross-region репликация, failover стратегии |
 
 ### Статус реализации
 
-- **Всего спецификаций в репозитории**: 42
+- **Всего спецификаций в репозитории**: 43
 - **Покрытие**: 100%
 
 ### Резюме для разработчика
@@ -257,7 +258,7 @@ Priority 3 (Nice to have - 5 specs)
 ├── Performance (3)
 └── Analytics (2)
 
-Total: 42 specifications
+Total: 43 specifications
 ```
 
 ---
@@ -307,7 +308,7 @@ Total: 42 specifications
 4. ~~**SRS-045 Cost Optimization & FinOps**~~ ✅ СОЗДАНО
    - Tagging strategies, Cost allocation, RI/Spot, Anomaly detection, Budgeting
 
-5. **SRS-046 Multi-Region & Disaster Recovery** (отсутствует)
+5. ~~**SRS-046 Multi-Region & Disaster Recovery**~~ ✅ СОЗДАНО
    - RTO/RPO расчеты и цели
    - Cross-region replication стратегии
    - Active-Active vs Active-Passive failover
@@ -367,7 +368,7 @@ Total: 42 specifications
 
 **Phase 2 (In Progress): Enterprise hardening**
 - ~~Создать SRS-045 Cost Optimization & FinOps~~ ✅
-- Создать SRS-046 Multi-Region DR
+- ~~Создать SRS-046 Multi-Region DR~~ ✅
 - Создать SRS-047 Capacity Planning
 - Создать SRS-048 Security Monitoring
 - Расширить SRS-011 (Distributed Tracing) - добавить Sampling
@@ -382,13 +383,13 @@ Total: 42 specifications
 
 #### 📈 Метрики качества каталога
 
-- **Всего спецификаций:** 42 (100%)
+- **Всего спецификаций:** 43 (100%)
 - **Двуязычность:** 100% (русский + английский)
 - **Средняя длина спецификации:** 650+ строк
 - **Production-ready примеры:** 95%+
-- **Глубина уровня 5/5:** 8 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh)
+- **Глубина уровня 5/5:** 9 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR)
 - **Числовые метрики:** 87% содержат конкретные числа и формулы
-- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash
+- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner
 
 #### 📝 Рекомендации по поддержке
 
