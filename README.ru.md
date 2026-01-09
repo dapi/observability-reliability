@@ -83,10 +83,11 @@
 | [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.ru.md) | P2 | Medium | FinOps/SRE | Управление облачными затратами, tagging, budgeting |
 | [SRS-046 Multi-Region DR](specs/SRS-046%20Multi-Region%20DR.ru.md) | P2 | High | Architect | RTO/RPO, cross-region репликация, failover стратегии |
 | [SRS-047 Capacity Planning](specs/SRS-047%20Capacity%20Planning.ru.md) | P2 | Medium | SRE | Прогнозирование нагрузки, анализ узких мест, baseline |
+| [SRS-048 Security Monitoring](specs/SRS-048%20Security%20Monitoring.ru.md) | P1 | High | Security/SRE | SIEM, обнаружение угроз, runtime security, compliance |
 
 ### Статус реализации
 
-- **Всего спецификаций в репозитории**: 44
+- **Всего спецификаций в репозитории**: 45
 - **Покрытие**: 100%
 
 ### Резюме для разработчика
@@ -259,7 +260,7 @@ Priority 3 (Nice to have - 5 specs)
 ├── Performance (3)
 └── Analytics (2)
 
-Total: 44 specifications
+Total: 45 specifications
 ```
 
 ---
@@ -324,11 +325,11 @@ Total: 44 specifications
    - Bottleneck identification
    - Scalability testing procedures
 
-7. **SRS-048 Security Monitoring** (отсутствует)
-   - IDS/IPS интеграция
-   - Vulnerability scanning automation
-   - SIEM integration (Splunk, Datadog)
+7. ~~**SRS-048 Security Monitoring**~~ ✅ СОЗДАНО
+   - SIEM интеграция (Elastic, Splunk)
+   - Runtime security (Falco, OSSEC)
    - Threat detection и response
+   - Compliance monitoring (SOC2, PCI-DSS, GDPR)
 
 **Приоритет 3 (Полезно - для large-scale optimization):**
 
@@ -367,11 +368,11 @@ Total: 44 specifications
 - ~~Создать SRS-043 Chaos Engineering~~ ✅
 - ~~Создать SRS-044 Service Mesh~~ ✅
 
-**Phase 2 (In Progress): Enterprise hardening**
+**Phase 2 (Завершено):** ✅
 - ~~Создать SRS-045 Cost Optimization & FinOps~~ ✅
 - ~~Создать SRS-046 Multi-Region DR~~ ✅
 - ~~Создать SRS-047 Capacity Planning~~ ✅
-- Создать SRS-048 Security Monitoring
+- ~~Создать SRS-048 Security Monitoring~~ ✅
 - Расширить SRS-011 (Distributed Tracing) - добавить Sampling
 - Расширить SRS-012 (Circuit Breaker) - добавить Half-Open, Adaptive
 
@@ -384,13 +385,13 @@ Total: 44 specifications
 
 #### 📈 Метрики качества каталога
 
-- **Всего спецификаций:** 44 (100%)
+- **Всего спецификаций:** 45 (100%)
 - **Двуязычность:** 100% (русский + английский)
 - **Средняя длина спецификации:** 650+ строк
 - **Production-ready примеры:** 95%+
-- **Глубина уровня 5/5:** 10 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning)
+- **Глубина уровня 5/5:** 11 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning, Security Monitoring)
 - **Числовые метрики:** 87% содержат конкретные числа и формулы
-- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet
+- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet, Falco, Elastic SIEM, Wazuh, OSSEC
 
 #### 📝 Рекомендации по поддержке
 

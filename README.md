@@ -83,10 +83,11 @@ This repository contains practical guides (specifications) for building reliable
 | [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.md) | P2 | Medium | FinOps/SRE | Cloud cost management, tagging, budgeting |
 | [SRS-046 Multi-Region DR](specs/SRS-046%20Multi-Region%20DR.md) | P2 | High | Architect | RTO/RPO, cross-region replication, failover strategies |
 | [SRS-047 Capacity Planning](specs/SRS-047%20Capacity%20Planning.md) | P2 | Medium | SRE | Load forecasting, bottleneck analysis, performance baseline |
+| [SRS-048 Security Monitoring](specs/SRS-048%20Security%20Monitoring.md) | P1 | High | Security/SRE | SIEM, threat detection, runtime security, compliance monitoring |
 
 ### Implementation Status
 
-- **Total specifications in repository**: 44
+- **Total specifications in repository**: 45
 - **Coverage**: 100%
 
 ### Developer Summary
@@ -259,7 +260,7 @@ Priority 3 (Nice to have - 5 specs)
 +-- Performance (3)
 +-- Analytics (2)
 
-Total: 44 specifications
+Total: 45 specifications
 ```
 
 ---
@@ -324,11 +325,11 @@ Total: 44 specifications
    - Bottleneck identification
    - Scalability testing procedures
 
-7. **SRS-048 Security Monitoring** (missing)
-   - IDS/IPS integration
-   - Vulnerability scanning automation
-   - SIEM integration (Splunk, Datadog)
+7. ~~**SRS-048 Security Monitoring**~~ ✅ CREATED
+   - SIEM integration (Elastic, Splunk)
+   - Runtime security (Falco, OSSEC)
    - Threat detection and response
+   - Compliance monitoring (SOC2, PCI-DSS, GDPR)
 
 **Priority 3 (Useful - for large-scale optimization):**
 
@@ -367,11 +368,11 @@ Total: 44 specifications
 - ~~Create SRS-043 Chaos Engineering~~ ✅
 - ~~Create SRS-044 Service Mesh~~ ✅
 
-**Phase 2 (In Progress): Enterprise hardening**
+**Phase 2 (Completed):** ✅
 - ~~Create SRS-045 Cost Optimization & FinOps~~ ✅
 - ~~Create SRS-046 Multi-Region DR~~ ✅
 - ~~Create SRS-047 Capacity Planning~~ ✅
-- Create SRS-048 Security Monitoring
+- ~~Create SRS-048 Security Monitoring~~ ✅
 - Expand SRS-011 (Distributed Tracing) - add Sampling
 - Expand SRS-012 (Circuit Breaker) - add Half-Open, Adaptive
 
@@ -384,13 +385,13 @@ Total: 44 specifications
 
 #### Catalog Quality Metrics
 
-- **Total specifications:** 44 (100%)
+- **Total specifications:** 45 (100%)
 - **Bilingual:** 100% (Russian + English)
 - **Average specification length:** 650+ lines
 - **Production-ready examples:** 95%+
-- **Level 5/5 depth:** 10 specifications (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning)
+- **Level 5/5 depth:** 11 specifications (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning, Security Monitoring)
 - **Numerical metrics:** 87% contain specific numbers and formulas
-- **Tooling covered:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet
+- **Tooling covered:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet, Falco, Elastic SIEM, Wazuh, OSSEC
 
 #### Maintenance Recommendations
 
