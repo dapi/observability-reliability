@@ -80,10 +80,11 @@
 | [SRS-042 Feature Flags](specs/SRS-042%20Feature%20Flags.ru.md) | P2 | Medium | Dev | Управление функциональностью без деплоя, canary releases |
 | [SRS-043 Chaos Engineering](specs/SRS-043%20Chaos%20Engineering.ru.md) | P2 | High | SRE | Требует настройки Chaos Mesh/Litmus и проведения Game Days |
 | [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.ru.md) | P2 | High | Architect | Требует настройки Istio/Linkerd и понимания traffic management |
+| [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.ru.md) | P2 | Medium | FinOps/SRE | Управление облачными затратами, tagging, budgeting |
 
 ### Статус реализации
 
-- **Всего спецификаций в репозитории**: 41
+- **Всего спецификаций в репозитории**: 42
 - **Покрытие**: 100%
 
 ### Резюме для разработчика
@@ -256,7 +257,7 @@ Priority 3 (Nice to have - 5 specs)
 ├── Performance (3)
 └── Analytics (2)
 
-Total: 41 specifications
+Total: 42 specifications
 ```
 
 ---
@@ -303,12 +304,8 @@ Total: 41 specifications
 3. ~~**SRS-044 Service Mesh**~~ ✅ СОЗДАНО
    - Istio/Linkerd, mTLS, Traffic management, Observability
 
-4. **SRS-045 Cost Optimization & FinOps** (отсутствует)
-   - Cost allocation by service/team
-   - Tagging strategies (FinOps framework)
-   - Reserved vs Spot instances
-   - Cost anomaly detection
-   - Бюджетирование и chargeback
+4. ~~**SRS-045 Cost Optimization & FinOps**~~ ✅ СОЗДАНО
+   - Tagging strategies, Cost allocation, RI/Spot, Anomaly detection, Budgeting
 
 5. **SRS-046 Multi-Region & Disaster Recovery** (отсутствует)
    - RTO/RPO расчеты и цели
@@ -368,8 +365,8 @@ Total: 41 specifications
 - ~~Создать SRS-043 Chaos Engineering~~ ✅
 - ~~Создать SRS-044 Service Mesh~~ ✅
 
-**Phase 2 (Next): Enterprise hardening**
-- Создать SRS-045 Cost Optimization & FinOps
+**Phase 2 (In Progress): Enterprise hardening**
+- ~~Создать SRS-045 Cost Optimization & FinOps~~ ✅
 - Создать SRS-046 Multi-Region DR
 - Создать SRS-047 Capacity Planning
 - Создать SRS-048 Security Monitoring
@@ -385,7 +382,7 @@ Total: 41 specifications
 
 #### 📈 Метрики качества каталога
 
-- **Всего спецификаций:** 41 (100%)
+- **Всего спецификаций:** 42 (100%)
 - **Двуязычность:** 100% (русский + английский)
 - **Средняя длина спецификации:** 650+ строк
 - **Production-ready примеры:** 95%+

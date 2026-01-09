@@ -80,10 +80,11 @@ This repository contains practical guides (specifications) for building reliable
 | [SRS-042 Feature Flags](specs/SRS-042%20Feature%20Flags.md) | P2 | Medium | Dev | Feature management without deployment, canary releases |
 | [SRS-043 Chaos Engineering](specs/SRS-043%20Chaos%20Engineering.md) | P2 | High | SRE | Requires Chaos Mesh/Litmus setup and Game Days |
 | [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.md) | P2 | High | Architect | Requires Istio/Linkerd setup and traffic management understanding |
+| [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.md) | P2 | Medium | FinOps/SRE | Cloud cost management, tagging, budgeting |
 
 ### Implementation Status
 
-- **Total specifications in repository**: 41
+- **Total specifications in repository**: 42
 - **Coverage**: 100%
 
 ### Developer Summary
@@ -256,7 +257,7 @@ Priority 3 (Nice to have - 5 specs)
 +-- Performance (3)
 +-- Analytics (2)
 
-Total: 41 specifications
+Total: 42 specifications
 ```
 
 ---
@@ -303,12 +304,8 @@ Total: 41 specifications
 3. ~~**SRS-044 Service Mesh**~~ ✅ CREATED
    - Istio/Linkerd, mTLS, Traffic management, Observability
 
-4. **SRS-045 Cost Optimization & FinOps** (missing)
-   - Cost allocation by service/team
-   - Tagging strategies (FinOps framework)
-   - Reserved vs Spot instances
-   - Cost anomaly detection
-   - Budgeting and chargeback
+4. ~~**SRS-045 Cost Optimization & FinOps**~~ ✅ CREATED
+   - Tagging strategies, Cost allocation, RI/Spot, Anomaly detection, Budgeting
 
 5. **SRS-046 Multi-Region & Disaster Recovery** (missing)
    - RTO/RPO calculations and targets
@@ -368,8 +365,8 @@ Total: 41 specifications
 - ~~Create SRS-043 Chaos Engineering~~ ✅
 - ~~Create SRS-044 Service Mesh~~ ✅
 
-**Phase 2 (Next): Enterprise hardening**
-- Create SRS-045 Cost Optimization & FinOps
+**Phase 2 (In Progress): Enterprise hardening**
+- ~~Create SRS-045 Cost Optimization & FinOps~~ ✅
 - Create SRS-046 Multi-Region DR
 - Create SRS-047 Capacity Planning
 - Create SRS-048 Security Monitoring
@@ -385,7 +382,7 @@ Total: 41 specifications
 
 #### Catalog Quality Metrics
 
-- **Total specifications:** 41 (100%)
+- **Total specifications:** 42 (100%)
 - **Bilingual:** 100% (Russian + English)
 - **Average specification length:** 650+ lines
 - **Production-ready examples:** 95%+
