@@ -16,65 +16,64 @@
 ## Структура репозитория
 
 - `specs/` - директория со всеми спецификациями
-- `IMPLEMENTATION_PRIORITY.md` - Рекомендации по приоритетизации внедрения спецификаций
 
 ## Каталог спецификаций
 
 ### Надежность (Reliability)
 
-| Спецификация | Название | Приоритет | Сложность | Обоснование сложности |
-|-------------|----------|-----------|-----------|----------------------|
-| [SRS-001](specs/SRS-001%20Jobs%20Management.md) | Jobs Management | P1 | Medium | Требует понимания фоновых задач и отработки edge cases |
-| [SRS-002](specs/SRS-002%20Stateless%20Services.md) | Stateless Services | P2 | Medium | Требует архитектурных решений для хранения состояния |
-| SRS-003 | Scaling and State | P2 | High | Важно для понимания архитектурных ограничений масштабирования |
-| SRS-015 | Blocking Timeouts | P2 | Low | Простая конфигурация timeout'ов |
-| SRS-010 | Liveness Probes | P1 | Low | Базовая проверка работоспособности в Kubernetes |
-| SRS-014 | Graceful Shutdown | P1 | Medium | Требует обработки сигналов и завершения запросов |
-| SRS-016 | Request Idempotency | P2 | Medium | Требует реализации идемпотентных операций на уровне API |
-| [SRS-013](specs/SRS-013%20Load%20Shedding.md) | Load Shedding | P2/P3 | Medium | Продвинутая защита от перегрузки |
-| [SRS-025](specs/SRS-025%20Bulkhead%20Pattern.md) | Bulkhead Pattern | P3 | High | Продвинутая изоляция ресурсов, требует архитектурных решений |
-| SRS-018 | Distributed Caching | P2 | High | Требует настройки кэширующего слоя и обеспечения консистентности |
-| [SRS-020](specs/SRS-020%20Retryier.md) | Retryier | P2 | Medium | Требует реализации экспоненциальных backoff'ов и jitter |
-| [SRS-022](specs/SRS-022%20Fallback.md) | Fallback | P2 | Medium | Требует реализации graceful degradation |
-| [SRS-023](specs/SRS-023%20Load%20Balancing%20Patterns.md) | Load Balancing Patterns | P2 | Medium | Требует настройки балансировщика нагрузки |
-| [SRS-024](specs/SRS-024%20Auto-scaling.md) | Auto-scaling | P2 | High | Требует настройки правил автоматического масштабирования и мониторинга метрик |
-| [SRS-027](specs/SRS-027%20Rate%20Limiting.md) | Rate Limiting | P2 | Medium | Требует настройки rate limiter'а и хранилища для счетчиков |
-| [SRS-028](specs/SRS-028%20Database%20Connection%20Pooling.md) | Database Connection Pooling | P2 | Medium | Требует настройки пула соединений и понимания нагрузки
+| Спецификация | Приоритет | Сложность | Обоснование сложности |
+|--------------|-----------|-----------|----------------------|
+| [SRS-001 Jobs Management](specs/SRS-001%20Jobs%20Management.md) | P1 | Medium | Требует понимания фоновых задач и отработки edge cases |
+| [SRS-010 Liveness Probes](specs/SRS-010%20Liveness%20Probes.md) | P1 | Low | Базовая проверка работоспособности в Kubernetes |
+| [SRS-014 Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.md) | P1 | Medium | Требует обработки сигналов и завершения запросов |
+| [SRS-002 Stateless Services](specs/SRS-002%20Stateless%20Services.md) | P2 | Medium | Требует архитектурных решений для хранения состояния |
+| [SRS-003 Scaling and State](specs/SRS-003%20Scaling%20and%20State.md) | P2 | High | Важно для понимания архитектурных ограничений масштабирования |
+| [SRS-015 Blocking Timeouts](specs/SRS-015%20Blocking%20Timeouts.md) | P2 | Low | Простая конфигурация timeout'ов |
+| [SRS-016 Request Idempotency](specs/SRS-016%20Request%20Idempotency.md) | P2 | Medium | Требует реализации идемпотентных операций на уровне API |
+| [SRS-013 Load Shedding](specs/SRS-013%20Load%20Shedding.md) | P2/P3 | Medium | Продвинутая защита от перегрузки |
+| [SRS-018 Distributed Caching](specs/SRS-018%20Distributed%20Caching.md) | P2 | High | Требует настройки кэширующего слоя и обеспечения консистентности |
+| [SRS-020 Retryier](specs/SRS-020%20Retryier.md) | P2 | Medium | Требует реализации экспоненциальных backoff'ов и jitter |
+| [SRS-022 Fallback](specs/SRS-022%20Fallback.md) | P2 | Medium | Требует реализации graceful degradation |
+| [SRS-023 Load Balancing Patterns](specs/SRS-023%20Load%20Balancing%20Patterns.md) | P2 | Medium | Требует настройки балансировщика нагрузки |
+| [SRS-024 Auto-scaling](specs/SRS-024%20Auto-scaling.md) | P2 | High | Требует настройки правил автоматического масштабирования и мониторинга метрик |
+| [SRS-027 Rate Limiting](specs/SRS-027%20Rate%20Limiting.md) | P2 | Medium | Требует настройки rate limiter'а и хранилища для счетчиков |
+| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md) | P2 | Medium | Требует настройки пула соединений и понимания нагрузки |
+| [SRS-025 Bulkhead Pattern](specs/SRS-025%20Bulkhead%20Pattern.md) | P3 | High | Продвинутая изоляция ресурсов, требует архитектурных решений |
 
 ### Безопасность (Security)
 
-| Спецификация | Название | Приоритет | Сложность | Обоснование сложности |
-|-------------|----------|-----------|-----------|----------------------|
-| [SRS-029](specs/SRS-029%20Secrets%20Management.md) | Secrets Management | P2 | Medium | Требует интеграции с Vault или облачными Secret Manager |
-| [SRS-031](specs/SRS-031%20Audit%20Logging.md) | Audit Logging | P2 | Medium | Требует настройки структурированного логирования и хранилища |
-| [SRS-040](specs/SRS-040%20Service%20Authentication.md) | Service Authentication | P2 | Medium | Требует реализации JWT/OAuth2 и управления секретами |
-| [SRS-041](specs/SRS-041%20Authorization%20Pattern.md) | Authorization Pattern | P2 | Medium | Требует реализации RBAC или Policy-based access control
+| Спецификация | Приоритет | Сложность | Обоснование сложности |
+|--------------|-----------|-----------|----------------------|
+| [SRS-029 Secrets Management](specs/SRS-029%20Secrets%20Management.md) | P2 | Medium | Требует интеграции с Vault или облачными Secret Manager |
+| [SRS-031 Audit Logging](specs/SRS-031%20Audit%20Logging.md) | P2 | Medium | Требует настройки структурированного логирования и хранилища |
+| [SRS-040 Service Authentication](specs/SRS-040%20Service%20Authentication.md) | P2 | Medium | Требует реализации JWT/OAuth2 и управления секретами |
+| [SRS-041 Authorization Pattern](specs/SRS-041%20Authorization%20Pattern.md) | P2 | Medium | Требует реализации RBAC или Policy-based access control |
 
 ### Наблюдаемость (Observability)
 
-| Спецификация | Название | Приоритет | Сложность | Обоснование сложности |
-|-------------|----------|-----------|-----------|----------------------|
-| SRS-012 | Circuit Breaker | P2 | Medium | Требует реализации паттерна Circuit Breaker и настройки порогов |
-| SRS-008 | Logging (Журналирование) | P1 | Low | Простая интеграция с библиотеками логирования |
-| SRS-005 | Application Versioning | P1 | Low | Добавление версии к сборке через CI/CD |
-| SRS-007 | Expose Application Version | P1 | Low | Добавление эндпоинта /version |
-| SRS-006 | Metrics Collection | P2 | Low | Настройка сбора метрик (Prometheus/Grafana) |
-| [SRS-011](specs/SRS-011%20Distributed%20Tracing.md) | Distributed Tracing | P3 | High | Требует интеграции с Jaeger/Zipkin и инструментария всех сервисов |
-| SRS-009 | Error Tracking | P1 | Low | Интеграция с Sentry/Rollbar |
-| SRS-004 | Environment Variables Usage | P1 | Low | Переход на конфигурацию через env vars |
-| SRS-019 | Stand-Independent Images | P2 | Medium | Подготовка контейнеров без host-зависимостей |
-| SRS-021 | Liveness probes over command | P1 | Low | Настройка liveness probes через command |
-| [SRS-026](specs/SRS-026%20Alerting%20Rules.md) | Alerting Rules | P2 | Low | Настройка правил алертинга в Prometheus/Grafana |
-| [SRS-032](specs/SRS-032%20SLI%20SLO%20SLA.md) | SLI/SLO/SLA | P2 | Medium | Требует определения SLI и расчета SLO |
-| [SRS-033](specs/SRS-033%20Synthetic%20Monitoring.md) | Synthetic Monitoring | P3 | Medium | Настройка синтетических проверок и локаций
+| Спецификация | Приоритет | Сложность | Обоснование сложности |
+|--------------|-----------|-----------|----------------------|
+| [SRS-004 Environment Variables Usage](specs/SRS-004%20Environment%20Variables%20Usage.md) | P1 | Low | Переход на конфигурацию через env vars |
+| [SRS-005 Application Versioning](specs/SRS-005%20Application%20Versioning.md) | P1 | Low | Добавление версии к сборке через CI/CD |
+| [SRS-007 Expose Application Version](specs/SRS-007%20Expose%20Application%20Version.md) | P1 | Low | Добавление эндпоинта /version |
+| [SRS-008 Logging (Журналирование)](specs/SRS-008%20Logging%20.md) | P1 | Low | Простая интеграция с библиотеками логирования |
+| [SRS-009 Error Tracking](specs/SRS-009%20Error%20Tracking.md) | P1 | Low | Интеграция с Sentry/Rollbar |
+| [SRS-021 Liveness probes over command](specs/SRS-021%20Liveness%20probes%20over%20command.md) | P1 | Low | Настройка liveness probes через command |
+| [SRS-006 Metrics Collection](specs/SRS-006%20Metrics%20Collection.md) | P2 | Low | Настройка сбора метрик (Prometheus/Grafana) |
+| [SRS-012 Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md) | P2 | Medium | Требует реализации паттерна Circuit Breaker и настройки порогов |
+| [SRS-026 Alerting Rules](specs/SRS-026%20Alerting%20Rules.md) | P2 | Low | Настройка правил алертинга в Prometheus/Grafana |
+| [SRS-032 SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.md) | P2 | Medium | Требует определения SLI и расчета SLO |
+| [SRS-019 Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.md) | P2 | Medium | Подготовка контейнеров без host-зависимостей |
+| [SRS-011 Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.md) | P3 | High | Требует интеграции с Jaeger/Zipkin и инструментария всех сервисов |
+| [SRS-033 Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md) | P3 | Medium | Настройка синтетических проверок и локаций |
 
 ### DevOps & Operations
 
-| Спецификация | Название | Приоритет | Сложность | Обоснование сложности |
-|-------------|----------|-----------|-----------|----------------------|
-| [SRS-034](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | On-Call & Incident Response | P2 | Medium | Требует настройки ротаций, escalation policies и runbook'ов |
-| [SRS-035](specs/SRS-035%20Database%20Migrations.md) | Database Migrations | P2 | High | Требует настройки фреймворка миграций и тестирования откатов |
-| [SRS-036](specs/SRS-036%20Backup%20&%20Recovery.md) | Backup & Recovery | P1 | Medium | Требует настройки резервного копирования и восстановления
+| Спецификация | Приоритет | Сложность | Обоснование сложности |
+|--------------|-----------|-----------|----------------------|
+| [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.md) | P1 | Medium | Требует настройки резервного копирования и восстановления |
+| [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | P2 | Medium | Требует настройки ротаций, escalation policies и runbook'ов |
+| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.md) | P2 | High | Требует настройки фреймворка миграций и тестирования откатов |
 
 ### Статус реализации
 
@@ -153,4 +152,74 @@
 
 ---
 
+## Уровни зрелости продуктов
+
+### Level 1: MVP (Minimum Viable Product)
+**Требуется:** Приоритет 1 (10 спецификаций)
+- Базовая инфраструктура и мониторинг
+- Корректная остановка и версионирование
+- Резервные копии критичных данных
+
+### Level 2: Production-Ready
+**Требуется:** Приоритет 1 + Приоритет 2 (33 спецификации)
+- Все приоритет 1
+- Безопасность и контроль доступа
+- Надежность и отказоустойчивость
+- Метрики и мониторинг
+- Операционные процедуры
+
+### Level 3: Enterprise-Ready
+**Требуется:** Приоритет 1 + Приоритет 2 + Приоритет 3 (38 спецификаций)
+- Все спецификации
+- Продвинутая оптимизация
+- Проактивное мониторинг
+- Продвинутая аналитика
+- Полное покрытие всех аспектов
+
+---
+
+## Примеры команд внедрения
+
+### Стартап (2 инженера, 3 месяца)
+- **Недели 1-3:** Приоритет 1 (Core infrastructure)
+- **Недели 4-10:** Приоритет 2 (Security, reliability)
+- **Недели 11-12:** Приоритет 3 (Оптимизация самых болезненных мест)
+
+### Small Team (5 инженеров, 2 месяца)
+- **Недели 1-2:** Приоритет 1 (Параллельно)
+- **Недели 3-8:** Приоритет 2 (Распределенно по сервисам)
+- **Недель 9-10:** Приоритет 3 (По необходимости)
+
+### Enterprise Team (20+ инженеров)
+- **Недели 1-2:** Приоритет 1 (Все команды параллельно)
+- **Недели 3-6:** Приоритет 2 (Распределенно по доменам)
+- **Недели 7+:** Приоритет 3 (Постоянный процесс оптимизации)
+
+---
+
+## Сводная карта приоритетов
+
+```
+Priority 1 (Critical - 10 specs)
+├─ Logging, Error Tracking, Health Checks
+├─ Versioning, Environment Variables
+├─ Graceful Shutdown, Jobs Management
+└─ Basic Backups, Basic Metrics
+
+Priority 2 (Important - 23 specs)
+├── Security (5)
+├── Reliability (9)
+├── Data & State (5)
+└── Infrastructure (4)
+
+Priority 3 (Nice to have - 5 specs)
+├── Performance (3)
+└── Analytics (2)
+
+Total: 38 specifications
+```
+
+---
+
 *Site Reliability Specifications (SRS) - практические руководства для построения production-ready систем*
+
