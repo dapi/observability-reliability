@@ -40,7 +40,6 @@
 | [SRS-023 Load Balancing Patterns](specs/SRS-023%20Load%20Balancing%20Patterns.ru.md) | P2 | Medium | Architect | Требует настройки балансировщика нагрузки |
 | [SRS-024 Auto-scaling](specs/SRS-024%20Auto-scaling.ru.md) | P2 | High | DevOps | Требует настройки правил автоматического масштабирования и мониторинга метрик |
 | [SRS-027 Rate Limiting](specs/SRS-027%20Rate%20Limiting.ru.md) | P2 | Medium | Dev | Требует настройки rate limiter'а и хранилища для счетчиков |
-| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.ru.md) | P2 | Medium | Dev | Требует настройки пула соединений и понимания нагрузки |
 | [SRS-025 Bulkhead Pattern](specs/SRS-025%20Bulkhead%20Pattern.ru.md) | P3 | High | Dev | Продвинутая изоляция ресурсов, требует архитектурных решений |
 
 ### Безопасность (Security)
@@ -85,9 +84,26 @@
 | [SRS-047 Capacity Planning](specs/SRS-047%20Capacity%20Planning.ru.md) | P2 | Medium | SRE | Прогнозирование нагрузки, анализ узких мест, baseline |
 | [SRS-048 Security Monitoring](specs/SRS-048%20Security%20Monitoring.ru.md) | P1 | High | Security/SRE | SIEM, обнаружение угроз, runtime security, compliance |
 
+### Администрирование баз данных (DBA)
+
+| Спецификация | Приоритет | Сложность | Роль | Обоснование сложности |
+|--------------|-----------|-----------|------|----------------------|
+| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.ru.md) | P2 | Medium | Dev/DBA | Требует настройки пула соединений и понимания нагрузки |
+| [SRS-052 Database Replication](specs/SRS-052%20Database%20Replication.ru.md) | P2 | High | DBA | Требует настройки репликации PostgreSQL/MySQL и мониторинга |
+| [SRS-053 Database Monitoring](specs/SRS-053%20Database%20Monitoring.ru.md) | P1 | Medium | DBA | Требует сбора метрик и настройки алертинга |
+| [SRS-054 Query Optimization](specs/SRS-054%20Query%20Optimization.ru.md) | P2 | Medium | Dev/DBA | Требует знания EXPLAIN ANALYZE и настройки индексов |
+| [SRS-055 Database High Availability](specs/SRS-055%20Database%20High%20Availability.ru.md) | P2 | High | DBA | Требует настройки Patroni/etcd и процедур failover |
+| [SRS-056 Database Sharding](specs/SRS-056%20Database%20Sharding.ru.md) | P3 | High | DBA/Architect | Требует проектирования стратегии шардирования и обработки cross-shard |
+| [SRS-057 Table Partitioning](specs/SRS-057%20Table%20Partitioning.ru.md) | P2 | Medium | DBA | Требует стратегии партиционирования и автоматизации обслуживания |
+| [SRS-058 Read Replicas & Load Balancing](specs/SRS-058%20Read%20Replicas.ru.md) | P2 | Medium | DBA | Требует настройки реплик и lag-aware маршрутизации |
+| [SRS-059 Database Maintenance](specs/SRS-059%20Database%20Maintenance.ru.md) | P2 | Medium | DBA | Требует VACUUM, ANALYZE и управления bloat |
+| [SRS-060 Database Security](specs/SRS-060%20Database%20Security.ru.md) | P1 | High | DBA/Security | Требует настройки аутентификации, шифрования и аудита |
+| [SRS-061 Database Performance Tuning](specs/SRS-061%20Database%20Performance%20Tuning.ru.md) | P2 | High | DBA | Требует знания настройки памяти, WAL и ОС |
+| [SRS-062 Materialized Views & Caching](specs/SRS-062%20Materialized%20Views%20&%20Caching.ru.md) | P2 | Medium | Dev/DBA | Требует управления материализованными представлениями и инвалидации кэша |
+
 ### Статус реализации
 
-- **Всего спецификаций в репозитории**: 45
+- **Всего спецификаций в репозитории**: 56
 - **Покрытие**: 100%
 
 ### Резюме для разработчика
@@ -124,6 +140,18 @@
 **Знать поверхностно:**
 - [Probes](specs/SRS-010%20Liveness%20Probes.ru.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.ru.md), [Versioning](specs/SRS-005%20Application%20Versioning.ru.md)
 - Паттерны надёжности (для понимания поведения приложений): [Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.ru.md), [Retry](specs/SRS-020%20Retryier.ru.md), [Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.ru.md)
+
+### Резюме для DBA
+
+**Обязательно изучить:**
+- Core база данных: [Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.ru.md), [Репликация](specs/SRS-052%20Database%20Replication.ru.md), [High Availability](specs/SRS-055%20Database%20High%20Availability.ru.md)
+- Производительность: [Оптимизация запросов](specs/SRS-054%20Query%20Optimization.ru.md), [Настройка производительности](specs/SRS-061%20Database%20Performance%20Tuning.ru.md), [Материализованные представления](specs/SRS-062%20Materialized%20Views%20&%20Caching.ru.md)
+- Операции: [Мониторинг](specs/SRS-053%20Database%20Monitoring.ru.md), [Обслуживание](specs/SRS-059%20Database%20Maintenance.ru.md), [Миграции](specs/SRS-035%20Database%20Migrations.ru.md)
+- Безопасность: [Безопасность БД](specs/SRS-060%20Database%20Security.ru.md)
+
+**Знать поверхностно:**
+- Продвинутые паттерны: [Шардирование](specs/SRS-056%20Database%20Sharding.ru.md), [Партиционирование](specs/SRS-057%20Table%20Partitioning.ru.md), [Read Replicas](specs/SRS-058%20Read%20Replicas.ru.md)
+- Связанные спеки: [Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.ru.md), [Distributed Caching](specs/SRS-018%20Distributed%20Caching.ru.md)
 
 ## Как использовать
 
@@ -244,23 +272,26 @@
 ## Сводная карта приоритетов
 
 ```
-Priority 1 (Critical - 10 specs)
+Priority 1 (Critical - 12 specs)
 ├─ Logging, Error Tracking, Health Checks
 ├─ Versioning, Environment Variables
 ├─ Graceful Shutdown, Jobs Management
-└─ Basic Backups, Basic Metrics
+├─ Basic Backups, Basic Metrics
+└─ Database Monitoring, Database Security
 
-Priority 2 (Important - 23 specs)
+Priority 2 (Important - 38 specs)
 ├── Security (5)
-├── Reliability (9)
+├── Reliability (8)
 ├── Data & State (5)
-└── Infrastructure (4)
+├── Infrastructure (4)
+└── Database Administration (10)
 
-Priority 3 (Nice to have - 5 specs)
+Priority 3 (Nice to have - 6 specs)
 ├── Performance (3)
-└── Analytics (2)
+├── Analytics (2)
+└── Database Sharding (1)
 
-Total: 45 specifications
+Total: 56 specifications
 ```
 
 ---
@@ -385,13 +416,13 @@ Total: 45 specifications
 
 #### 📈 Метрики качества каталога
 
-- **Всего спецификаций:** 45 (100%)
+- **Всего спецификаций:** 56 (100%)
 - **Двуязычность:** 100% (русский + английский)
 - **Средняя длина спецификации:** 650+ строк
 - **Production-ready примеры:** 95%+
-- **Глубина уровня 5/5:** 11 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning, Security Monitoring)
+- **Глубина уровня 5/5:** 22 спецификации (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning, Security Monitoring, Database Replication, Database HA, Database Sharding, Database Security, Database Performance Tuning)
 - **Числовые метрики:** 87% содержат конкретные числа и формулы
-- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet, Falco, Elastic SIEM, Wazuh, OSSEC
+- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet, Falco, Elastic SIEM, Wazuh, OSSEC, PostgreSQL, MySQL, PgBouncer, Patroni, etcd, HAProxy, pg_stat_statements, pgAudit, Citus, Vitess
 
 #### 📝 Рекомендации по поддержке
 
@@ -461,7 +492,7 @@ Total: 45 specifications
 
 ---
 
-*Последний анализ: 09.01.2026 | Аналитик: Senior SRE Engineer*
+*Последний анализ: 10.01.2026 | Аналитик: Senior SRE Engineer*
 
 ---
 

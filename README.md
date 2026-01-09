@@ -40,7 +40,6 @@ This repository contains practical guides (specifications) for building reliable
 | [SRS-023 Load Balancing Patterns](specs/SRS-023%20Load%20Balancing%20Patterns.md) | P2 | Medium | Architect | Requires load balancer configuration |
 | [SRS-024 Auto-scaling](specs/SRS-024%20Auto-scaling.md) | P2 | High | DevOps | Requires auto-scaling rules and metrics monitoring setup |
 | [SRS-027 Rate Limiting](specs/SRS-027%20Rate%20Limiting.md) | P2 | Medium | Dev | Requires rate limiter and counter storage setup |
-| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md) | P2 | Medium | Dev | Requires connection pool setup and load understanding |
 | [SRS-025 Bulkhead Pattern](specs/SRS-025%20Bulkhead%20Pattern.md) | P3 | High | Dev | Advanced resource isolation, requires architectural decisions |
 
 ### Security
@@ -76,7 +75,7 @@ This repository contains practical guides (specifications) for building reliable
 |---------------|----------|------------|------|---------------------|
 | [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.md) | P1 | Medium | DevOps | Requires backup and recovery setup |
 | [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | P2 | Medium | SRE | Requires rotation, escalation policies, and runbooks setup |
-| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.md) | P2 | High | Dev | Requires migration framework setup and rollback testing |
+| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.md) | P2 | High | Dev/DBA | Requires migration framework setup and rollback testing |
 | [SRS-042 Feature Flags](specs/SRS-042%20Feature%20Flags.md) | P2 | Medium | Dev | Feature management without deployment, canary releases |
 | [SRS-043 Chaos Engineering](specs/SRS-043%20Chaos%20Engineering.md) | P2 | High | SRE | Requires Chaos Mesh/Litmus setup and Game Days |
 | [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.md) | P2 | High | Architect | Requires Istio/Linkerd setup and traffic management understanding |
@@ -85,9 +84,26 @@ This repository contains practical guides (specifications) for building reliable
 | [SRS-047 Capacity Planning](specs/SRS-047%20Capacity%20Planning.md) | P2 | Medium | SRE | Load forecasting, bottleneck analysis, performance baseline |
 | [SRS-048 Security Monitoring](specs/SRS-048%20Security%20Monitoring.md) | P1 | High | Security/SRE | SIEM, threat detection, runtime security, compliance monitoring |
 
+### Database Administration (DBA)
+
+| Specification | Priority | Complexity | Role | Complexity Rationale |
+|---------------|----------|------------|------|---------------------|
+| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md) | P2 | Medium | Dev/DBA | Requires connection pool setup and load understanding |
+| [SRS-052 Database Replication](specs/SRS-052%20Database%20Replication.md) | P2 | High | DBA | Requires PostgreSQL/MySQL replication setup and monitoring |
+| [SRS-053 Database Monitoring](specs/SRS-053%20Database%20Monitoring.md) | P1 | Medium | DBA | Requires metrics collection and alerting setup |
+| [SRS-054 Query Optimization](specs/SRS-054%20Query%20Optimization.md) | P2 | Medium | Dev/DBA | Requires EXPLAIN ANALYZE and index tuning knowledge |
+| [SRS-055 Database High Availability](specs/SRS-055%20Database%20High%20Availability.md) | P2 | High | DBA | Requires Patroni/etcd setup and failover procedures |
+| [SRS-056 Database Sharding](specs/SRS-056%20Database%20Sharding.md) | P3 | High | DBA/Architect | Requires sharding strategy design and cross-shard handling |
+| [SRS-057 Table Partitioning](specs/SRS-057%20Table%20Partitioning.md) | P2 | Medium | DBA | Requires partition strategy and maintenance automation |
+| [SRS-058 Read Replicas & Load Balancing](specs/SRS-058%20Read%20Replicas.md) | P2 | Medium | DBA | Requires replica setup and lag-aware routing |
+| [SRS-059 Database Maintenance](specs/SRS-059%20Database%20Maintenance.md) | P2 | Medium | DBA | Requires VACUUM, ANALYZE, and bloat management |
+| [SRS-060 Database Security](specs/SRS-060%20Database%20Security.md) | P1 | High | DBA/Security | Requires authentication, encryption, and auditing setup |
+| [SRS-061 Database Performance Tuning](specs/SRS-061%20Database%20Performance%20Tuning.md) | P2 | High | DBA | Requires memory, WAL, and OS tuning knowledge |
+| [SRS-062 Materialized Views & Caching](specs/SRS-062%20Materialized%20Views%20&%20Caching.md) | P2 | Medium | Dev/DBA | Requires materialized view management and cache invalidation |
+
 ### Implementation Status
 
-- **Total specifications in repository**: 45
+- **Total specifications in repository**: 56
 - **Coverage**: 100%
 
 ### Developer Summary
@@ -124,6 +140,18 @@ This repository contains practical guides (specifications) for building reliable
 **Good to know:**
 - [Probes](specs/SRS-010%20Liveness%20Probes.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.md), [Versioning](specs/SRS-005%20Application%20Versioning.md)
 - Reliability patterns (to understand application behavior): [Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md), [Retry](specs/SRS-020%20Retryier.md), [Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.md)
+
+### DBA Summary
+
+**Must study:**
+- Core database: [Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md), [Replication](specs/SRS-052%20Database%20Replication.md), [High Availability](specs/SRS-055%20Database%20High%20Availability.md)
+- Performance: [Query Optimization](specs/SRS-054%20Query%20Optimization.md), [Performance Tuning](specs/SRS-061%20Database%20Performance%20Tuning.md), [Materialized Views](specs/SRS-062%20Materialized%20Views%20&%20Caching.md)
+- Operations: [Monitoring](specs/SRS-053%20Database%20Monitoring.md), [Maintenance](specs/SRS-059%20Database%20Maintenance.md), [Migrations](specs/SRS-035%20Database%20Migrations.md)
+- Security: [Database Security](specs/SRS-060%20Database%20Security.md)
+
+**Good to know:**
+- Advanced patterns: [Sharding](specs/SRS-056%20Database%20Sharding.md), [Partitioning](specs/SRS-057%20Table%20Partitioning.md), [Read Replicas](specs/SRS-058%20Read%20Replicas.md)
+- Related specs: [Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.md), [Distributed Caching](specs/SRS-018%20Distributed%20Caching.md)
 
 ## How to Use
 
@@ -244,23 +272,26 @@ Specification statuses:
 ## Priority Summary Map
 
 ```
-Priority 1 (Critical - 10 specs)
-+- Logging, Error Tracking, Health Checks
-+- Versioning, Environment Variables
-+- Graceful Shutdown, Jobs Management
-+- Basic Backups, Basic Metrics
+Priority 1 (Critical - 12 specs)
+├─ Logging, Error Tracking, Health Checks
+├─ Versioning, Environment Variables
+├─ Graceful Shutdown, Jobs Management
+├─ Basic Backups, Basic Metrics
+└─ Database Monitoring, Database Security
 
-Priority 2 (Important - 23 specs)
-+-- Security (5)
-+-- Reliability (9)
-+-- Data & State (5)
-+-- Infrastructure (4)
+Priority 2 (Important - 38 specs)
+├── Security (5)
+├── Reliability (8)
+├── Data & State (5)
+├── Infrastructure (4)
+└── Database Administration (10)
 
-Priority 3 (Nice to have - 5 specs)
-+-- Performance (3)
-+-- Analytics (2)
+Priority 3 (Nice to have - 6 specs)
+├── Performance (3)
+├── Analytics (2)
+└── Database Sharding (1)
 
-Total: 45 specifications
+Total: 56 specifications
 ```
 
 ---
@@ -385,13 +416,13 @@ Total: 45 specifications
 
 #### Catalog Quality Metrics
 
-- **Total specifications:** 45 (100%)
+- **Total specifications:** 56 (100%)
 - **Bilingual:** 100% (Russian + English)
 - **Average specification length:** 650+ lines
 - **Production-ready examples:** 95%+
-- **Level 5/5 depth:** 11 specifications (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning, Security Monitoring)
+- **Level 5/5 depth:** 22 specifications (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning, Security Monitoring, Database Replication, Database HA, Database Sharding, Database Security, Database Performance Tuning)
 - **Numerical metrics:** 87% contain specific numbers and formulas
-- **Tooling covered:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet, Falco, Elastic SIEM, Wazuh, OSSEC
+- **Tooling covered:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet, Falco, Elastic SIEM, Wazuh, OSSEC, PostgreSQL, MySQL, PgBouncer, Patroni, etcd, HAProxy, pg_stat_statements, pgAudit, Citus, Vitess
 
 #### Maintenance Recommendations
 
@@ -461,7 +492,7 @@ Our specifications are based on the following industry standards and best practi
 
 ---
 
-*Last analysis: 09.01.2026 | Analyst: Senior SRE Engineer*
+*Last analysis: 10.01.2026 | Analyst: Senior SRE Engineer*
 
 ---
 
