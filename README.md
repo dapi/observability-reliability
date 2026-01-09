@@ -23,65 +23,81 @@ This repository contains practical guides (specifications) for building reliable
 
 ### Reliability
 
-| Specification | Priority | Complexity | Complexity Rationale |
-|---------------|----------|------------|---------------------|
-| [SRS-001 Jobs Management](specs/SRS-001%20Jobs%20Management.md) | P1 | Medium | Requires understanding of background tasks and edge case handling |
-| [SRS-010 Liveness Probes](specs/SRS-010%20Liveness%20Probes.md) | P1 | Low | Basic health check in Kubernetes |
-| [SRS-014 Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.md) | P1 | Medium | Requires signal handling and request completion |
-| [SRS-002 Stateless Services](specs/SRS-002%20Stateless%20Services.md) | P2 | Medium | Requires architectural decisions for state storage |
-| [SRS-003 Scaling and State](specs/SRS-003%20Scaling%20and%20State.md) | P2 | High | Important for understanding scaling architectural constraints |
-| [SRS-015 Blocking Timeouts](specs/SRS-015%20Blocking%20Timeouts.md) | P2 | Low | Simple timeout configuration |
-| [SRS-016 Request Idempotency](specs/SRS-016%20Request%20Idempotency.md) | P2 | Medium | Requires implementation of idempotent operations at API level |
-| [SRS-013 Load Shedding](specs/SRS-013%20Load%20Shedding.md) | P2/P3 | Medium | Advanced overload protection |
-| [SRS-018 Distributed Caching](specs/SRS-018%20Distributed%20Caching.md) | P2 | High | Requires caching layer setup and consistency management |
-| [SRS-020 Retryier](specs/SRS-020%20Retryier.md) | P2 | Medium | Requires exponential backoff and jitter implementation |
-| [SRS-022 Fallback](specs/SRS-022%20Fallback.md) | P2 | Medium | Requires graceful degradation implementation |
-| [SRS-023 Load Balancing Patterns](specs/SRS-023%20Load%20Balancing%20Patterns.md) | P2 | Medium | Requires load balancer configuration |
-| [SRS-024 Auto-scaling](specs/SRS-024%20Auto-scaling.md) | P2 | High | Requires auto-scaling rules and metrics monitoring setup |
-| [SRS-027 Rate Limiting](specs/SRS-027%20Rate%20Limiting.md) | P2 | Medium | Requires rate limiter and counter storage setup |
-| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md) | P2 | Medium | Requires connection pool setup and load understanding |
-| [SRS-025 Bulkhead Pattern](specs/SRS-025%20Bulkhead%20Pattern.md) | P3 | High | Advanced resource isolation, requires architectural decisions |
+| Specification | Priority | Complexity | Role | Complexity Rationale |
+|---------------|----------|------------|------|---------------------|
+| [SRS-001 Jobs Management](specs/SRS-001%20Jobs%20Management.md) | P1 | Medium | Dev | Requires understanding of background tasks and edge case handling |
+| [SRS-010 Liveness Probes](specs/SRS-010%20Liveness%20Probes.md) | P1 | Low | Dev/DevOps | Basic health check in Kubernetes |
+| [SRS-014 Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.md) | P1 | Medium | Dev | Requires signal handling and request completion |
+| [SRS-002 Stateless Services](specs/SRS-002%20Stateless%20Services.md) | P2 | Medium | Architect | Requires architectural decisions for state storage |
+| [SRS-003 Scaling and State](specs/SRS-003%20Scaling%20and%20State.md) | P2 | High | Architect | Important for understanding scaling architectural constraints |
+| [SRS-015 Blocking Timeouts](specs/SRS-015%20Blocking%20Timeouts.md) | P2 | Low | Dev | Simple timeout configuration |
+| [SRS-016 Request Idempotency](specs/SRS-016%20Request%20Idempotency.md) | P2 | Medium | Dev | Requires implementation of idempotent operations at API level |
+| [SRS-017 Deadline Propagation](specs/SRS-017%20Deadline%20Propagation.md) | P2 | Medium | Dev | Requires deadline propagation between services |
+| [SRS-013 Load Shedding](specs/SRS-013%20Load%20Shedding.md) | P2/P3 | Medium | Architect | Advanced overload protection |
+| [SRS-018 Distributed Caching](specs/SRS-018%20Distributed%20Caching.md) | P2 | High | Dev | Requires caching layer setup and consistency management |
+| [SRS-020 Retryier](specs/SRS-020%20Retryier.md) | P2 | Medium | Dev | Requires exponential backoff and jitter implementation |
+| [SRS-022 Fallback](specs/SRS-022%20Fallback.md) | P2 | Medium | Dev | Requires graceful degradation implementation |
+| [SRS-023 Load Balancing Patterns](specs/SRS-023%20Load%20Balancing%20Patterns.md) | P2 | Medium | Architect | Requires load balancer configuration |
+| [SRS-024 Auto-scaling](specs/SRS-024%20Auto-scaling.md) | P2 | High | DevOps | Requires auto-scaling rules and metrics monitoring setup |
+| [SRS-027 Rate Limiting](specs/SRS-027%20Rate%20Limiting.md) | P2 | Medium | Dev | Requires rate limiter and counter storage setup |
+| [SRS-028 Database Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md) | P2 | Medium | Dev | Requires connection pool setup and load understanding |
+| [SRS-025 Bulkhead Pattern](specs/SRS-025%20Bulkhead%20Pattern.md) | P3 | High | Dev | Advanced resource isolation, requires architectural decisions |
 
 ### Security
 
-| Specification | Priority | Complexity | Complexity Rationale |
-|---------------|----------|------------|---------------------|
-| [SRS-029 Secrets Management](specs/SRS-029%20Secrets%20Management.md) | P2 | Medium | Requires integration with Vault or cloud Secret Manager |
-| [SRS-031 Audit Logging](specs/SRS-031%20Audit%20Logging.md) | P2 | Medium | Requires structured logging and storage setup |
-| [SRS-040 Service Authentication](specs/SRS-040%20Service%20Authentication.md) | P2 | Medium | Requires JWT/OAuth2 implementation and secrets management |
-| [SRS-041 Authorization Pattern](specs/SRS-041%20Authorization%20Pattern.md) | P2 | Medium | Requires RBAC or Policy-based access control implementation |
+| Specification | Priority | Complexity | Role | Complexity Rationale |
+|---------------|----------|------------|------|---------------------|
+| [SRS-029 Secrets Management](specs/SRS-029%20Secrets%20Management.md) | P2 | Medium | Dev/DevOps | Requires integration with Vault or cloud Secret Manager |
+| [SRS-031 Audit Logging](specs/SRS-031%20Audit%20Logging.md) | P2 | Medium | Dev | Requires structured logging and storage setup |
+| [SRS-040 Service Authentication](specs/SRS-040%20Service%20Authentication.md) | P2 | Medium | Dev | Requires JWT/OAuth2 implementation and secrets management |
+| [SRS-041 Authorization Pattern](specs/SRS-041%20Authorization%20Pattern.md) | P2 | Medium | Dev | Requires RBAC or Policy-based access control implementation |
 
 ### Observability
 
-| Specification | Priority | Complexity | Complexity Rationale |
-|---------------|----------|------------|---------------------|
-| [SRS-004 Environment Variables Usage](specs/SRS-004%20Environment%20Variables%20Usage.md) | P1 | Low | Transitioning to env vars configuration |
-| [SRS-005 Application Versioning](specs/SRS-005%20Application%20Versioning.md) | P1 | Low | Adding version to build via CI/CD |
-| [SRS-007 Expose Application Version](specs/SRS-007%20Expose%20Application%20Version.md) | P1 | Low | Adding /version endpoint |
-| [SRS-008 Logging](specs/SRS-008%20Logging.md) | P1 | Low | Simple integration with logging libraries |
-| [SRS-009 Error Tracking](specs/SRS-009%20Error%20Tracking.md) | P1 | Low | Integration with Sentry/Rollbar |
-| [SRS-021 Liveness probes over command](specs/SRS-021%20Liveness%20probes%20over%20command.md) | P1 | Low | Configuring liveness probes via command |
-| [SRS-006 Metrics Collection](specs/SRS-006%20Metrics%20Collection.md) | P2 | Low | Setting up metrics collection (Prometheus/Grafana) |
-| [SRS-012 Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md) | P2 | Medium | Requires Circuit Breaker pattern implementation and threshold configuration |
-| [SRS-026 Alerting Rules](specs/SRS-026%20Alerting%20Rules.md) | P2 | Low | Setting up alerting rules in Prometheus/Grafana |
-| [SRS-032 SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.md) | P2 | Medium | Requires SLI definition and SLO calculation |
-| [SRS-019 Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.md) | P2 | Medium | Preparing containers without host dependencies |
-| [SRS-011 Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.md) | P3 | High | Requires Jaeger/Zipkin integration and instrumentation of all services |
-| [SRS-033 Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md) | P3 | Medium | Setting up synthetic checks and locations |
+| Specification | Priority | Complexity | Role | Complexity Rationale |
+|---------------|----------|------------|------|---------------------|
+| [SRS-004 Environment Variables Usage](specs/SRS-004%20Environment%20Variables%20Usage.md) | P1 | Low | Dev/DevOps | Transitioning to env vars configuration |
+| [SRS-005 Application Versioning](specs/SRS-005%20Application%20Versioning.md) | P1 | Low | Dev/DevOps | Adding version to build via CI/CD |
+| [SRS-007 Expose Application Version](specs/SRS-007%20Expose%20Application%20Version.md) | P1 | Low | Dev | Adding /version endpoint |
+| [SRS-008 Logging](specs/SRS-008%20Logging.md) | P1 | Low | Dev | Simple integration with logging libraries |
+| [SRS-009 Error Tracking](specs/SRS-009%20Error%20Tracking.md) | P1 | Low | Dev | Integration with Sentry/Rollbar |
+| [SRS-021 Liveness probes over command](specs/SRS-021%20Liveness%20probes%20over%20command.md) | P1 | Low | Dev/DevOps | Configuring liveness probes via command |
+| [SRS-006 Metrics Collection](specs/SRS-006%20Metrics%20Collection.md) | P2 | Low | Dev/SRE | Setting up metrics collection (Prometheus/Grafana) |
+| [SRS-012 Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md) | P2 | Medium | Dev | Requires Circuit Breaker pattern implementation and threshold configuration |
+| [SRS-026 Alerting Rules](specs/SRS-026%20Alerting%20Rules.md) | P2 | Low | SRE | Setting up alerting rules in Prometheus/Grafana |
+| [SRS-032 SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.md) | P2 | Medium | Architect | Requires SLI definition and SLO calculation |
+| [SRS-019 Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.md) | P2 | Medium | DevOps | Preparing containers without host dependencies |
+| [SRS-011 Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.md) | P3 | High | Architect | Requires Jaeger/Zipkin integration and instrumentation of all services |
+| [SRS-033 Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md) | P3 | Medium | SRE | Setting up synthetic checks and locations |
 
 ### DevOps & Operations
 
-| Specification | Priority | Complexity | Complexity Rationale |
-|---------------|----------|------------|---------------------|
-| [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.md) | P1 | Medium | Requires backup and recovery setup |
-| [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | P2 | Medium | Requires rotation, escalation policies, and runbooks setup |
-| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.md) | P2 | High | Requires migration framework setup and rollback testing |
+| Specification | Priority | Complexity | Role | Complexity Rationale |
+|---------------|----------|------------|------|---------------------|
+| [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.md) | P1 | Medium | DevOps | Requires backup and recovery setup |
+| [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | P2 | Medium | SRE | Requires rotation, escalation policies, and runbooks setup |
+| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.md) | P2 | High | Dev | Requires migration framework setup and rollback testing |
 
 ### Implementation Status
 
 - **Total specifications in registry**: 41
-- **Found in repository**: 38 (92.6%)
-- **Missing**: 3 (7.4%)
+- **Found in repository**: 39 (95.1%)
+- **Missing**: 2 (4.9%)
+
+### Developer Summary
+
+**Must study:**
+- Reliability patterns: [Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md), [Retry](specs/SRS-020%20Retryier.md), [Fallback](specs/SRS-022%20Fallback.md), [Bulkhead](specs/SRS-025%20Bulkhead%20Pattern.md), [Timeouts](specs/SRS-015%20Blocking%20Timeouts.md)
+- Data handling: [Idempotency](specs/SRS-016%20Request%20Idempotency.md), [Caching](specs/SRS-018%20Distributed%20Caching.md), [Connection Pooling](specs/SRS-028%20Database%20Connection%20Pooling.md), [Migrations](specs/SRS-035%20Database%20Migrations.md)
+- Observability: [Logging](specs/SRS-008%20Logging.md), [Error Tracking](specs/SRS-009%20Error%20Tracking.md), [Audit Logging](specs/SRS-031%20Audit%20Logging.md)
+- Security: [Authentication](specs/SRS-040%20Service%20Authentication.md), [Authorization](specs/SRS-041%20Authorization%20Pattern.md)
+- Lifecycle: [Graceful Shutdown](specs/SRS-014%20Graceful%20Shutdown.md), [Deadline Propagation](specs/SRS-017%20Deadline%20Propagation.md)
+
+**Good to know:**
+- [Jobs](specs/SRS-001%20Jobs%20Management.md), [Probes](specs/SRS-010%20Liveness%20Probes.md), [Metrics](specs/SRS-006%20Metrics%20Collection.md), [Secrets](specs/SRS-029%20Secrets%20Management.md), [Versioning](specs/SRS-005%20Application%20Versioning.md), [Environment Variables](specs/SRS-004%20Environment%20Variables%20Usage.md)
+
+**Not a priority (DevOps/SRE scope):**
+- [Auto-scaling](specs/SRS-024%20Auto-scaling.md), [Alerting](specs/SRS-026%20Alerting%20Rules.md), [Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md), [On-Call](specs/SRS-034%20On-Call%20&%20Incident%20Response.md), [Backups](specs/SRS-036%20Backup%20&%20Recovery.md), [Images](specs/SRS-019%20Stand-Independent%20Images.md)
 
 ## How to Use
 
@@ -171,7 +187,7 @@ Specification statuses:
 - Operational procedures
 
 ### Level 3: Enterprise-Ready
-**Required:** Priority 1 + Priority 2 + Priority 3 (38 specifications)
+**Required:** Priority 1 + Priority 2 + Priority 3 (39 specifications)
 - All specifications
 - Advanced optimization
 - Proactive monitoring
@@ -218,7 +234,7 @@ Priority 3 (Nice to have - 5 specs)
 +-- Performance (3)
 +-- Analytics (2)
 
-Total: 38 specifications
+Total: 39 specifications
 ```
 
 ---
@@ -232,7 +248,7 @@ Total: 38 specifications
 #### Strengths
 
 1. **Complete coverage of core SRE practices (85%)**
-   - 38 specifications cover reliability, observability, security, operations
+   - 39 specifications cover reliability, observability, security, operations
    - Production-ready examples with specific numbers and formulas
 
 2. **Exceptional depth of key specifications**
