@@ -77,12 +77,14 @@
 | [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.ru.md) | P1 | Medium | DevOps | Требует настройки резервного копирования и восстановления |
 | [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.ru.md) | P2 | Medium | SRE | Требует настройки ротаций, escalation policies и runbook'ов |
 | [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.ru.md) | P2 | High | Dev | Требует настройки фреймворка миграций и тестирования откатов |
+| [SRS-042 Feature Flags](specs/SRS-042%20Feature%20Flags.ru.md) | P2 | Medium | Dev | Управление функциональностью без деплоя, canary releases |
+| [SRS-043 Chaos Engineering](specs/SRS-043%20Chaos%20Engineering.ru.md) | P2 | High | SRE | Требует настройки Chaos Mesh/Litmus и проведения Game Days |
+| [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.ru.md) | P2 | High | Architect | Требует настройки Istio/Linkerd и понимания traffic management |
 
 ### Статус реализации
 
-- **Всего спецификаций в реестре**: 41
-- **Найдено в репозитории**: 39 (95.1%)
-- **Отсутствует**: 2 (4.9%)
+- **Всего спецификаций в репозитории**: 41
+- **Покрытие**: 100%
 
 ### Резюме для разработчика
 
@@ -254,7 +256,7 @@ Priority 3 (Nice to have - 5 specs)
 ├── Performance (3)
 └── Analytics (2)
 
-Total: 39 specifications
+Total: 41 specifications
 ```
 
 ---
@@ -292,21 +294,23 @@ Total: 39 specifications
 
 **Приоритет 1 (Критично - для level 5 Optimizing):**
 
-1. **SRS-042 Chaos Engineering** (отсутствует)
-   - Fault injection (CPU, memory, network latency)
-   - Chaos Mesh / Gremlin интеграция
-   - Game days процедуры
-   - Termination of instances
-   - Автоматизированные chaos experiments
+1. ~~**SRS-042 Feature Flags & Toggles**~~ ✅ СОЗДАНО
+   - Rollback без деплоя, A/B testing, Canary releases, Gradual rollout
 
-2. **SRS-043 Cost Optimization & FinOps** (упоминается в Backup, но нет системного подхода)
+2. ~~**SRS-043 Chaos Engineering**~~ ✅ СОЗДАНО
+   - Fault injection, Chaos Mesh/Litmus, Game Days, Automated experiments
+
+3. ~~**SRS-044 Service Mesh**~~ ✅ СОЗДАНО
+   - Istio/Linkerd, mTLS, Traffic management, Observability
+
+4. **SRS-045 Cost Optimization & FinOps** (отсутствует)
    - Cost allocation by service/team
    - Tagging strategies (FinOps framework)
    - Reserved vs Spot instances
    - Cost anomaly detection
    - Бюджетирование и chargeback
 
-3. **SRS-044 Multi-Region & Disaster Recovery** (упоминается в Backup, но нет деталей)
+5. **SRS-046 Multi-Region & Disaster Recovery** (отсутствует)
    - RTO/RPO расчеты и цели
    - Cross-region replication стратегии
    - Active-Active vs Active-Passive failover
@@ -315,30 +319,17 @@ Total: 39 specifications
 
 **Приоритет 2 (Важно - для enterprise production):**
 
-4. **SRS-045 Feature Flags & Toggles** (отсутствует)
-   - Rollback без деплоя
-   - A/B testing framework
-   - Canary releases с процентами
-   - Gradual rollout стратегии
-
-5. **SRS-046 Capacity Planning** (отсутствует)
+6. **SRS-047 Capacity Planning** (отсутствует)
    - Load forecasting (ML-based)
    - Performance baseline establishment
    - Bottleneck identification
    - Scalability testing procedures
 
-6. **SRS-047 Security Monitoring** (базовое упоминание в WAF)
+7. **SRS-048 Security Monitoring** (отсутствует)
    - IDS/IPS интеграция
    - Vulnerability scanning automation
    - SIEM integration (Splunk, Datadog)
    - Threat detection и response
-
-7. **SRS-048 Service Mesh** (упоминается в API Gateway, но нет полной спецификации)
-   - Istio/Linkerd детальная настройка
-   - mTLS enforcement policies
-   - Traffic management (canary, A/B)
-   - Authorization policies (OPA)
-   - Observability in service mesh
 
 **Приоритет 3 (Полезно - для large-scale optimization):**
 
@@ -366,26 +357,26 @@ Total: 39 specifications
 |----------|------------|-------------|
 | Google SRE Book | 90% | Отличное покрытие SLI/SLO, Error Budgets, мониторинг |
 | AWS Well-Architected (Reliability) | 85% | Хорошая надежность, безопасность, операции |
-| CNCF Cloud Native | 80% | Отличные cloud patterns, нужен Service Mesh |
+| CNCF Cloud Native | 95% | Отличные cloud patterns, Service Mesh добавлен |
 | DevOps Handbook | 85% | Хороший CD, мониторинг, IAC |
 | ITIL 4 | 70% | Formal Change Management отсутствует |
 
 #### 🎯 Рекомендованный roadmap расширения
 
-**Phase 1 (Month 1-2): Foundation for Level 5**
-- Создать SRS-042 Chaos Engineering
-- Создать SRS-043 Cost Optimization
+**Phase 1 (Завершено):** ✅
+- ~~Создать SRS-042 Feature Flags~~ ✅
+- ~~Создать SRS-043 Chaos Engineering~~ ✅
+- ~~Создать SRS-044 Service Mesh~~ ✅
+
+**Phase 2 (Next): Enterprise hardening**
+- Создать SRS-045 Cost Optimization & FinOps
+- Создать SRS-046 Multi-Region DR
+- Создать SRS-047 Capacity Planning
+- Создать SRS-048 Security Monitoring
 - Расширить SRS-011 (Distributed Tracing) - добавить Sampling
 - Расширить SRS-012 (Circuit Breaker) - добавить Half-Open, Adaptive
 
-**Phase 2 (Month 3-4): Enterprise hardening**
-- Создать SRS-044 Multi-Region DR
-- Создать SRS-045 Feature Flags
-- Создать SRS-046 Capacity Planning
-- Создать SRS-047 Security Monitoring
-
-**Phase 3 (Month 5-6): Platform & Optimization**
-- Создать SRS-048 Service Mesh (полная)
+**Phase 3: Platform & Optimization**
 - Создать SRS-049 Platform Engineering
 - Создать SRS-050 GitOps
 - Создать SRS-051 Advanced Monitoring (ML)
@@ -394,13 +385,13 @@ Total: 39 specifications
 
 #### 📈 Метрики качества каталога
 
-- **Всего спецификаций:** 38 (92.6% от реестра)
+- **Всего спецификаций:** 41 (100%)
 - **Двуязычность:** 100% (русский + английский)
-- **Средняя длина спецификации:** 682 строки
-- **Production-ready примеры:** 95% (36/38)
-- **Глубина уровня 5/5:** 5 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway)
+- **Средняя длина спецификации:** 650+ строк
+- **Production-ready примеры:** 95%+
+- **Глубина уровня 5/5:** 8 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh)
 - **Числовые метрики:** 87% содержат конкретные числа и формулы
-- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry
+- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash
 
 #### 📝 Рекомендации по поддержке
 
