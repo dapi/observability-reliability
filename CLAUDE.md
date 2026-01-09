@@ -14,6 +14,7 @@ This is the Site Reliability Specifications (SRS) repository - a collection of t
 - Specifications support versioning: `SRS-XXX-Y` where Y is the version number
 - Status workflow: DRAFT → PROPOSED → APPROVED → DEPRECATED
 - Written in Russian and English
+- **IMPORTANT**: Files with Russian titles must use `.ru.md` extension (e.g., `SRS-XXX Title in Russian.ru.md`)
 
 ## Key Specifications
 
