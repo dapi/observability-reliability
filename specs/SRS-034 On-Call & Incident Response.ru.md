@@ -503,7 +503,7 @@ Database connection pool size insufficient after deployment of v2.1
 
 ---
 
-## Communincation
+## Communication
 
 ### Incident Communication Matrix
 

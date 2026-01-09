@@ -53,7 +53,7 @@ class SLICalculator:
         return (sla_target / p99_latency) * 100 if p99_latency > 0 else 100
 
     def calculate_good_requests(self):
-        """"Хорошие" запросы по всеум параметрам"""
+        """"Хорошие" запросы по всем параметрам"""
         return metrics.query("""
             http_requests_total
             - http_requests_5xx

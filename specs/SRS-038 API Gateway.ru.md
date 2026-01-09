@@ -48,7 +48,7 @@ API Gateway - это паттерн проектирования, который
 
 ### ❌ API Gateway как монолит
 ```
-Все логика в одном месте:
+Вся логика в одном месте:
 - Auth
 - Business logic
 - Data aggregation

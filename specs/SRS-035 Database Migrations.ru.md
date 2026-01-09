@@ -669,7 +669,7 @@ DB_STATEMENT_TIMEOUT=30000  # 30 seconds
 
 ### Хранение миграций
 - ✅ Версионировать в Git
-- ✅ Явные названия (YYYYMMMDD_description.sql)
+- ✅ Явные названия (YYYYMMDD_description.sql)
 - ✅ Хранить up/down пары
 - ✅ Минимизировать ручные правки
 
