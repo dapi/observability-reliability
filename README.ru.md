@@ -82,10 +82,11 @@
 | [SRS-044 Service Mesh](specs/SRS-044%20Service%20Mesh.ru.md) | P2 | High | Architect | Требует настройки Istio/Linkerd и понимания traffic management |
 | [SRS-045 Cost Optimization & FinOps](specs/SRS-045%20Cost%20Optimization%20&%20FinOps.ru.md) | P2 | Medium | FinOps/SRE | Управление облачными затратами, tagging, budgeting |
 | [SRS-046 Multi-Region DR](specs/SRS-046%20Multi-Region%20DR.ru.md) | P2 | High | Architect | RTO/RPO, cross-region репликация, failover стратегии |
+| [SRS-047 Capacity Planning](specs/SRS-047%20Capacity%20Planning.ru.md) | P2 | Medium | SRE | Прогнозирование нагрузки, анализ узких мест, baseline |
 
 ### Статус реализации
 
-- **Всего спецификаций в репозитории**: 43
+- **Всего спецификаций в репозитории**: 44
 - **Покрытие**: 100%
 
 ### Резюме для разработчика
@@ -258,7 +259,7 @@ Priority 3 (Nice to have - 5 specs)
 ├── Performance (3)
 └── Analytics (2)
 
-Total: 43 specifications
+Total: 44 specifications
 ```
 
 ---
@@ -317,7 +318,7 @@ Total: 43 specifications
 
 **Приоритет 2 (Важно - для enterprise production):**
 
-6. **SRS-047 Capacity Planning** (отсутствует)
+6. ~~**SRS-047 Capacity Planning**~~ ✅ СОЗДАНО
    - Load forecasting (ML-based)
    - Performance baseline establishment
    - Bottleneck identification
@@ -369,7 +370,7 @@ Total: 43 specifications
 **Phase 2 (In Progress): Enterprise hardening**
 - ~~Создать SRS-045 Cost Optimization & FinOps~~ ✅
 - ~~Создать SRS-046 Multi-Region DR~~ ✅
-- Создать SRS-047 Capacity Planning
+- ~~Создать SRS-047 Capacity Planning~~ ✅
 - Создать SRS-048 Security Monitoring
 - Расширить SRS-011 (Distributed Tracing) - добавить Sampling
 - Расширить SRS-012 (Circuit Breaker) - добавить Half-Open, Adaptive
@@ -383,13 +384,13 @@ Total: 43 specifications
 
 #### 📈 Метрики качества каталога
 
-- **Всего спецификаций:** 43 (100%)
+- **Всего спецификаций:** 44 (100%)
 - **Двуязычность:** 100% (русский + английский)
 - **Средняя длина спецификации:** 650+ строк
 - **Production-ready примеры:** 95%+
-- **Глубина уровня 5/5:** 9 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR)
+- **Глубина уровня 5/5:** 10 спецификаций (SLI/SLO, Migrations, Backup, On-Call, API Gateway, Feature Flags, Chaos Engineering, Service Mesh, Multi-Region DR, Capacity Planning)
 - **Числовые метрики:** 87% содержат конкретные числа и формулы
-- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner
+- **Инструментарий охвачен:** Prometheus, Grafana, Datadog, PagerDuty, AWS, Kong, NGINX, Vault, Sentry, Jaeger, OpenTelemetry, Istio, Linkerd, Chaos Mesh, Litmus, LaunchDarkly, Unleash, Kubefed, Submariner, k6, Locust, Prophet
 
 #### 📝 Рекомендации по поддержке
 
