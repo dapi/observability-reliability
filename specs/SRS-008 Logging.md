@@ -1,66 +1,65 @@
-# SRS-008 Logging (Журналирование)
+# SRS-008 Logging
 
-Этот документ описывает принципы ведения лога приложения.
+This document describes the principles of application logging.
 
-1. Приложения пишут свой лог в `STDOUT`.
-2. Приложение стартовое сообщение со своим именем и версией сразу первой
-   строкой к функции main *ДО всех инициализаций, аллокации памяти и установки
-   соединений*. Например: `Staring Blockberry v1.2.3`.
-3. Приложение пишет в log момент когда оно инициализировано и готово принмать
-   запросы/выполнять работу: `Initialization completed. Ready to work.`
-3. Сообщение пишется в log ОДНОЙ сторокой (избегать многострочных сообщений).
-4. Длинна записи не должна превышать 10Kb.
-5. Добавлять к сообщениям `correlation_id`
-6. Делить сообщения больше 10Gb на части и искать по `correlation_id`
-7. Использовать UID между сервисами
-8. Ограничить поля логов только самыми необходимыми
-9. Избегать многострочных сообщений
-10. Не писать в сообщения пароли и другую чувствительную информацию
-11. Категорировать сообщения по уровнять (INFO, ERROR, DEBUG и тд)
-12. Приложение пишет в лог о своем завершени и причине [см Graceful shutdown](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-014%20Graceful%20Shutdown.md)
+1. Applications write their logs to `STDOUT`.
+2. The application writes a startup message with its name and version as the first
+   line to the main function *BEFORE all initializations, memory allocations and establishing
+   connections*. For example: `Starting Blockberry v1.2.3`.
+3. The application writes to the log when it is initialized and ready to accept
+   requests/perform work: `Initialization completed. Ready to work.`
+4. Messages are written to the log in a SINGLE line (avoid multi-line messages).
+5. The length of a record should not exceed 10Kb.
+6. Add `correlation_id` to messages
+7. Split messages larger than 10Gb into parts and search by `correlation_id`
+8. Limit log fields to only the most necessary
+9. Avoid multi-line messages
+10. Do not write passwords and other sensitive information in messages
+11. Categorize messages by level (INFO, ERROR, DEBUG, etc.)
+12. The application writes to the log about its termination and reason [see Graceful shutdown](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-014%20Graceful%20Shutdown.md)
 
-# Форматы записей в логе
+# Log record formats
 
-timestamp пишется в формате ISO8601 с указанием временной зоны.
+Timestamp is written in ISO8601 format with timezone indication.
 
-## Текстовый формат
+## Text format
 
-Текстовая строка в кодировке UTF-8. Формат:
+Text string in UTF-8 encoding. Format:
 
 ```
  <DATE> <LOG_SEVERITY_SYMBOL> <MESSAGE>
 ```
 
-Пример:
+Example:
 
 ```
-2024-12-12T19:31:35+00:00 INFO Staring Application v1.2.3
+2024-12-12T19:31:35+00:00 INFO Starting Application v1.2.3
 ```
 
 ## JSON
 
-Обязательные поля:
+Required fields:
 
-* `timesatmp`
-* `message` - тестовая строка с сообщением
-* `level` - уровень записи 
+* `timestamp`
+* `message` - text string with message
+* `level` - record level
 
-допускаются также любые другие поля.
+Any other fields are also allowed.
 
-Пример:
+Example:
 
 ```
 {"timestamp":"2024-12-12T19:31:35+00:00","message":"Starting Blockbery v1.2.3","level": "INFO", "extra":"Other info"}
 ```
 ## Date/Timestamp
 
-Допустимые значения даты/времени: https://docs.datadoghq.com/logs/log_configuration/parsing/?tab=matchers#parsing-dates
+Valid date/time values: https://docs.datadoghq.com/logs/log_configuration/parsing/?tab=matchers#parsing-dates
 
-Рекомендуемый формат: `yyyy-MM-dd'T'HH:mm:ss.SSSZ` пример: `2016-11-29T16:21:36.431+0000`
+Recommended format: `yyyy-MM-dd'T'HH:mm:ss.SSSZ` example: `2016-11-29T16:21:36.431+0000`
 
 ## Severity/Level
 
-Допустимые значения для level
+Valid values for level
 * https://en.wikipedia.org/wiki/Syslog#Severity_level
 * https://docs.datadoghq.com/logs/log_configuration/processors/?tab=ui#log-status-remapper
 

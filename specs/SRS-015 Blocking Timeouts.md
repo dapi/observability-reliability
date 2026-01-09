@@ -1,16 +1,16 @@
 # SRS-015 Blocking Timeouts
 
-При взаимодействии необходимо предусмотреть настраиваемые таймауты как на стороне провайдера сервиса, так и на стороне потребителя сервиса. Следует предусмотреть значения по умолчанию для таймаутов.
+When interacting, it is necessary to provide configurable timeouts on both the service provider side and the service consumer side. Default timeout values should be provided.
 
-Использование таймаута на стороне провайдера сервиса позволяет своевременно информировать потребителя сервиса, что выполнение запроса занимает очень долгое время, и дожидаться окончания его выполнения смысла не имеет.
+Using a timeout on the service provider side allows timely notification to the service consumer that request execution is taking too long, and there is no point in waiting for it to complete.
 
-Использование таймаута на стороне потребителя сервиса позволяет регулировать время ожидания ответа на запрос. Может использоваться резервная логика получения ответа в тех случаях, когда результат ответа теряет свою актуальность из-за чрезмерного времени ожидания.
+Using a timeout on the service consumer side allows regulating the response waiting time for a request. Fallback logic for getting a response can be used in those cases where the response result loses its relevance due to excessive waiting time.
 
-# Переменные окружения для управления таймаутами
+# Environment variables for timeout management
 
 * `OPEN_TIMEOUT`
 * `READ_TIMEOUT`
 
-# Дополнительно
+# Additionally
 
-См также [SRS-20 Retryier](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-020%20Retryier.md)
+See also [SRS-20 Retryier](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-020%20Retryier.md)

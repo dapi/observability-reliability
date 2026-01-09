@@ -1,35 +1,35 @@
 # SRS-018 Distributed Caching
 
-## Цель и задачи
+## Goals
 
-Распределенный кэш обеспечивает хранение данных в памяти с низкой задержкой, высокой доступностью и возможностью масштабирования.
+Distributed cache provides in-memory data storage with low latency, high availability, and scalability capabilities.
 
-## Когда использовать
+## When to use
 
-* Часто читаемые, редко изменяемые данные
-* Результаты дорогостоящих вычислений
-* Сессии пользователей
-* Rate limiting состояния
-* Временные блокировки
+* Frequently read, rarely changed data
+* Results of expensive computations
+* User sessions
+* Rate limiting state
+* Temporary locks
 
-## Выбор решения
+## Choosing a solution
 
-**Redis (рекомендуется)** - быстрый, многофункциональный, поддерживает TTL, pub/sub, streams
-**Memcached** - очень быстрый, простой, но только key-value
-**Hazelcast** - встроенные в JVM, rich data structures
+**Redis (recommended)** - fast, feature-rich, supports TTL, pub/sub, streams
+**Memcached** - very fast, simple, but only key-value
+**Hazelcast** - embedded in JVM, rich data structures
 
-## Ключи и именование
+## Keys and naming
 
-Формат: `<namespace>:<entity>:<id>:<field>`
+Format: `<namespace>:<entity>:<id>:<field>`
 
-Примеры:
+Examples:
 ```
 app:users:123:name
 app:products:456:price
 app:config:feature_flags
 ```
 
-## Стратегии кэширования
+## Caching strategies
 
 ### Cache-Aside (Lazy Loading)
 ```python
@@ -52,19 +52,19 @@ def update_user(user_id, data):
     return data
 ```
 
-### TTL и Время жизни
+### TTL and lifetime
 ```
-# Данные пользователя - 1 час
+# User data - 1 hour
 redis.setex("app:users:123", 3600, data)
 
-# Сессия - 24 часа
+# Session - 24 hours
 redis.setex("app:session:abc", 86400, data)
 
-# Feature flags - 5 минут
+# Feature flags - 5 minutes
 redis.setex("app:config:flags", 300, data)
 ```
 
-## Распределенные блокировки
+## Distributed locks
 
 ```python
 def process_payment(order_id):
@@ -78,7 +78,7 @@ def process_payment(order_id):
         redis.delete(lock_key)
 ```
 
-## Конфигурация
+## Configuration
 
 ```
 CACHE_ENABLED=true
@@ -93,7 +93,7 @@ CACHE_POOL_MAX_SIZE=20
 CACHE_POOL_TIMEOUT=5000
 ```
 
-## Метрики
+## Metrics
 
 ```
 cache_hits_total (counter)
@@ -104,34 +104,34 @@ cache_latency_seconds (histogram)
 cache_errors_total (counter)
 ```
 
-## Проблемы и решения
+## Problems and solutions
 
 ### Cache Stampede
-Решение: Probabilistic early expiration или Mutex для пересоздания
+Solution: Probabilistic early expiration or Mutex for rebuilding
 
-### Холодный кэш (Cold Start)
-Решение: Cache warming при старте, Redis persistence
+### Cold Start
+Solution: Cache warming at startup, Redis persistence
 
-### Размер кэша
-Решение: maxmemory в Redis, LRU eviction policy, мониторинг на 80% использования
+### Cache size
+Solution: maxmemory in Redis, LRU eviction policy, monitor at 80% usage
 
 ## Best practices
 
-✅ **Делать**
-* Устанавливать TTL на все ключи
-* Именовать ключи с namespace
-* Мониторить hit rate (цель > 80%)
-* Использовать connection pooling
-* Включить persistence для Redis
+✅ **Do**
+* Set TTL on all keys
+* Name keys with namespace
+* Monitor hit rate (target > 80%)
+* Use connection pooling
+* Enable persistence for Redis
 
-❌ **Не делать**
-* Хранить сессии без TTL
-* Кэшировать вечно
-* Использовать кэш как основное хранилище
-* Кэшировать все подряд
-* Игнорировать метрики
+❌ **Don't**
+* Store sessions without TTL
+* Cache forever
+* Use cache as primary storage
+* Cache everything indiscriminately
+* Ignore metrics
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [Redis Best Practices](https://redis.io/topics/best-practices)
 * [Caching Strategies](https://docs.microsoft.com/en-us/azure/architecture/best-practices/caching)

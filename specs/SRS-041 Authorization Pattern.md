@@ -1,36 +1,36 @@
-# SRS-041 Authorization Pattern (Контроль доступа)
+# SRS-041 Authorization Pattern
 
-## Определение
+## Definition
 
-Authorization - это процесс определения, имеет ли аутентифицированный пользователь/сервис право на выполнение конкретного действия или доступ к ресурсу.
+Authorization is the process of determining whether an authenticated user/service has the right to perform a specific action or access a resource.
 
 ## Authentication vs Authorization
 
 ```
-Authentication (аутентификация) = Кто вы?
-  ↓ Проверка подлинности
+Authentication (аутентификация) = Who are you?
+  ↓ Verification
 Token is valid, user is authenticated
   ↓
-Authorization (авторизация) = Что вам разрешено делать?
-  ↓ Проверка прав
+Authorization (авторизация) = What are you allowed to do?
+  ↓ Permission check
 User can read orders, but cannot delete them
 ```
 
-## Паттерны авторизации
+## Authorization patterns
 
 ### 1. Role-Based Access Control (RBAC)
 
 Access based on roles assigned to users.
 
 ```yaml
-# Роли
+# Roles
 roles:
   - admin
   - manager
   - user
   - guest
 
-# Разрешения
+# Permissions
 permissions:
   - orders:create
   - orders:read
@@ -39,15 +39,15 @@ permissions:
   - users:read
   - users:update
 
-# Связи роли-разрешения
+# Role-permission relationships
 role_permissions:
-  admin: ["*"]  # Все разрешения
+  admin: ["*"]  # All permissions
   manager: ["orders:*", "users:read"]
   user: ["orders:create", "orders:read", "users:read"]
   guest: ["orders:read"]
 ```
 
-Реализация:
+Implementation:
 ```python
 def has_permission(user, resource, action):
     # Get user's roles
@@ -78,15 +78,15 @@ if not has_permission(current_user, "orders", "delete"):
 delete_order(order_id)
 ```
 
-Плюсы:
-* Простота понимания
-* Легко масштабируется
-* Широко поддерживается
+Pros:
+* Easy to understand
+* Scalable
+* Widely supported
 
-Минусы:
-* Не гибкий (роли статичны)
-* Проблема role explosion
-* Не учитывает контекст
+Cons:
+* Not flexible (roles are static)
+* Role explosion problem
+* Doesn't consider context
 
 ### 2. Attribute-Based Access Control (ABAC)
 
@@ -155,16 +155,16 @@ def evaluate_policies(user, resource, action, env):
     return False  # Deny by default
 ```
 
-Плюсы:
-* Очень гибкий
-* Учитывает контекст
+Pros:
+* Very flexible
+* Considers context
 * Fine-grained control
 
-Минусы:
-* Сложная реализация
-* Медленная оценка политик
-* Сложно отлаживать
-* Нужен PDP (Policy Decision Point)
+Cons:
+* Complex implementation
+* Slow policy evaluation
+* Difficult to debug
+* Needs PDP (Policy Decision Point)
 
 ### 3. Policy-Based Access Control (PBAC)
 
@@ -222,7 +222,7 @@ Order #456 ACL:
 - user:999 (accounting) - read
 ```
 
-Реализация:
+Implementation:
 ```python
 def check_acl(user, resource, action):
     # Get ACL for resource
@@ -237,17 +237,17 @@ def check_acl(user, resource, action):
     return False
 ```
 
-Плюсы:
-* Простая реализация
-* Понятная модель
-* Подходит для файлов, документов
+Pros:
+* Simple implementation
+* Clear model
+* Suitable for files, documents
 
-Минусы:
-* Не масштабируется (N × M матрица)
-* Сложно администрировать
-* Нет наследования
+Cons:
+* Doesn't scale (N × M matrix)
+* Hard to administer
+* No inheritance
 
-## Реализация в приложении
+## Implementation in applications
 
 ### Middleware pattern
 
@@ -323,7 +323,7 @@ public class OrderController {
 }
 ```
 
-## Роли и разрешения
+## Roles and permissions
 
 ### Standard roles
 
@@ -413,7 +413,7 @@ def get_orders(user):
     return Order.query.filter_by(organization_id=user.organization_id).all()
 ```
 
-## Конфигурация
+## Configuration
 
 ```
 # Authorization
@@ -474,7 +474,7 @@ def test_manager_cannot_approve_over_limit():
 
 ## Best practices
 
-✅ **Делать**
+✅ **Do**
 * Deny by default (whitelist over blacklist)
 * Use least privilege principle
 * Test authorization logic
@@ -486,7 +486,7 @@ def test_manager_cannot_approve_over_limit():
 * Document roles and permissions
 * Separate authentication from authorization
 
-❌ **Не делать**
+❌ **Don't**
 * Hardcode permissions
 * Mix authz with business logic
 * Skip authorization on internal calls
@@ -496,7 +496,7 @@ def test_manager_cannot_approve_over_limit():
 * Forget about service-to-service authz
 * Skip authorization on "trusted" services
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [OAuth 2.0 Authorization](https://oauth.net/2/)
 * [OpenID Connect](https://openid.net/connect/)

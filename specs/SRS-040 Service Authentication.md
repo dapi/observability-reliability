@@ -1,32 +1,32 @@
-# SRS-040 Service Authentication (Аутентификация сервисов)
+# SRS-040 Service Authentication
 
-## Определение
+## Definition
 
-Service Authentication - это процесс проверки подлинности сервиса, который делает запрос, для предотвращения несанкционированного доступа к ресурсам.
+Service Authentication is the process of verifying the authenticity of a service making a request to prevent unauthorized access to resources.
 
-## Типы аутентификации
+## Types of authentication
 
 ### 1. mTLS (Mutual TLS)
 
-Самый безопасный способ аутентификации между сервисами.
+The most secure way to authenticate between services.
 
 ```yaml
-# Пример на Nginx
+# Example on Nginx
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    # Серверный сертификат
+    # Server certificate
     ssl_certificate /etc/ssl/certs/server.crt;
     ssl_certificate_key /etc/ssl/private/server.key;
 
-    # CA для проверки клиентских сертификатов
+    # CA to verify client certificates
     ssl_client_certificate /etc/ssl/certs/ca.crt;
-    ssl_verify_client on;  # Требовать клиентский сертификат
+    ssl_verify_client on;  # Require client certificate
     ssl_verify_depth 2;
 
     location / {
-        # Передаем информацию о клиенте в заголовках
+        # Pass client info in headers
         proxy_set_header X-SSL-Client-Serial $ssl_client_serial;
         proxy_set_header X-SSL-Client-DN $ssl_client_s_dn;
         proxy_set_header X-SSL-Client-Verify $ssl_client_verify;
@@ -36,15 +36,15 @@ server {
 }
 ```
 
-Плюсы:
-* Высокая безопасность
-* Имя сервиса в сертификате
-* Невозможность подделки
+Pros:
+* High security
+* Service name in certificate
+* Impossible to forge
 
-Минусы:
-* Сложность управления сертификатами
-* Накладные расходы на TLS handshake
-* Нужен PKI
+Cons:
+* Complexity of certificate management
+* TLS handshake overhead
+* Need PKI
 
 ### 2. JWT Service Tokens
 
@@ -52,7 +52,7 @@ server {
 import jwt
 import time
 
-# Создание service token
+# Creating service token
 def create_service_token(service_name, private_key):
     payload = {
         "iss": service_name,                    # Issuer
@@ -60,13 +60,13 @@ def create_service_token(service_name, private_key):
         "aud": "target-service",                # Audience
         "exp": time.time() + 3600,              # Expiration (1 hour)
         "iat": time.time(),                     # Issued at
-        "jti": generate_unique_id(),            # JWT ID (для отзыва)
+        "jti": generate_unique_id(),            # JWT ID (for revocation)
         "scope": ["read", "write"]              # Permissions
     }
 
     return jwt.encode(payload, private_key, algorithm="RS256")
 
-# Проверка service token
+# Verify service token
 def verify_service_token(token, public_key, expected_issuer):
     try:
         payload = jwt.decode(
@@ -83,28 +83,28 @@ def verify_service_token(token, public_key, expected_issuer):
         raise Exception("Invalid issuer")
 ```
 
-Плюсы:
-* Простота использования (HTTP header)
-* Можно проверять без запроса к auth service
-* Встроенное время истечения
-* Поддерживается большинством фреймворков
+Pros:
+* Easy to use (HTTP header)
+* Can be verified without auth service request
+* Built-in expiration time
+* Supported by most frameworks
 
-Минусы:
-* Невозможность немедленного отзыва (без blacklist)
-* Нужно синхронизировать время
-* Размер токена (1-2KB)
+Cons:
+* Cannot immediately revoke (without blacklist)
+* Need time synchronization
+* Token size (1-2KB)
 
 ### 3. OAuth 2.0 Client Credentials
 
 ```bash
-# Запрос токена
+# Request token
 curl -X POST https://auth.example.com/oauth/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=client_credentials" \
   -d "client_id=service-a" \
   -d "client_secret=secret-key"
 
-# Ответ
+# Response
 {
   "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
@@ -112,26 +112,26 @@ curl -X POST https://auth.example.com/oauth/token \
   "scope": "read write"
 }
 
-# Использование токена
+# Using token
 curl -X GET https://api.example.com/data \
   -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
-Плюсы:
-* Стандартный протокол (RFC 6749)
-* Возможность отзыва токенов
-* Централизованное управление
-* Поддержка scopes
+Pros:
+* Standard protocol (RFC 6749)
+* Ability to revoke tokens
+* Centralized management
+* Scope support
 
-Минусы:
-* Дополнительный запрос за токеном
-* Сложность инфраструктуры (need auth server)
-* Накладные расходы
+Cons:
+* Additional request for token
+* Infrastructure complexity (need auth server)
+* Overhead
 
 ### 4. API Keys
 
 ```python
-# Проверка API Key
+# Verify API Key
 from functools import wraps
 import hashlib
 
@@ -143,48 +143,48 @@ def require_api_key(f):
         if not api_key:
             return jsonify({"error": "API key required"}), 401
 
-        # Сравниваем хеши (timing-safe)
+        # Compare hashes (timing-safe)
         expected_key_hash = os.getenv('SERVICE_A_API_KEY_HASH')
         provided_key_hash = hashlib.sha256(api_key.encode()).hexdigest()
 
         if not hmac.compare_digest(expected_key_hash, provided_key_hash):
             return jsonify({"error": "Invalid API key"}), 403
 
-        # Ключ валиден
+        # Key is valid
         g.service_name = "service-a"
         return f(*args, **kwargs)
 
     return decorated_function
 
-# Использование
+# Usage
 @app.route('/api/data')
 @require_api_key
 def get_data():
     return jsonify({"data": "secret"})
 ```
 
-Плюсы:
-* Простота
-* Низкие накладные расходы
-* Подходит для простых сценариев
+Pros:
+* Simple
+* Low overhead
+* Suitable for simple scenarios
 
-Минусы:
-* API Key не истекает автоматически
-* Нужен дополнительный список отзыва
-* Менее безопасно (передается в каждом запросе)
-* Отслеживание использования сложнее
+Cons:
+* API Key doesn't auto-expire
+* Need additional revocation list
+* Less secure (sent in every request)
+* Harder to track usage
 
-## Рекомендации по выбору
+## Selection recommendations
 
-| Сценарий | Рекомендация |
+| Scenario | Recommendation |
 |----------|-------------|
-| Service-to-service внутри кластера | mTLS |
-| Внешние сервисы | JWT или OAuth 2.0 |
-| Простые интеграции | API Keys |
+| Service-to-service within cluster | mTLS |
+| External services | JWT or OAuth 2.0 |
+| Simple integrations | API Keys |
 | High security requirements | mTLS + JWT |
-| Legacy системы | API Keys |
+| Legacy systems | API Keys |
 
-## Конфигурация
+## Configuration
 
 ```
 # Service Authentication
@@ -220,7 +220,7 @@ SERVICE_AUTH_API_KEY_ROTATION_ENABLED=true
 SERVICE_AUTH_API_KEY_OLD_KEYS_CACHE=true
 ```
 
-## Пример реализации на Python (FastAPI)
+## Example implementation in Python (FastAPI)
 
 ```python
 from fastapi import FastAPI, Depends, HTTPException, Security
@@ -230,7 +230,7 @@ import jwt
 app = FastAPI()
 security = HTTPBearer()
 
-# Public key для проверки JWT
+# Public key for JWT verification
 PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...
 -----END PUBLIC KEY-----"""
@@ -283,7 +283,7 @@ async def get_data(payload: dict = Depends(verify_service_token)):
     return {"message": f"Hello from {service_name}"}
 ```
 
-## Централизованная проверка
+## Centralized verification
 
 ```python
 @app.middleware("http")
@@ -322,7 +322,7 @@ async def auth_middleware(request: Request, call_next):
     return await call_next(request)
 ```
 
-## Мониторинг
+## Monitoring
 
 ```
 service_auth_requests_total (counter)
@@ -332,7 +332,7 @@ service_auth_token_cache_hits (counter)
 service_auth_token_cache_misses (counter)
 ```
 
-Логирование:
+Logging:
 ```python
 logger.info(
     "Service authenticated",
@@ -346,24 +346,24 @@ logger.info(
 
 ## Best practices
 
-✅ **Делать**
-* Использовать mTLS для intra-service communication
-* Использовать JWT/OAuth для external API
-* Ротировать секретные ключи регулярно
-* Использовать short-lived tokens (1 час)
-* Логировать все аутентификационные события
-* Кэшировать проверенные токены (на 5-10 минут)
-* Использовать timing-safe comparison для секретов
+✅ **Do**
+* Use mTLS for intra-service communication
+* Use JWT/OAuth for external API
+* Rotate secret keys regularly
+* Use short-lived tokens (1 hour)
+* Log all authentication events
+* Cache verified tokens (for 5-10 minutes)
+* Use timing-safe comparison for secrets
 
-❌ **Не делать**
-* Использовать API Keys для внутренних сервисов
-* Хранить секреты в коде
-* Использовать долгоживущие токены
-* Доверять токенам без проверки подписи
-* Игнорировать метрики auth failures
-* Логировать секреты и токены
+❌ **Don't**
+* Use API Keys for internal services
+* Store secrets in code
+* Use long-lived tokens
+* Trust tokens without signature verification
+* Ignore auth failure metrics
+* Log secrets and tokens
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [OAuth 2.0 RFC 6749](https://tools.ietf.org/html/rfc6749)
 * [JWT RFC 7519](https://tools.ietf.org/html/rfc7519)

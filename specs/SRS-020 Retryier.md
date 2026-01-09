@@ -1,21 +1,20 @@
-# SRS-020 Retryier (Повторная отправка запроса (retry)
+# SRS-020 Retryier (Request retry)
 
-Технику повторной отправки запроса необходимо использовать на стороне потребителя сервиса в случае кратковременной недоступности провайдера. Для использования этой техники необходимо предусмотреть настраиваемое количество попыток и настраиваемый постоянный интервал между попытками на стороне потребителя сервиса. Использование увеличивающихся интервалов между попытками при малом числе попыток не рекомендуется. Следует предусмотреть значения параметров по умолчанию.
+Retry technique should be used on the consumer side in case of short-term unavailability of the provider. To use this technique, you must provide a configurable number of attempts and a configurable constant interval between attempts on the consumer side. Using increasing intervals between attempts with a small number of attempts is not recommended. Default parameter values should be provided.
 
-## Реализация повторной отправки для Http-клиентов: Повторную отправку запроса следует производить при некоторых условиях:
-* Невалидный код ответа сервера
-* Запрос не сформирован (внутренняя ошибка сервера или TCP-соединения)
-* Ошибки TCP-соединения
+## Implementation of retry for HTTP clients: Retry should be performed under certain conditions:
+* Invalid server response code
+* Request not formed (internal server error or TCP connection)
+* TCP connection errors
 
-Не следует производить повторную отправку запроса в том случае, когда очевидно, что запрос не будет обработан, например, провайдер сигнализирует о том, что он перегружен.
+Retry should NOT be performed when it is obvious that the request will not be processed, for example, the provider signals that it is overloaded.
 
 <img width="926" alt="Screenshot 2024-12-11 at 16 49 20" src="https://github.com/user-attachments/assets/9b48733a-6bc3-47c6-b16d-c3248485ce83" />
 
-Рекомендуется использовать функционал повторной отправки для операций чтения данных (как правило, GET-запросы). Для операций изменения данных функционал повторной отправки рекомендуется использовать только в том случае, если провайдер сервиса гарантирует идемпотентность операции.
+It is recommended to use retry functionality for data read operations (typically GET requests). For data modification operations, retry functionality is recommended only if the service provider guarantees operation idempotency.
 
-## Дополнительно
+## Additionally
 
-Количество повторов и инртервалы должны управляться через переменные окружения.
+Number of retries and intervals should be managed through environment variables.
 
-См также [SRS-015 Blocking Timeouts](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-015%20Blocking%20Timeouts.md)
-
+See also [SRS-015 Blocking Timeouts](https://github.com/safeblock-com/wiki/blob/main/specs/SRS-015%20Blocking%20Timeouts.md)

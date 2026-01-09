@@ -1,39 +1,35 @@
 # SRS-007 Expose Application Version
 
-Для контроля конфигурации запущенных приложений в микросервисной архитектуре
-необходимо иметь возможность получать от приложения сведения о его версии.
+To control the configuration of running applications in a microservice architecture,
+it is necessary to be able to obtain information about their version from the application.
 
-Приложение сообщает о своей версии следующими способами:
+The application reports its version in the following ways:
 
-## 1. Ответ на запрос GET /version
+## 1. Response to GET /version request
 
-Приложения отвечают на HTTP GET запрос на всех HTTP портах (исключая health
-port, включая metric-порт и все функциональные порты) с путем `/version` и отдают:
+Applications respond to an HTTP GET request on all HTTP ports (excluding health
+port, including metric ports and all functional ports) with the path `/version` and return:
 
-* Свое название в поле `name`
-* Cвою версию (AppVersion) в поле `version`
-* `deployment_info` - информация из переменной окружения `DEPLOYMENT_INFO` с
-  которой запущено приложение.
+* Its name in the `name` field
+* Its version (AppVersion) in the `version` field
+* `deployment_info` - information from the `DEPLOYMENT_INFO` environment variable with
+  which the application was started.
 
-Пример:
-
+Example:
 
 ```sh
 curl http://localhost/version
 {"version":"v1.2.3","deployment_info":"image:tag","name":"blockberry"}
 ```
 
-## 2. В каждый ответ (включая ответ с ошибкой) добавляет HTTP заголовки
+## 2. Add HTTP headers to every response (including error responses)
 
 * `X-App-Name`
 * `X-App-Version`
 
-Например:
+For example:
 
 ```sh
 X-App-Name: safeblock
 X-App-Version: v0.1.0
 ```
-
-
-

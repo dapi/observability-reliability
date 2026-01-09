@@ -1,71 +1,71 @@
 # SRS-002 Stateless Services
 
-## Определение stateless
+## Definition of stateless
 
-Сервисы должны быть stateless (не хранить состояние между запросами). Это позволяет:
-* Легко масштабировать сервис путем добавления новых экземпляров
-* Перезапускать контейнеры без потери данных
-* Распределять нагрузку между экземплярами без привязки к конкретному экземпляру
+Services must be stateless (not store state between requests). This allows:
+* Easily scale the service by adding new instances
+* Restart containers without data loss
+* Distribute load between instances without binding to a specific instance
 
-## Что является состоянием
+## What is considered state
 
-Состояние (state) включает:
-* Данные пользовательской сессии
-* Незавершенные транзакции в памяти
-* Загруженные файлы, ожидающие обработки
-* Кэш, который не может быть восстановлен
-* Временные данные, хранящиеся на диске контейнера
+State includes:
+* User session data
+* Incomplete in-memory transactions
+* Loaded files waiting for processing
+* Cache that cannot be restored
+* Temporary data stored on the container disk
 
-## Где хранить состояние
+## Where to store state
 
-Если приложению необходимо состояние, оно должно храниться в:
-* Базах данных (PostgreSQL, MongoDB, Redis)
-* Объектном хранилище (S3, MinIO)
-* Распределенном кэше (Redis, Memcached)
-* Сообщенных брокерах (RabbitMQ, Kafka)
+If an application needs state, it should store it in:
+* Databases (PostgreSQL, MongoDB, Redis)
+* Object storage (S3, MinIO)
+* Distributed cache (Redis, Memcached)
+* Message brokers (RabbitMQ, Kafka)
 
-## Сессии
+## Sessions
 
-Для хранения сессий пользователей использовать:
-* Redis с TTL
-* JWT токены (stateless sessions)
-* Cookie с encrypted data
-* НЕ использовать in-memory хранение на экземпляре
+For storing user sessions use:
+* Redis with TTL
+* JWT tokens (stateless sessions)
+* Cookies with encrypted data
+* DO NOT use in-memory storage on the instance
 
-## Примеры stateful анти-паттернов
+## Examples of stateful anti-patterns
 
-❌ Неправильно:
+❌ Incorrect:
 ```
-- Хранение пользовательских сессий в памяти приложения
-- Запись файлов на диск контейнера
-- Использование sticky sessions в load balancer
-- Хранение очереди задач в памяти
-```
-
-✅ Правильно:
-```
-- Хранение сессий в Redis
-- Запись файлов в S3
-- Stateless балансировка нагрузки
-- Использование очередей сообщений (RabbitMQ, SQS)
+- Storing user sessions in application memory
+- Writing files to container disk
+- Using sticky sessions in load balancer
+- Storing task queue in memory
 ```
 
-## Health check для stateless сервисов
+✅ Correct:
+```
+- Storing sessions in Redis
+- Writing files to S3
+- Stateless load balancing
+- Using message queues (RabbitMQ, SQS)
+```
 
-При health check проверяйте только способность сервиса обрабатывать запросы:
-* CPU/Memory健康状况
-* Наличие соединения к базе данных (опционально)
-* НЕ проверяйте доступность внешних зависимостей
+## Health check for stateless services
 
-## Развертывание
+During health check, check only the service's ability to process requests:
+* CPU/Memory health status
+* Database connection presence (optional)
+* DO NOT check availability of external dependencies
 
-Stateless сервисы должны:
-* Запускаться сразу с нескольких экземпляров
-* Не требовать специального порядка запуска
-* Работать с любым количеством реплик
-* Корректно масштабироваться в обе стороны
+## Deployment
 
-## Дополнительные ресурсы
+Stateless services must:
+* Start immediately with multiple instances
+* Not require special startup order
+* Work with any number of replicas
+* Scale correctly in both directions
+
+## Additional resources
 
 * [The Twelve-Factor App: Processes](https://12factor.net/processes)
 * [Kubernetes Stateless Applications](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/)

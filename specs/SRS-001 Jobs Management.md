@@ -1,11 +1,9 @@
 # SRS-001 Jobs Management
 
-`job` - это приложение которое запускается в ручную или автоматически по
-таймеру/событию и имеет ограниченное время работы.
+`job` - is an application that is started manually or automatically by timer/event and has a limited execution time.
 
-`job` поддерживает возможность остановки (уничтожение по сигналу) без порчи
-данных и возобнавляет свою работу с того места с которого начал .
+`job` supports the ability to stop (termination by signal) without corrupting data and resume its work from the point where it started.
 
-`job` завершается со статусом и только со статусом `exit 0` в случае успешного завершения работы.
-`job` завершается со статусом отличным от `exit 0` если он прекращает выполнение НЕ завершив работу (по причине exception, полученного сигнала). 
-Этот статус является сигналом для шедулера повторить запуск.
+`job` terminates with status and only with status `exit 0` in case of successful completion.
+`job` terminates with status other than `exit 0` if it stops execution WITHOUT completing the work (due to exception, received signal).
+This status serves as a signal for the scheduler to retry the execution.

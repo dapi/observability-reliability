@@ -1,13 +1,12 @@
-# SRS-014 Graceful Shutdown (Плавное выключение)
+# SRS-014 Graceful Shutdown
 
-Для гаратнии согласованности данных, управлния ресурсами и надежности системы
-сервис обязан уметь плавно выключаться.
+To guarantee data consistency, resource management and system reliability, a service must be able to shut down gracefully.
 
-1. Прекратить прием новых запросов: сервис должен прекратить прием нового входящего трафика, но продолжить обработку текущих запросов.
-2. Завершить обработку активных запросов: завершить все текущие задачи, включая транзакции, запись в базу данных или связь с другими службами.
-3. Уведомление других служб: писать в log о причинах завершения (сигнал SIGINT или др).
-4. Освобождение ресурсов: правильно освобождайте ресурсы, такие как дескрипторы файлов, подключения к базам данных и сетевые подключения.
+1. Stop accepting new requests: the service must stop accepting new incoming traffic, but continue processing current requests.
+2. Complete processing of active requests: complete all current tasks, including transactions, database writes, or communication with other services.
+3. Notification to other services: write to log about the reasons for termination (SIGINT signal or others).
+4. Resource release: properly release resources such as file descriptors, database connections, and network connections.
 
-Подробнее: 
+Learn more:
 * https://www.geeksforgeeks.org/graceful-shutdown-in-distributed-systems-and-microservices/
 * https://www.linkedin.com/pulse/mastering-graceful-shutdown-distributed-systems-jainal-gosaliya-oliye/

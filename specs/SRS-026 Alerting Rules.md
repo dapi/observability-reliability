@@ -1,14 +1,14 @@
-# SRS-026 Alerting Rules (Правила алертинга)
+# SRS-026 Alerting Rules
 
-## Определение
+## Definition
 
-Alerting Rules - это условия, при которых система мониторинга генерирует оповещения о проблемах. Хороший алерт - это четкое, своевременное и действуемое уведомление.
+Alerting Rules are conditions under which a monitoring system generates alerts about issues. A good alert is a clear, timely, and actionable notification.
 
-## Типы алертов
+## Alert types
 
-### 1. Критичные алерты (Critical/P1)
+### 1. Critical alerts (Critical/P1)
 
-Требуют немедленного действия (в течение 5-15 минут).
+Require immediate action (within 5-15 minutes).
 
 ```yaml
 # Service down
@@ -37,9 +37,9 @@ Alerting Rules - это условия, при которых система м�
 
 **Action**: Page on-call engineer, investigate immediately.
 
-### 2. Предупреждающие алерты (Warning/P2)
+### 2. Warning alerts (Warning/P2)
 
-Требуют действия в течение 1-4 часов.
+Require action within 1-4 hours.
 
 ```yaml
 # High latency
@@ -70,9 +70,9 @@ Alerting Rules - это условия, при которых система м�
 
 **Action**: Investigate during business hours.
 
-### 3. Информационные алерты (Info/P3)
+### 3. Informational alerts (Info/P3)
 
-Не требуют немедленного действия, но нужно отслеживать тренды.
+Do not require immediate action, but need to track trends.
 
 ```yaml
 # Certificate expiration
@@ -100,67 +100,67 @@ Alerting Rules - это условия, при которых система м�
 
 **Action**: No immediate action, track trends.
 
-## Правила хороших алертов
+## Good alerting rules
 
-### 1. Алерт должен быть действуемым
+### 1. Alert must be actionable
 
-❌ Не делать:
+❌ Don't:
 ```yaml
 - alert: CPUUsage
   expr: cpu_usage > 0
-  # CPU всегда > 0, это нормально!
+  # CPU is always > 0, this is normal!
 ```
 
-✅ Делать:
+✅ Do:
 ```yaml
 - alert: HighCPUUsage
   expr: cpu_usage > 80
   for: 10m
-  # Это проблема, которую можно решить
+  # This is a problem that can be solved
 ```
 
-### 2. Настроить время предварительной проверки (for)
+### 2. Configure evaluation period (for)
 
-❌ Не делать:
+❌ Don't:
 ```yaml
 - alert: ServiceDown
-  for: 0m  # Сработает при каждом перезапуске
+  for: 0m  # Will fire on every restart
   expr: up == 0
 ```
 
-✅ Делать:
+✅ Do:
 ```yaml
 - alert: ServiceDown
-  for: 5m  # Сработает только если сервис не поднимается
+  for: 5m  # Will only fire if service doesn't recover
   expr: up == 0
 ```
 
-### 3. Использовать rate вместо raw counters
+### 3. Use rate instead of raw counters
 
-❌ Не делать:
+❌ Don't:
 ```yaml
 - alert: TooManyErrors
   expr: http_requests_total{status="500"} > 1000
-  # counter всегда растет!
+  # counter always increases!
 ```
 
-✅ Делать:
+✅ Do:
 ```yaml
 - alert: HighErrorRate
   expr: rate(http_requests_total{status="500"}[5m]) > 10
-  # errors per second за последние 5 минут
+  # errors per second for the last 5 minutes
 ```
 
-### 4. Использовать quantiles для latency
+### 4. Use quantiles for latency
 
-❌ Не делать:
+❌ Don't:
 ```yaml
 - alert: HighLatency
   expr: http_request_duration_seconds > 0.5
   # Averages can be misleading
 ```
 
-✅ Делать:
+✅ Do:
 ```yaml
 - alert: HighLatency
   expr: |
@@ -170,20 +170,20 @@ Alerting Rules - это условия, при которых система м�
   # 95% of requests are under 500ms
 ```
 
-### 5. Алерт должен быть конкретным
+### 5. Alert must be specific
 
-❌ Не делать:
+❌ Don't:
 ```yaml
 - alert: SomethingWrong
   expr: (metric1 > 10) OR (metric2 < 5) OR (metric3 == 0)
-  # Слишком сложно, непонятно что делать
+  # Too complex, unclear what to do
 ```
 
-✅ Делать:
+✅ Do:
 ```yaml
 - alert: ServiceDown
   expr: up == 0
-  # Четко, понятно что делать
+  # Clear, obvious what to do
 ```
 
 ## Avoiding Alert Fatigue
@@ -247,10 +247,10 @@ groups:
 ```yaml
 labels:
   severity: critical      # critical|warning|info
-  team: platform          # Кто отвечает
-  service: order-service  # Какой сервис
-  environment: production # Где сработало
-  component: api         # Компонент
+  team: platform          # Who is responsible
+  service: order-service  # Which service
+  environment: production # Where it fired
+  component: api         # Component
 ```
 
 ### Annotations
@@ -364,7 +364,7 @@ mute_time_intervals:
     weekdays: ['saturday', 'sunday']
 ```
 
-## Мета-алерты
+## Meta-alerts
 
 ### Disabled alerts
 
@@ -432,7 +432,7 @@ curl http://alertmanager:9093/api/v1/alerts
 curl http://mock-slack:8080/messages
 ```
 
-## Конфигурация через переменные окружения
+## Configuration via environment variables
 
 ```
 # Alerting
@@ -463,26 +463,26 @@ ALERTING_EMAIL_FROM=alerts@example.com
 
 ## Best practices
 
-✅ **Делать**
-* Тестировать алерты при нагрузке
-* Иметь runbook для каждого алерта
-* Использовать разные каналы для разной важности
-* Анализировать false positive алерты еженедельно
-* Документировать причины каждого алерта
-* Использовать `for` для избежания ложных срабатываний
-* Иметь метрику alert: время от проблемы до алерта
-* Review и refine алерты каждый квартал
+✅ **Do**
+* Test alerts under load
+* Have runbook for each alert
+* Use different channels for different severities
+* Analyze false positive alerts weekly
+* Document reasons for each alert
+* Use `for` to avoid false positives
+* Have a metric for alert: time from problem to alert
+* Review and refine alerts every quarter
 
-❌ **Не делать**
-* Алерт на каждую метрику
-* Отправлять все алерты в Slack
-* Являться единственным получателем алертов
-* Игнорировать алерты (если игнорируете, удалите)
-* Паниковать по каждому алерту
-* Использовать алерты для информации (используйте дашборды)
-* Оставлять silences навсегда (fix the problem)
+❌ **Don't**
+* Alert on every metric
+* Send all alerts to Slack
+* Be the only recipient of alerts
+* Ignore alerts (if you ignore them, remove them)
+* Panic over every alert
+* Use alerts for information (use dashboards instead)
+* Leave silences forever (fix the problem)
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [Prometheus Alerting](https://prometheus.io/docs/alerting/latest/overview/)
 * [Alertmanager Documentation](https://prometheus.io/docs/alerting/latest/alertmanager/)

@@ -1,13 +1,13 @@
-# SRS-038 API Gateway (API шлюз)
+# SRS-038 API Gateway
 
-API Gateway - это паттерн проектирования, который служит единой точкой входа для клиентских запросов, предоставляя маршрутизацию, аутентификацию, ограничение скорости, кеширование и другие сквозные возможности для микросервисной архитектуры.
+API Gateway is a design pattern that serves as a single entry point for client requests, providing routing, authentication, rate limiting, caching, and other cross-cutting capabilities for microservice architectures.
 
 ---
 
-## Что такое API Gateway?
+## What is API Gateway?
 
 ```
-Без API Gateway:
+Without API Gateway:
 ┌─────────────┐
 │  Frontend   │
 └──────┬──────┘
@@ -17,7 +17,7 @@ API Gateway - это паттерн проектирования, который
        ├──→ [Service 3] → Database 3
        └──→ [Service 4] → Database 4
 
-С API Gateway:
+With API Gateway:
 ┌─────────────┐
 │  Frontend   │
 └──────┬──────┘
@@ -33,8 +33,8 @@ API Gateway - это паттерн проектирования, который
        └──→ [Service 4]
 ```
 
-**Цели API Gateway:**
-- Единая точка входа для клиентов
+**API Gateway Goals:**
+- Single entry point for clients
 - Centralized security and auth
 - Rate limiting and throttling
 - Request/response transformation
@@ -44,22 +44,22 @@ API Gateway - это паттерн проектирования, который
 
 ---
 
-## Ошибки проектирования ❌
+## Design Mistakes ❌
 
-### ❌ API Gateway как монолит
+### ❌ API Gateway as a Monolith
 ```
-Все логика в одном месте:
+All logic in one place:
 - Auth
 - Business logic
 - Data aggregation
 - Form validation
 
-Приводит к: God Object, сложность, единая точка отказа
+Leads to: God Object, complexity, single point of failure
 ```
 
-### ❌ Сетевая связность (Chatty API Gateway)
+### ❌ Network Chatter (Chatty API Gateway)
 ```
-Клиент: GET /dashboard
+Client: GET /dashboard
 ↓
 API Gateway:
   ├→ GET /users/123
@@ -67,24 +67,24 @@ API Gateway:
   ├→ GET /payments?user=123
   └→ GET /recommendations?user=123
 ↓
-Ответ (составлен из 4 ответов): 800ms latency
+Response (composed from 4 responses): 800ms latency
 
-Проблема: Синхронные вызовы, медленный response
+Problem: Synchronous calls, slow response
 ```
 
-### ❌ Сохранение состояния
+### ❌ Storing State
 ```python
-# В gateway храним сессии и данные
-# Нарушает stateless принцип
-# Усложняет масштабирование
+# Gateway stores sessions and data
+# Violates stateless principle
+# Complicates scaling
 session_store = Redis()
 session_store.set(f"user:{user_id}", session_data)
 ```
 
-### ❌ Жесткая связанность
+### ❌ Tight Coupling
 ```yaml
-# Сервисы напрямую зависят от Gateway
-# Невозможно обратиться напрямую в тестах
+# Services directly depend on Gateway
+# Cannot access directly in tests
 services:
   - name: order-service
     only_accessible_through: api-gateway
@@ -92,9 +92,9 @@ services:
 
 ---
 
-## Архитектура API Gateway
+## API Gateway Architecture
 
-### Layer 1: Edge Layer (входящий трафик)
+### Layer 1: Edge Layer (incoming traffic)
 
 ```yaml
 edge_layer:
@@ -173,14 +173,14 @@ service_mesh:
 
 ---
 
-## Типовые функции API Gateway
+## API Gateway Common Functions
 
-### 1. Аутентификация и авторизация
+### 1. Authentication and Authorization
 
 ```python
 class APIGateway:
     def authenticate_request(self, request):
-        """Аутентификация запроса"""
+        """Request authentication"""
         auth_header = request.headers.get('Authorization')
 
         if not auth_header:
@@ -208,7 +208,7 @@ class APIGateway:
         return request
 
     def authorize_request(self, request, route):
-        """Авторизация на основе RBAC"""
+        """Authorization based on RBAC"""
         required_scopes = route['required_scopes']
 
         if not any(scope in request.scopes for scope in required_scopes):
@@ -216,7 +216,7 @@ class APIGateway:
 
         return request
 
-# Использование
+# Usage
 @app.route('/api/v1/users')
 def users(request):
     # Auth middleware
@@ -242,7 +242,7 @@ class RateLimiter:
         self.redis = redis_client
 
     def is_allowed(self, request, route):
-        """Проверяем лимит запросов"""
+        """Check request limit"""
         # Key: user + route
         key = f"rate_limit:{request.user_id}:{route['path']}"
 
@@ -264,7 +264,7 @@ class RateLimiter:
 
         return True, {'remaining': limit - current}
 
-# Использование
+# Usage
 @app.route('/api/v1/search')
 def search(request):
     allowed, result = gateway.rate_limiter.is_allowed(
@@ -291,7 +291,7 @@ class Router:
             '/api/v1/payments': {'service': 'payment-service', 'version': 'v1'},
         }
     def route_request(self, request):
-        """Маршрутизируем запрос к нужному сервису"""
+        """Route request to appropriate service"""
         path = request.path
 
         # Exact match
@@ -308,7 +308,7 @@ class Router:
         return {'error': 'Not found'}, 404
 
     def forward_to_service(self, request, route):
-        """Передаем запрос во внутренний сервис"""
+        """Forward request to internal service"""
         service = route['service']
 
         # Service discovery
@@ -377,14 +377,14 @@ class Transformer:
 ```python
 class APIComposer:
     def compose_dashboard(self, request, user_id):
-        """Компоновка данных из нескольких сервисов"""
+        """Compose data from multiple services"""
 
-        # Параллельные вызовы
+        # Parallel calls
         user_future = self.async_get(f"/users/{user_id}")
         orders_future = self.async_get(f"/orders?user={user_id}")
         payments_future = self.async_get(f"/payments?user={user_id}")
 
-        # Ожидание всех ответов
+        # Wait for all responses
         user = user_future.result()
         orders = orders_future.result()
         payments = payments_future.result()
@@ -401,7 +401,7 @@ class APIComposer:
         }
 
     def generate_insights(self, orders, payments):
-        """Генерация insights на основе данных"""
+        """Generate insights based on data"""
         return {
             'avg_order_value': self.calculate_avg(orders),
             'preferred_payment_method': self.most_common(payments, 'method')
@@ -410,7 +410,7 @@ class APIComposer:
 
 ---
 
-## Платформы API Gateway
+## API Gateway Platforms
 
 ### AWS API Gateway
 
@@ -486,7 +486,7 @@ services:
               allow: [admin, customer]
 ```
 
-### NGINX (дополнительно Lua)
+### NGINX (with Lua)
 
 ```nginx
 # nginx.conf
@@ -625,48 +625,48 @@ gateway.listen(3000);
 
 ---
 
-## Метрики API Gateway
+## API Gateway Metrics
 
 ```python
 GATEWAY_METRICS = {
-    # Трафик
-    'gateway_requests_total': 'Общее количество запросов',
-    'gateway_requests_by_route': 'Запросы по маршруту',
-    'gateway_requests_by_method': 'Запросы по HTTP методу',
+    # Traffic
+    'gateway_requests_total': 'Total number of requests',
+    'gateway_requests_by_route': 'Requests by route',
+    'gateway_requests_by_method': 'Requests by HTTP method',
 
-    # Производительность
-    'gateway_request_duration': 'Время обработки запроса',
-    'gateway_upstream_latency': 'Время ответа backend сервиса',
-    'gateway_proxy_latency': 'Время работы прокси',
+    # Performance
+    'gateway_request_duration': 'Request processing time',
+    'gateway_upstream_latency': 'Backend service response time',
+    'gateway_proxy_latency': 'Proxy processing time',
 
-    # Ошибки
-    'gateway_errors_total': 'Общее количество ошибок',
-    'gateway_errors_by_type': 'Ошибки по типу (4xx, 5xx)',
-    'gateway_timeout_errors': 'Таймауты',
+    # Errors
+    'gateway_errors_total': 'Total number of errors',
+    'gateway_errors_by_type': 'Errors by type (4xx, 5xx)',
+    'gateway_timeout_errors': 'Timeouts',
 
     # Rate limiting
-    'gateway_rate_limit_hits_total': 'Срабатываний rate limit',
-    'gateway_rate_limit_remaining': 'Оставшихся запросов',
+    'gateway_rate_limit_hits_total': 'Rate limit hits',
+    'gateway_rate_limit_remaining': 'Remaining requests',
 
-    # Состояние
-    'gateway_active_connections': 'Активных соединений',
-    'gateway_waiting_requests': 'Запросов в очереди',
-    'gateway_services_healthy': 'Здоровых backend сервисов',
+    # State
+    'gateway_active_connections': 'Active connections',
+    'gateway_waiting_requests': 'Requests in queue',
+    'gateway_services_healthy': 'Healthy backend services',
 
-    # Кэширование
-    'gateway_cache_hits_total': 'Попаданий в кэш',
-    'gateway_cache_misses_total': 'Промахов кэша',
-    'gateway_cache_size_bytes': 'Размер кэша'
+    # Caching
+    'gateway_cache_hits_total': 'Cache hits',
+    'gateway_cache_misses_total': 'Cache misses',
+    'gateway_cache_size_bytes': 'Cache size'
 }
 ```
 
 ---
 
-## Сравнение решений
+## Solution Comparison
 
-| Решение | Управление | Features | Cost | Self-Hosted | Best For |
+| Solution | Management | Features | Cost | Self-Hosted | Best For |
 |---------|-----------|----------|------|-------------|----------|
-| AWS API Gateway | Провайдер | Full | $$ | No | AWS workloads |
+| AWS API Gateway | Provider | Full | $$ | No | AWS workloads |
 | Kong | OSS / Enterprise | Extensible | $ / $$$ | Yes | Hybrid clouds |
 | NGINX | OSS / Plus | Flexible | $ / $$ | Yes | Simple routing |
 | HAProxy | OSS / Enterprise | High performance | $ / $$$ | Yes | Load balancing |
@@ -677,4 +677,4 @@ GATEWAY_METRICS = {
 
 ---
 
-*API Gateway - паттерн единой точки входа для микросервисной архитектуры*
+*API Gateway - single entry point pattern for microservice architectures*

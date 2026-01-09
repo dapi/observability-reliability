@@ -1,35 +1,35 @@
-# SRS-011 Distributed Tracing (Распределенный трейсинг)
+# SRS-011 Distributed Tracing
 
-## Определение
+## Definition
 
-Distributed Tracing - это метод мониторинга запросов, которые проходят через множество сервисов, позволяющий отслеживать полный путь от входа до выхода.
+Distributed Tracing is a method of monitoring requests that pass through multiple services, allowing tracking of the complete path from entry to exit.
 
-## Зачем нужен
+## Why it's needed
 
-Без трейсинга:
+Without tracing:
 ```
 [Client] → [API Gateway] → [Service A] → [Service B] → [Service C] → [Database]
                                                               ↓
-                                                    Клиент ждет 5 секунд
-                                                    Где проблема???
+                                                    Client waits 5 seconds
+                                                    Where is the problem???
 ```
 
-С трейсингом:
+With tracing:
 ```
 [Client] → [API Gateway: 10ms] → [Service A: 50ms] → [Service B: 3000ms] → [Service C: 50ms] → [Database: 30ms]
                                                               ↓
-                                                    Проблема в Service B!
+                                                    Problem in Service B!
 ```
 
-## Концепции
+## Concepts
 
-### Span (Спан)
+### Span
 
-Одиночная операция в трейсе. Имеет:
-* Начало и конец
-* Название (operation name)
-* Tags (метаданные)
-* Logs (события)
+A single operation in a trace. Has:
+* Start and end
+* Name (operation name)
+* Tags (metadata)
+* Logs (events)
 
 ```
 ┌──────────────────────────────Span────────────────────────────────┐
@@ -52,9 +52,9 @@ Distributed Tracing - это метод мониторинга запросов,
 └───────────────────────────────────────────────────────────────────┘
 ```
 
-### Trace (Трейс)
+### Trace
 
-Цепочка span-ов, показывающая полный путь запроса.
+A chain of spans showing the complete request path.
 
 ```
 ┌──────────────────────────────────────Trace─────────────────────────────────────┐
@@ -82,7 +82,7 @@ Distributed Tracing - это метод мониторинга запросов,
 
 ### Trace Context
 
-Информация, передаваемая между сервисами:
+Information passed between services:
 
 ```http
 X-Trace-Id: 4bf92f3577b34da6a3ce929d0e0e4736
@@ -91,13 +91,13 @@ X-Parent-Span-Id: 3ce929d0e0e4736a
 X-Sampled: 1
 ```
 
-В стандарте W3C Trace Context:
+In W3C Trace Context standard:
 ```http
 traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
 #     version - trace_id ------------------ span_id -------------- flags
 ```
 
-## Инструментация
+## Instrumentation
 
 ### Python (OpenTelemetry)
 
@@ -305,7 +305,7 @@ func fetchUsers(ctx context.Context) ([]User, error) {
 }
 ```
 
-## Propagation (распространение)
+## Propagation
 
 ### HTTP Headers (W3C Trace Context)
 
@@ -365,19 +365,19 @@ conn, err := grpc.Dial(
 )
 ```
 
-## Sampling (выборка)
+## Sampling
 
-### Почему нужна выборка
+### Why sampling is needed
 
-100% трейсинг:
+100% tracing:
 ```
-10,000 запросов/секунду × 10 спанов = 100,000 спанов/секунду
-= 8.64 миллиарда спанов/день
+10,000 requests/second × 10 spans = 100,000 spans/second
+= 8.64 billion spans/day
 ```
 
-Это очень дорого для хранения и анализа.
+This is very expensive for storage and analysis.
 
-### Типы выборки
+### Sampling types
 
 #### 1. Probability Sampling
 
@@ -419,25 +419,25 @@ kamon {
 }
 ```
 
-### Когда собирать 100%
+### When to collect 100%
 
 * Development/Staging
-* Ошибки (status >= 500)
-* Критичные эндпоинты (/payment, /checkout)
-* Платные клиенты (enterprise)
+* Errors (status >= 500)
+* Critical endpoints (/payment, /checkout)
+* Paid clients (enterprise)
 
 ```python
-# Всегда собирать трейсы ошибок
+# Always collect error traces
 def should_sample(attrs):
     status_code = attrs.get("http.status_code", 0)
 
     if status_code >= 500:
-        return ALWAYS_SAMPLE  # Собирать всегда
+        return ALWAYS_SAMPLE  # Always collect
 
-    return PROBABILITY_SAMPLE(0.10)  # 10% для успешных
+    return PROBABILITY_SAMPLE(0.10)  # 10% for successful
 ```
 
-## Backend для хранения
+## Backend for storage
 
 ### Jaeger
 
@@ -483,7 +483,7 @@ compactor:
 
 ### Elasticsearch
 
-Для больших объемов:
+For large volumes:
 ```yaml
 jaeger-collector:
   environment:
@@ -492,7 +492,7 @@ jaeger-collector:
     ES_INDEX_PREFIX: jaeger
 ```
 
-## Конфигурация
+## Configuration
 
 ### OpenTelemetry Collector
 
@@ -543,7 +543,7 @@ service:
       exporters: [prometheus]
 ```
 
-### Конфигурация сервиса
+### Service configuration
 
 ```
 # Tracing
@@ -565,9 +565,9 @@ OTEL_TRACES_SAMPLER_ARG=0.10  # 10%
 OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production,service.namespace=payments
 ```
 
-## Использование в коде
+## Usage in code
 
-### Добавление тегов
+### Adding tags
 
 ```python
 span.set_attributes({
@@ -578,7 +578,7 @@ span.set_attributes({
 })
 ```
 
-### Добавление событий
+### Adding events
 
 ```python
 span.add_event("Order created", {
@@ -593,7 +593,7 @@ span.add_event("Payment processed", {
 })
 ```
 
-### Запись ошибок
+### Recording errors
 
 ```python
 except Exception as e:
@@ -604,7 +604,7 @@ except Exception as e:
 
 ## W3C Trace Context
 
-Стандарт для передачи контекста:
+Standard for passing context:
 
 ```
 traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
@@ -619,25 +619,25 @@ tracestate: congo=t61rcWkgMzE  # Vendor-specific data
 
 ## Best practices
 
-✅ **Делать**
-* Использовать W3C Trace Context для HTTP
-* Агрегировать спаны в batch перед отправкой
-* Добавлять service name и version как resource
-* Использовать выборку (sampling) для снижения нагрузки
-* Добавлять ошибки в спаны
-* Использовать semantic conventions (атрибуты)
-* Хранить трейсы хотя бы 7 дней
-* Собирать 100% для ошибок
+✅ **Do**
+* Use W3C Trace Context for HTTP
+* Aggregate spans in batches before sending
+* Add service name and version as resource
+* Use sampling to reduce load
+* Add errors to spans
+* Use semantic conventions (attributes)
+* Store traces for at least 7 days
+* Collect 100% for errors
 
-❌ **Не делать**
-* Создавать спаны для каждой строки кода (over-tracing)
-* Пропускать propagation (терять трейсы)
-* Собирать 100% трейсов в продакшене (дорого)
-* Игнорировать timeout-ы при отправке трейсов
-* Добавлять PII (personally identifiable information)
-* Создавать слишком много span events
+❌ **Don't**
+* Create spans for every line of code (over-tracing)
+* Skip propagation (losing traces)
+* Collect 100% traces in production (expensive)
+* Ignore timeouts when sending traces
+* Add PII (personally identifiable information)
+* Create too many span events
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [OpenTelemetry Tracing](https://opentelemetry.io/docs/concepts/signals/traces/)
 * [W3C Trace Context](https://www.w3.org/TR/trace-context/)

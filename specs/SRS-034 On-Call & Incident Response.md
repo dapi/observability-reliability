@@ -1,12 +1,12 @@
-# SRS-034 On-Call & Incident Management (Дежурства и управление инцидентами)
+# SRS-034 On-Call & Incident Management
 
-On-Call & Incident Management - это практика организации 24/7 поддержки сервисов, быстрого реагирования на инциденты и их эффективного разрешения для минимизации воздействия на пользователей.
+On-Call & Incident Management is the practice of organizing 24/7 support for services, rapid incident response, and their effective resolution to minimize impact on users.
 
 ---
 
-## On-Call Организация
+## On-Call Organization
 
-### Структура команд
+### Team Structure
 
 ```yaml
 sre_organization:
@@ -18,7 +18,7 @@ sre_organization:
         - initial_incident_triage
         - communication_with_stakeholders
         - escalation_decisions
-      shift_duration: "12_hours"  # или 24 часа
+      shift_duration: "12_hours"  # or 24 hours
       timezone: "primary"
 
     secondary_on_call:
@@ -48,25 +48,25 @@ sre_organization:
       escalation_path: "primary -> secondary"
 ```
 
-### График дежурств
+### On-Call Schedule
 
 **Weekly Rotation:**
 ```
-Неделя 1: Alice (Primary), Bob (Secondary)
-Неделя 2: Charlie (Primary), David (Secondary)
-Неделя 3: Eve (Primary), Frank (Secondary)
-Неделя 4: Grace (Primary), Henry (Secondary)
+Week 1: Alice (Primary), Bob (Secondary)
+Week 2: Charlie (Primary), David (Secondary)
+Week 3: Eve (Primary), Frank (Secondary)
+Week 4: Grace (Primary), Henry (Secondary)
 ```
 
 **Daily Rotation:**
 ```
-Понедельник: Alice (Day), Bob (Night)
-Вторник: Charlie (Day), David (Night)
-Среда: Eve (Day), Frank (Night)
-Четверг: Grace (Day), Henry (Night)
-Пятница: Ivan (Day), Judy (Night)
-Суббота: Kevin (Day), Laura (Night)
-Воскресенье: Mike (Day), Nancy (Night)
+Monday: Alice (Day), Bob (Night)
+Tuesday: Charlie (Day), David (Night)
+Wednesday: Eve (Day), Frank (Night)
+Thursday: Grace (Day), Henry (Night)
+Friday: Ivan (Day), Judy (Night)
+Saturday: Kevin (Day), Laura (Night)
+Sunday: Mike (Day), Nancy (Night)
 ```
 
 **Tools:**
@@ -77,7 +77,7 @@ sre_organization:
 
 ---
 
-## Процесс On-Call
+## On-Call Process
 
 ### Before Shift
 
@@ -87,19 +87,19 @@ sre_organization:
 
 echo "📋 Pre-Shift Checklist"
 
-# 1. Проверить рабочее окружение
+# 1. Check work environment
 Check laptop, internet, phone
 Verify VPN access
 Test access to monitoring systems
 
 # 2. Review recent incidents
-# - Посмотреть последние 7 дней alerts
-# - Проверить unresolved issues
+# - Review last 7 days of alerts
+# - Check unresolved issues
 # - Review trending problems
 
-# 3. Синхронизация с предыдущим on-call
-# - Передать контекст
-# - Проверить action items
+# 3. Sync with previous on-call
+# - Pass context
+# - Check action items
 # - Review runbooks
 
 # 4. Set up notifications
@@ -121,15 +121,15 @@ echo "=== Active Incidents ==="
 curl -s https://pagerduty.com/api/incidents | jq '.incidents[] | select(.status=="triggered")'
 
 # Recent Alerts
-echo "\\n=== Recent Alerts (Last Hour) ==="
+echo "\n=== Recent Alerts (Last Hour) ==="
 curl -s https://datadog.com/api/alerts | jq '.alerts[] | select(.date>")'
 
 # System Health
-echo "\\n=== System Health ==="
+echo "\n=== System Health ==="
 curl -s https://grafana.com/api/dashboards/health | jq '.'
 
 # Escalation Policy
-echo "\\n=== Current On-Call ==="
+echo "\n=== Current On-Call ==="
 curl -s https://pagerduty.com/api/oncalls | jq '.oncalls[].user.summary'
 ```
 
@@ -143,20 +143,20 @@ echo "📤 Shift Handover Summary"
 echo "Date: $(date)"
 
 # Incident Summary
-echo "\\n=== Incidents During Shift ==="
+echo "\n=== Incidents During Shift ==="
 echo "Total: 3"
 echo "Sev1: 0"
 echo "Sev2: 1 (Payment gateway latency)"
-echo "Sev3: 2 (Database backup delay, Cache refresh)")
+echo "Sev3: 2 (Database backup delay, Cache refresh)"
 
 # Action Items
-echo "\\n=== Action Items ==="
+echo "\n=== Action Items ==="
 echo "1. Fix database connection pooling (Jira TICKET-123)"
 echo "2. Update runbook for cache issues (assigned: Bob)"
 echo "3. Review payment service alerts (trending)"
 
 # Notes for next shift
-echo "\\n=== Notes for Next On-Call ==="
+echo "\n=== Notes for Next On-Call ==="
 echo "- Database connections spiking around 15:00 UTC"
 echo "- New deployment scheduled for tomorrow"
 echo "- Increased latency in EU region"
@@ -164,18 +164,18 @@ echo "- Increased latency in EU region"
 
 ---
 
-## Уровни критичности инцидентов
+## Incident Severity Levels
 
 ### Severity 1 (Sev1) - Critical
 
 ```yaml
 sev1:
-  definition: "Полная недоступность сервиса для большинства пользователей"
+  definition: "Complete service unavailability for most users"
   examples:
-    - website_down: "Сайт полностью не работает"
-    - payment_system_down: "Невозможно принимать платежи"
-    - data_loss: "Потеря данных"
-    - major_security_incident: "Взлом системы"
+    - website_down: "Website is completely not working"
+    - payment_system_down: "Unable to process payments"
+    - data_loss: "Data loss"
+    - major_security_incident: "System breach"
 
   response:
     response_time: "immediate"  # < 5 minutes
@@ -201,12 +201,12 @@ sev1:
 
 ```yaml
 sev2:
-  definition: "Значительная деградация сервиса или недоступность важной функции"
+  definition: "Significant service degradation or important feature unavailability"
   examples:
-    - partial_outage: "50% запросов завершаются с ошибками"
+    - partial_outage: "50% of requests fail"
     - severe_performance: "P99 latency > 5000ms"
-    - backup_failures: "Ошибки резервного копирования"
-    - degraded_functionality: "Ключевые фичи не работают"
+    - backup_failures: "Backup failures"
+    - degraded_functionality: "Key features not working"
 
   response:
     response_time: "15_minutes"
@@ -231,12 +231,12 @@ sev2:
 
 ```yaml
 sev3:
-  definition: "Минимальное влияние на пользователей или доступно Workaround"
+  definition: "Minimal user impact or workaround available"
   examples:
-    - minor_degradation: "10% запросов медленнее"
-    - non_critical_functionality: "Фича категории 'nice to have'"
-    - scheduled_task_failure: "Ошибка в фоновой задаче"
-    - monitoring_gap: "Данные не собираются"
+    - minor_degradation: "10% of requests slower"
+    - non_critical_functionality: "'Nice to have' feature"
+    - scheduled_task_failure: "Background task errors"
+    - monitoring_gap: "Data not being collected"
 
   response:
     response_time: "30_minutes"
@@ -259,12 +259,12 @@ sev3:
 
 ```yaml
 sev4:
-  definition: "Косметические или информационные вопросы, без влияния на пользователей"
+  definition: "Cosmetic or informational issues, no user impact"
   examples:
-    - cosmetic_issues: "Неправильный цвет в UI"
-    - doc_updates: "Неточность в документации"
-    - low_priority_alerts: "Warnings из monitoring"
-    - questions: "Технические вопросы"
+    - cosmetic_issues: "Wrong color in UI"
+    - doc_updates: "Documentation inaccuracy"
+    - low_priority_alerts: "Monitoring warnings"
+    - questions: "Technical questions"
 
   response:
     response_time: "business_hours"
@@ -283,13 +283,13 @@ sev4:
 
 ---
 
-## Жизненный цикл инцидента
+## Incident Lifecycle
 
 ```
 Alert/Detection → Triage → Response → Investigation → Resolution → Post-Incident
 ```
 
-### 1. Detection (Обнаружение)
+### 1. Detection (Detection)
 
 ```python
 class IncidentDetection:
@@ -297,25 +297,25 @@ class IncidentDetection:
         self.monitoring = monitoring_tools
 
     def detect_incident(self):
-        """Детектируем инциденты из разных источников"""
+        """Detect incidents from different sources"""
 
-        # Из monitoring (Prometheus, Datadog)
+        # From monitoring (Prometheus, Datadog)
         alerts = self.monitoring.get_active_alerts(
             severity=['warning', 'critical']
         )
 
-        # Из логов (ERROR, FATAL)
+        # From logs (ERROR, FATAL)
         log_errors = self.monitoring.get_log_spikes(
             level=['error', 'fatal'],
-            threshold=100  # ошибок в минуту
+            threshold=100  # errors per minute
         )
 
-        # Из пользовательских жалоб
+        # From user complaints
         user_reports = self.monitoring.get_user_complaints(
             source: ['support_tickets', 'twitter', 'status_page']
         )
 
-        # Корреляция - объединяем связанные проблемы
+        # Correlation - merge related problems
         incidents = self.correlate_signals(
             alerts + log_errors + user_reports
         )
@@ -323,21 +323,21 @@ class IncidentDetection:
         return incidents
 ```
 
-### 2. Triage (Оценка и классификация)
+### 2. Triage (Assessment and Classification)
 
 ```python
 class IncidentTriage:
     def triage_incident(self, incident):
-        """Оцениваем инцидент и определяем severity"""
+        """Assess incident and determine severity"""
 
-        # Оценка impact
+        # Impact assessment
         impact = self.calculate_impact(
             affected_users=incident.affected_users,
             affected_requests=incident.error_rate,
             functionality=incident.affected_components
         )
 
-        # Классификация severity
+        # Severity classification
         if impact == 'total_outage' or incident.security_breach:
             severity = 1
         elif impact == 'significant_degradation' or incident.revenue_impact:
@@ -347,7 +347,7 @@ class IncidentTriage:
         else:
             severity = 4
 
-        # Воркфлоу в зависимости от severity
+        # Workflow based on severity
         self.start_incident_workflow(severity, incident)
 
         return {
@@ -357,7 +357,7 @@ class IncidentTriage:
         }
 ```
 
-### 3. Response (Реакция)
+### 3. Response (Reaction)
 
 ```yaml
 incident_response:
@@ -388,15 +388,15 @@ incident_response:
       - status_page_if_customer_impact
 ```
 
-### 4. Investigation (Расследование)
+### 4. Investigation (Investigation)
 
 ```python
 class IncidentInvestigation:
     def investigate(self, incident):
-        """Исследуем инцидент"""
+        """Investigate incident"""
         steps = []
 
-        # Собираем данные
+        # Collect data
         steps.append(self.collect_metrics(
             timeframe: incident.timeframe,
             metrics: ['error_rate', 'latency', 'throughput']
@@ -413,7 +413,7 @@ class IncidentInvestigation:
             timeframe: incident.timeframe
         ))
 
-        # Анализ
+        # Analysis
         possible_causes = self.analyze_patterns(steps)
 
         # Testing hypotheses
@@ -426,7 +426,7 @@ class IncidentInvestigation:
         return incident
 ```
 
-### 5. Resolution (Решение)
+### 5. Resolution (Solution)
 
 ```bash
 #!/bin/bash
@@ -434,7 +434,7 @@ class IncidentInvestigation:
 
 echo "🔧 Incident Resolution Process"
 
-# 1. Тестируем фикс
+# 1. Test the fix
 echo "1. Testing fix in staging..."
 ./test-fix.sh --environment=staging
 
@@ -449,11 +449,11 @@ fi
 echo "2. Deploying fix to production..."
 ./deploy.sh --service=$AFFECTED_SERVICE --check-only
 
-# 3. Мониторинг после деплоя
+# 3. Monitor after deployment
 echo "3. Monitoring after fix..."
 ./monitor-deployment.sh --service=$AFFECTED_SERVICE --duration=15m
 
-# 4. Проверка recovery
+# 4. Verify recovery
 echo "4. Verifying recovery..."
 ./verify-recovery.sh --incident=$INCIDENT_ID
 
@@ -462,7 +462,7 @@ echo "5. Notifying stakeholders..."
 ./notify.sh --incident=$INCIDENT_ID --message="resolved"
 ```
 
-### 6. Post-Incident (Пост-инцидентный анализ)
+### 6. Post-Incident (Post-Incident Analysis)
 
 ```markdown
 # Incident Report Template
@@ -503,7 +503,7 @@ Database connection pool size insufficient after deployment of v2.1
 
 ---
 
-## Communincation
+## Communication
 
 ### Incident Communication Matrix
 
@@ -582,7 +582,7 @@ Service is fully recovered. All payment processing back to normal.
 
 ---
 
-## Инструменты
+## Tools
 
 ### PagerDuty
 
@@ -626,22 +626,22 @@ class IncidentManagement:
         self.status_page = status_page
 
     def create_incident(self, incident):
-        """Создаем инцидент в всех системах"""
+        """Create incident in all systems"""
 
-        # Создаем Slack channel
+        # Create Slack channel
         channel = self.slack.create_channel(
             name=f"inc-{incident.id}",
             purpose=f"Incident: {incident.title}"
         )
 
-        # Создаем PagerDuty incident
+        # Create PagerDuty incident
         pd_incident = self.pagerduty.create_incident(
             title=incident.title,
             urgency=incident.severity,
             assignee=incident.commander
         )
 
-        # Создаем Status Page incident
+        # Create Status Page incident
         if incident.severity <= 2:
             sp_incident = self.status_page.create_incident(
                 name=incident.title,
@@ -649,7 +649,7 @@ class IncidentManagement:
                 components=incident.affected_components
             )
 
-        # Логируем в системе
+        # Log in system
         return IncidentRecord(
             id=incident.id,
             slack_channel=channel,
@@ -660,38 +660,38 @@ class IncidentManagement:
 
 ---
 
-## Метрики on-call и инцидентов
+## On-Call and Incident Metrics
 
 ```python
 ON_CALL_METRICS = {
     # Time to detection
-    'incident_detection_time': 'Время от проблемы до алерта',
+    'incident_detection_time': 'Time from problem to alert',
 
     # Time to response
-    'incident_acknowledgement_time': 'Время до подтверждения',
-    'on_call_response_time': 'Время реакции on-call',
+    'incident_acknowledgement_time': 'Time to acknowledge',
+    'on_call_response_time': 'On-call response time',
 
     # Time to resolution
-    'incident_resolution_time': 'Время до полного решения',
-    'incident_mitigation_time': 'Время до минимизации влияния (MTTM)',
+    'incident_resolution_time': 'Time to full resolution',
+    'incident_mitigation_time': 'Time to impact mitigation (MTTM)',
 
-    # Производительность
-    'incident_count_by_severity': 'Количество инцидентов по severity',
-    'on_call_alerts_per_shift': 'Алертов за смену',
-    'false_positive_rate': 'Доля false positive алертов',
+    # Performance
+    'incident_count_by_severity': 'Incident count by severity',
+    'on_call_alerts_per_shift': 'Alerts per shift',
+    'false_positive_rate': 'False positive rate',
 
     # Workload
-    'on_call_interruptions': 'Прерываний за смену',
-    'after_hours_pages': 'Пейджей вне рабочих часов',
-    'weekend_incidents': 'Инцидентов в выходные',
+    'on_call_interruptions': 'Interruptions per shift',
+    'after_hours_pages': 'Pages outside business hours',
+    'weekend_incidents': 'Weekend incidents',
 
-    # Качество
-    'postmortems_completed': 'Постмортемов завершено',
-    'action_items_completed': 'Action items выполнено',
-    'recurring_incidents': 'Повторяющихся инцидентов'
+    # Quality
+    'postmortems_completed': 'Postmortems completed',
+    'action_items_completed': 'Action items completed',
+    'recurring_incidents': 'Recurring incidents'
 }
 ```
 
 ---
 
-*On-Call & Incident Management - практика 24/7 поддержки и управления инцидентами*
+*On-Call & Incident Management - 24/7 support and incident management practice*

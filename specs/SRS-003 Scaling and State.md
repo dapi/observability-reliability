@@ -1,17 +1,13 @@
-# SRS-003 Scaling and State.md
+# SRS-003 Scaling and State
 
-Приложения могут работать в одном из двух режимов, что нужно явно обозначать при
-передаче сервиса в эксплуатацию:
+Applications can operate in one of two modes, which must be explicitly indicated when putting the service into production:
 
-## Реплицируемый
+## Replicable
 
-Сервис не хранит состояние и умеет запускаться в нескольких экземплярах (позволяет горизонтально масштабироваться и обеспечивать отказоустойчивость)
+Service does not store state and can run in multiple instances (allows horizontal scaling and provides fault tolerance)
 
-## Не реплицируемый
+## Non-replicable
 
-Сервис НЕ умеет работать в режиме нескольких экземпляров, поэтому ОБЯЗАТЕЛЬНО при случайном
-запуске необходимо гарантировать что это НЕ приведет к потере или порче данных.
+Service CANNOT work in multiple instances mode, therefore when accidentally starting an additional instance you MUST ensure that this does NOT lead to data loss or corruption.
 
-ЖЕЛАТЕЛЬНО чтобы такой сервис при запуске дополнительной копии самостоятельно
-это обнаруживал (например, через механизм семафоров/lock) сообщал об этом в лог
-и завершал сво выполнение со статусом отличным от `0`.
+IT IS DESIRABLE that such a service, when starting an additional copy, would detect this on its own (for example, through a semaphore/lock mechanism), report this in the log and terminate its execution with a status other than `0`.

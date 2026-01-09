@@ -1,25 +1,25 @@
 # SRS-021 Liveness probes over commands
 
-## Мотивация
+## Motivation
 
-Некоторые worker-ы написанные на golang настолько загружены что им некогда отвечать на liveness пробы по HTTP/TCP.
+Some workers written in golang are so busy that they don't have time to respond to HTTP/TCP liveness probes.
 
-Решение - делать [пробы через команду](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command)
+Solution - use [probes through commands](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-liveness-command)
 
-Данное решение подходит только для work/job и не применяется для webserver-ов.
+This solution is only suitable for workers/jobs and is not used for webservers.
 
-## Решение
+## Solution
 
-В образе приложения появляется команда (скрипт, программа или тп) `/is_live` которая возвращает статус `0` если приложение живо, и статус `1` если приложение мертво.
+A command (script, program, etc.) `/is_live` appears in the application image that returns status `0` if the application is alive, and status `1` if the application is dead.
 
-## Реализация со стороны приложения
+## Implementation from the application side
 
-### Вариант 1
+### Option 1
 
-1. Приложение регулярно (регулярность определятся разработчиком и отмечается в документации по эксплуатации) создает файл, а если файл есть, то обновляет ему modification time.
-2. В образ добавляется команда (программи/скрипт) `/is_live` которая проверяет наличие файла, удаляет его если он есть и возвращает exit-статус `0`, если файла нет, возвращает exit-статус `1`
+1. The application regularly (frequency is determined by the developer and noted in the operation documentation) creates a file, and if the file exists, it updates its modification time.
+2. A command (program/script) `/is_live` is added to the image that checks for the presence of the file, deletes it if it exists and returns exit status `0`, if the file does not exist, it returns exit status `1`
 
-### Вариант 2
+### Option 2
 
-1. Приложение регулярно (регулярность определятся разработчиком и отмечается в документации по эксплуатации) создает файл, а если файл есть, то обновляет ему modification time.
-2. В образ добавляется команда (программи/скрипт) `/is_live` которая проверяет наличие файла и возвращает exit-статус `0` если время модификации файла не старше ${LIVENESS_TIMEOUT} (по-умолчанию 30) секунд, в образом возвращает exit-статус `1`
+1. The application regularly (frequency is determined by the developer and noted in the operation documentation) creates a file, and if the file exists, it updates its modification time.
+2. A command (program/script) `/is_live` is added to the image that checks for the presence of the file and returns exit status `0` if the file modification time is not older than ${LIVENESS_TIMEOUT} (default 30) seconds, otherwise it returns exit status `1`

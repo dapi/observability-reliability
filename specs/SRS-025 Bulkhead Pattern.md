@@ -1,47 +1,47 @@
-# SRS-025 Bulkhead Pattern (Перегородки)
+# SRS-025 Bulkhead Pattern
 
-## Определение
+## Definition
 
-Bulkhead Pattern - техника изоляции ресурсов, при которой система разделяется на изолированные секции (перегородки), чтобы сбой в одной секции не повлиял на остальные части системы.
+Bulkhead Pattern is a resource isolation technique where the system is divided into isolated compartments (bulkheads), so that a failure in one compartment does not affect other parts of the system.
 
-Название происходит от судовых перегородок (bulkhead), которые предотвращают затопление всего корабля при пробитии одного отсека.
+The name comes from ship bulkheads, which prevent the entire ship from flooding when one compartment is breached.
 
-## Зачем нужен
+## Why it's needed
 
-Без Bulkhead:
+Without Bulkhead:
 ```
-Все потоки → Один пул соединений (20) → База данных
-Если один поток блокируется → Все остальные страдают
-```
-
-С Bulkhead:
-```
-Поток A → Пул 1 (10 соединений) → База
-Поток B → Пул 2 (10 соединений) → База
-Поток C → Пул 3 (10 соединений) → База
-Блокировка в одном потоке → Остальные работают нормально
+All threads → One connection pool (20) → Database
+If one thread blocks → All others suffer
 ```
 
-## Типы перегородок
+With Bulkhead:
+```
+Thread A → Pool 1 (10 connections) → Database
+Thread B → Pool 2 (10 connections) → Database
+Thread C → Pool 3 (10 connections) → Database
+Block in one thread → Others work normally
+```
 
-### 1. Разделение по потребителям
+## Types of bulkheads
+
+### 1. Separation by consumers
 
 ```python
-# Пул для платежей (критичный)
+# Pool for payments (critical)
 payment_pool = ConnectionPool(
     name="payments",
     max_connections=20,
     min_connections=5
 )
 
-# Пул для отчетов (некритичный)
+# Pool for reports (non-critical)
 reporting_pool = ConnectionPool(
     name="reports",
     max_connections=5,
     min_connections=1
 )
 
-# Пул для batch-операций
+# Pool for batch operations
 batch_pool = ConnectionPool(
     name="batch",
     max_connections=10,
@@ -49,27 +49,27 @@ batch_pool = ConnectionPool(
 )
 ```
 
-### 2. Разделение по ресурсам
+### 2. Separation by resources
 
 ```python
-# Отдельные пулы для чтения и записи
+# Separate pools for reads and writes
 read_pool = ConnectionPool("read", max_connections=25)
 write_pool = ConnectionPool("write", max_connections=10)
 ```
 
-### 3. Разделение по приоритету
+### 3. Separation by priority
 
 ```python
-# Высокий приоритет (пользовательские операции)
+# High priority (user operations)
 high_pool = ConnectionPool("high_priority", max_connections=15)
 
-# Низкий приоритет (фоновые задачи)
+# Low priority (background tasks)
 low_pool = ConnectionPool("low_priority", max_connections=5)
 ```
 
-## Конфигурация
+## Configuration
 
-Через переменные окружения:
+Via environment variables:
 ```
 BULKHEAD_ENABLED=true
 BULKHEAD_POOLS=payments,reports,batch
@@ -83,7 +83,7 @@ REPORTS_POOL_MIN_SIZE=1
 REPORTS_POOL_TIMEOUT_SEC=30
 ```
 
-## Реализация на Java (HikariCP)
+## Implementation in Java (HikariCP)
 
 ```java
 HikariConfig paymentConfig = new HikariConfig();
@@ -102,17 +102,17 @@ DataSource paymentDS = new HikariDataSource(paymentConfig);
 DataSource reportDS = new HikariDataSource(reportConfig);
 ```
 
-## Реализация на Go
+## Implementation in Go
 
 ```go
-// Пул для пользовательских запросов
+// Pool for user requests
 userPool, err := pgxpool.New(ctx, "pool_max_conns=20")
 
-// Пул для внутренних задач
+// Pool for internal tasks
 internalPool, err := pgxpool.New(ctx, "pool_max_conns=5")
 ```
 
-## Метрики
+## Metrics
 
 ```
 bulkhead_pool_size (gauge)
@@ -123,77 +123,77 @@ bulkhead_rejected (counter)
 bulkhead_wait_duration (histogram)
 ```
 
-## Сценарии применения
+## Usage scenarios
 
-### Система с разными типами запросов
+### System with different request types
 
 ```
-┌─────────────┐
-│ API Gateway │
-└──────┬──────┘
+├───────────┐
+ API Gateway
+└───────────┘
        │
-┌──────▼──────┐
-│  Роутер     │
-└──┬──┬──┬───┘
+├─────────┐
+  Router
+└──┐││──┘
    │  │  │
-   │  │  └────→ reporting_pool (5 conns)
-   │  └───────→ batch_pool (10 conns)
-   └──────────→ payment_pool (20 conns)
+   │  │  ┛───→ reporting_pool (5 conns)
+   │  ┛─────→ batch_pool (10 conns)
+   ┛────────→ payment_pool (20 conns)
 ```
 
-### Микросервис с несколькими БД
+### Microservice with multiple databases
 
 ```
-┌──────────┐
-│ Service  │
-└──┬──┬───┘
+├───────┐
+ Service
+└──┐───┘
    │  │
-   │  └────→ users_db_pool (10 conns)
-   └───────→ orders_db_pool (15 conns)
+   │  ┛───→ users_db_pool (10 conns)
+   ┛─────→ orders_db_pool (15 conns)
 ```
 
-## Преимущества
+## Advantages
 
-✅ **Лучшая устойчивость**
-- Сбой в одной части не распространяется
-- Ограничение blast radius
+✅ **Better resilience**
+- Failure in one part does not spread
+- Limiting blast radius
 
-✅ **Предсказуемая производительность**
-- Каждый компонент имеет четкие лимиты
-- Нет взаимного влияния между компонентами
+✅ **Predictable performance**
+- Each component has clear limits
+- No mutual influence between components
 
-✅ **Гибкое масштабирование**
-- Можно настроить разные лимиты под разные нужды
-- Гранулярное управление ресурсами
+✅ **Flexible scaling**
+- Can configure different limits for different needs
+- Granular resource management
 
-✅ **Упрощенное дебажение**
-- Понятно, какой компонент использует ресурсы
-- Легко найти проблему
+✅ **Simplified debugging**
+- Clear which component uses resources
+- Easy to find problems
 
-## Недостатки
+## Disadvantages
 
-⚠️ **Сложность конфигурации** - нужно настроить несколько пулов
-⚠️ **Неоптимальное использование ресурсов** - если один пул загружен, а другой простаивает
-⚠️ **Большая нагрузка на базу** - больше открытых соединений
+⚠️ **Complex configuration** - need to configure multiple pools
+⚠️ **Suboptimal resource usage** - if one pool is loaded and another is idle
+⚠️ **Higher load on database** - more open connections
 
 ## Best practices
 
-✅ **Делать**
-* Разделять критичные и некритичные операции
-* Устанавливать разные timeouts для разных пулов
-* Мониторить каждый пул отдельно
-* Тестировать при нагрузке
-* Настраивать circuit breakers для каждого пула
+✅ **Do**
+* Separate critical and non-critical operations
+* Set different timeouts for different pools
+* Monitor each pool separately
+* Test under load
+* Configure circuit breakers for each pool
 
-❌ **Не делать**
-* Слишком мелкое дробление (>10 пулов)
-* Использовать один пул для всего
-* Игнорировать метрики отдельных пулов
-* Без разницы выделять ресурсы под критичные и некритичные операции
+❌ **Don't**
+* Over-granular splitting (>10 pools)
+* Use one pool for everything
+* Ignore metrics of individual pools
+* Allocate resources equally for critical and non-critical operations regardless of priority
 
-## Альтернативы
+## Alternatives
 
-Если Bulkhead слишком сложен:
+If Bulkhead is too complex:
 * [SRS-012 Circuit Breaker](SRS-012%20Circuit%20Breaker.md)
 * [SRS-015 Blocking Timeouts](SRS-015%20Blocking%20Timeouts.md)
 * [SRS-013 Load Shedding](SRS-013%20Load%20Shedding.md)

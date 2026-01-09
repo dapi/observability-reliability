@@ -1,86 +1,86 @@
-# SRS-029 Secrets Management (Управление секретами)
+# SRS-029 Secrets Management
 
-Secrets Management - это практика безопасного хранения, передачи и управления чувствительными данными (секретами), такими как API ключи, пароли, сертификаты и токены доступа.
+Secrets Management is the practice of securely storing, transmitting, and managing sensitive data (secrets) such as API keys, passwords, certificates, and access tokens.
 
-## Что считается секретами?
+## What is considered secrets?
 
-- API ключи и токены доступа
-- Пароли к базам данных
-- TLS/SSL сертификаты и приватные ключи
-- SSH ключи
-- Ключи шифрования
-- OAuth клиентские секреты
-- Временные токены (session tokens)
+- API keys and access tokens
+- Database passwords
+- TLS/SSL certificates and private keys
+- SSH keys
+- Encryption keys
+- OAuth client secrets
+- Temporary tokens (session tokens)
 - Connection strings
 
 ---
 
-## Антипаттерны (Что НЕ делать) ❌
+## Anti-patterns (What NOT to do) ❌
 
-### ❌ Хранение в коде
+### ❌ Storing in code
 ```python
-# НЕ ДЕЛАТЬ!
-api_key = "sk-1234567890abcdef"  # Жестко прописано в коде
-db_password = "super-secret-pass"  # В репозитории Git
+# DON'T DO THIS!
+api_key = "sk-1234567890abcdef"  # Hardcoded in code
+db_password = "super-secret-pass"  # In Git repository
 ```
 
-**Риски:**
-- Попадание в Git history навсегда
-- Доступно всем, кто видит код
-- Требует пересборки для изменения
+**Risks:**
+- Forever in Git history
+- Accessible to everyone who sees the code
+- Requires rebuilding to change
 
-### ❌ Хранение в конфигурационных файлах без шифрования
+### ❌ Storing in configuration files without encryption
 ```yaml
-# config.yml - НЕ ДЕЛАТЬ!
+# config.yml - DON'T DO THIS!
 database:
   password: "my-secret-password"
   host: "db.example.com"
 ```
 
-### ❌ Отправка через небезопасные каналы
+### ❌ Sending via insecure channels
 
 - Email
 - Slack/Teams
 - Messengers
-- Включение в логи
+- Including in logs
 - URL parameters
 - Query parameters
-- Параметры командной строки
+- Command line parameters
 
-### ❌ Общие секреты
-- Использование одного API ключа всеми разработчиками
-- Общий SSH ключ на все серверы
-- "admin/admin" учетные данные
+### ❌ Shared secrets
+- Using one API key for all developers
+- Common SSH key for all servers
+- "admin/admin" credentials
 
 ---
 
-## Хорошие практики ✅
+## Best practices ✅
 
-### 1. Использование переменных окружения (базовый уровень)
+### 1. Using environment variables (basic level)
 
 ```bash
-# Устанавливаем переменные на хосте
+# Setting variables on host
 export DB_PASSWORD="{{secret_value}}"
 ```
 
 ```python
 import os
 
-# В приложении используем переменные окружения
+# Using environment variables in application
 db_password = os.environ.get('DB_PASSWORD')
 
-# Создаем производные токены с ограниченными правами
+# Creating derived tokens with limited permissions
 def create_api_token():
     base_key = os.environ.get('API_MASTER_KEY')
     return generate_limited_token(base_key, permissions=['read'])
 ```
 
-**⚠️ Важно:** Переменные окружения - базовый уровень, но не самый безопасный для production.
+**⚠️ Important:** Environment variables - basic level, but not the most secure for production.
 
-### 2. Использование файлов, монтируемых при запуске
+### 2. Using files mounted at startup
 
 ```bash
-# Запуск контейнера с файлами секретов
+# Running container with secret files
 docker run -d \
   --env DB_PASSWORD_FILE=/run/secrets/db_password \
   --mount type=bind,source=/var/secrets/db_password,target=/run/secrets/db_password,readonly \
@@ -88,7 +88,7 @@ docker run -d \
 ```
 
 ```python
-# Чтение из файла
+# Reading from file
 def read_secret_from_file(path):
     try:
         with open(path, 'r') as f:
@@ -99,20 +99,20 @@ def read_secret_from_file(path):
 db_password = read_secret_from_file('/run/secrets/db_password')
 ```
 
-**Плюсы:**
-- Файловая система может быть монтирована с правами `readonly`
-- Операционная система контролирует доступ
-- Совместимость с Docker secrets, Kubernetes secrets
+**Pros:**
+- File system can be mounted with `readonly` permissions
+- Operating system controls access
+- Compatible with Docker secrets, Kubernetes secrets
 
-### 3. Системы управления секретами (рекомендуется)
+### 3. Secret management systems (recommended)
 
 #### HashiCorp Vault
 
 ```bash
-# Установка секрета
+# Setting secret
 echo -n "super-secret" | vault kv put secret/myapp/db_password value=-
 
-# Чтение секрета
+# Reading secret
 vault kv get -field=value secret/myapp/db_password
 ```
 
@@ -128,22 +128,22 @@ class VaultSecretsManager:
         return response['data']['data'][key]
 
     def create_dynamic_secret(self, role):
-        # Создает временные учетные данные БД
+        # Creates temporary database credentials
         response = self.client.secrets.database.generate_credentials(role)
         return response['data']
 
-# Использование
+# Usage
 vault = VaultSecretsManager('http://vault:8200', 's.token')
 db_pass = vault.get_secret('myapp', 'db_password')
 ```
 
-**Возможности Vault:**
-- Динамические секреты (генерация временных паролей)
-- Автоматический ротация
-- Утечка секретов (lease-based access)
+**Vault capabilities:**
+- Dynamic secrets (generating temporary passwords)
+- Automatic rotation
+- Secret leasing (lease-based access)
 - Audit logging
-- Мульти-tenant безопасность
-- Резервное копирование и восстановление
+- Multi-tenant security
+- Backup and recovery
 
 #### AWS Secrets Manager
 
@@ -162,7 +162,7 @@ class AWSSecretsManager:
         except ClientError as e:
             raise Exception(f"Failed to get secret: {e}")
 
-# Использование
+# Usage
 aws_sm = AWSSecretsManager()
 db_password = aws_sm.get_secret('prod/db/password')
 ```
@@ -182,12 +182,12 @@ class GoogleSecretManager:
         response = self.client.access_secret_version(name=name)
         return response.payload.data.decode('UTF-8')
 
-# Использование
+# Usage
 gsm = GoogleSecretManager('my-project')
 api_key = gsm.get_secret('prod-api-key')
 ```
 
-### 4. Kubernetes Secrets (для K8s окружений)
+### 4. Kubernetes Secrets (for K8s environments)
 
 ```yaml
 # secret.yaml
@@ -228,19 +228,19 @@ spec:
           secretName: db-credentials
 ```
 
-**Важно:** Используйте `sealed-secrets` для GitOps:
+**Important:** Use `sealed-secrets` for GitOps:
 ```bash
-# Шифруем секрет для хранения в Git
+# Encrypt secret for storing in Git
 kubeseal < secret.yaml > sealed-secret.yaml
 ```
 
-### 5. Docker Secrets (для Docker Swarm)
+### 5. Docker Secrets (for Docker Swarm)
 
 ```bash
-# Создание секрета
+# Creating secret
 echo "my-secret-password" | docker secret create db_password -
 
-# Использование в сервисе
+# Using in service
 docker service create \
   --name myapp \
   --secret db_password \
@@ -250,9 +250,9 @@ docker service create \
 
 ---
 
-## Процесс ротации секретов
+## Secret rotation process
 
-### Автоматическая ротация
+### Automatic rotation
 
 ```python
 class SecretRotator:
@@ -260,28 +260,28 @@ class SecretRotator:
         self.secrets_manager = secrets_manager
 
     def rotate_database_password(self):
-        """Ротация пароля БД с нулевым downtime"""
-        # 1. Генерируем новый пароль
+        """Rotate DB password with zero downtime"""
+        # 1. Generate new password
         new_password = generate_secure_password()
 
-        # 2. Создаем нового пользователя с теми же правами
+        # 2. Create new user with same permissions
         db.create_user('app_user_new', new_password)
         db.grant_permissions('app_user_new', 'app_user')
 
-        # 3. Обновляем секрет в хранилище
+        # 3. Update secret in storage
         self.secrets_manager.update_secret('db_password', new_password)
 
-        # 4. Перезапускаем приложения с новым паролем
+        # 4. Restart applications with new password
         orchestrator.restart_services('app', rolling=True)
 
-        # 5. Проверяем, что все работает
+        # 5. Check that everything works
         health_check.wait_all_healthy()
 
-        # 6. Удаляем старого пользователя (через некоторое время)
+        # 6. Delete old user (after some time)
         schedule.delay(7.days).run(db.drop_user, 'app_user')
 ```
 
-### Ручная ротация при компрометации
+### Manual rotation during compromise
 
 ```bash
 #!/bin/bash
@@ -289,33 +289,33 @@ class SecretRotator:
 
 echo "🚨 EMERGENCY SECRET ROTATION"
 
-# Останавливаем все сервисы
+# Stop all services
 kubectl scale deployment --all --replicas=0
 
-# Генерируем новые секреты
+# Generate new secrets
 vault write -f auth/token/roles/app
 vault write -f database/rotate-role/db-app
 
-# Обновляем все приложения
+# Update all applications
 terraform apply -var="emergency_rotation=true"
 
-# Запускаем сервисы обратно
+# Start services back
 kubectl scale deployment --all --replicas=3
 ```
 
 ---
 
-## Конфигурация через переменные окружения
+## Configuration via environment variables
 
 ```bash
-# Пример конфигурации
+# Example configuration
 SECRETS_PROVIDER=vault              # vault, aws, gcp, azure, file
 VAULT_ADDR=https://vault.example.com
 VAULT_TOKEN=s.token
 VAULT_NAMESPACE=production
 VAULT_SECRET_PATH=secret/data/myapp
 
-# Для разработки
+# For development
 SECRETS_PROVIDER=file
 SECRETS_FILE_PATH=/run/secrets
 ```
@@ -324,32 +324,32 @@ SECRETS_FILE_PATH=/run/secrets
 
 ## Best practices ✅
 
-### Хранение
-- ✅ Использовать специализированные системы управления секретами (Vault, AWS/GCP/Azure Secrets Manager)
-- ✅ Хранить секреты отдельно от кода и конфигурации
-- ✅ Шифровать секреты в rest и in transit
-- ✅ Использовать different keys for different environments (dev, staging, prod)
-- ✅ Регулярно ротировать секреты (автоматически или по расписанию)
-- ✅ Использовать краткосрочные временные секреты (TTL)
+### Storage
+- ✅ Use specialized secret management systems (Vault, AWS/GCP/Azure Secrets Manager)
+- ✅ Store secrets separately from code and configuration
+- ✅ Encrypt secrets at rest and in transit
+- ✅ Use different keys for different environments (dev, staging, prod)
+- ✅ Regularly rotate secrets (automatically or on schedule)
+- ✅ Use short-lived temporary secrets (TTL)
 
-### Доступ
-- ✅ Использовать принцип наименьших привилегий (least privilege)
-- ✅ Audit log всех операций с секретами
-- ✅ Multi-factor authentication для доступа к секретам
+### Access
+- ✅ Use principle of least privilege (least privilege)
+- ✅ Audit log all secret operations
+- ✅ Multi-factor authentication for secret access
 - ✅ Service-to-service authentication (mTLS)
-- ✅ RBAC для управления доступом
+- ✅ RBAC for access management
 
-### В приложениях
-- ✅ НИКОГДА не логировать секреты
-- ✅ Очищать секреты из памяти после использования
-- ✅ Передавать секреты только по зашифрованным каналам
-- ✅ Использовать environment-specific secrets
-- ✅ НЕ передавать секреты через CLI arguments
-- ✅ Обрабатывать ошибки доступа к секретам
+### In applications
+- ✅ NEVER log secrets
+- ✅ Clear secrets from memory after use
+- ✅ Pass secrets only through encrypted channels
+- ✅ Use environment-specific secrets
+- ✅ DO NOT pass secrets via CLI arguments
+- ✅ Handle secret access errors
 
-### Мониторинг
+### Monitoring
 ```python
-# Пример метрик
+# Example metrics
 metrics.counter('secrets.accessed', tags={'secret_type': 'db_password'})
 metrics.counter('secrets.rotation.success')
 metrics.counter('secrets.rotation.failed')
@@ -358,57 +358,57 @@ metrics.gauge('secrets.expiring_soon', count_near_expiry())
 
 ---
 
-## Как НЕ получать секреты ❌
+## How NOT to get secrets ❌
 
-❌ **НЕ делать:**
+❌ **Don't:**
 ```python
-# НЕ передавать в командной строке
-subprocess.run(['app', '--password', password])  # Видно в ps aux
+# DON'T pass via command line
+subprocess.run(['app', '--password', password])  # Visible in ps aux
 
-# НЕ использовать общие секреты
-default_api_key = "sk-default-12345"  # Не меняется между клиентами
+# DON'T use shared secrets
+default_api_key = "sk-default-12345"  # Doesn't change between clients
 
-# НЕ коммитить в репозиторий
+# DON'T commit to repository
 # .env file committed to git
 
-# НЕ логировать
+# DON'T log
 logger.info(f"Connecting to DB with password {db_pass}")
 
-# НЕ передавать по HTTP без TLS
+# DON'T send via HTTP without TLS
 requests.post('http://insecure.com/api', data={'key': api_key})
 
-# НЕ хранить в plain text
+# DON'T store in plain text
 with open('/tmp/secrets.txt', 'w') as f:
-    f.write(f"password={password}")  # Незашифровано!
+    f.write(f"password={password}")  # Not encrypted!
 ```
 
 ---
 
-## Метрики и мониторинг
+## Metrics and monitoring
 
 ```python
-# Метрики для секретов
+# Metrics for secrets
 SECRETS_RELATED_METRICS = {
-    'secrets.access.success': 'Успешный доступ к секрету',
-    'secrets.access.denied': 'Отказ в доступе',
-    'secrets.rotation.success': 'Успешная ротация',
-    'secrets.rotation.failed': 'Ошибка ротации',
-    'secrets.expiry.soon': 'Секрет истекает менее чем через 7 дней',
-    'secrets.lease_time': 'Время жизни секрета',
+    'secrets.access.success': 'Successful secret access',
+    'secrets.access.denied': 'Access denied',
+    'secrets.rotation.success': 'Successful rotation',
+    'secrets.rotation.failed': 'Rotation failed',
+    'secrets.expiry.soon': 'Secret expires in less than 7 days',
+    'secrets.lease_time': 'Secret lifetime',
 }
 ```
 
 ---
 
-## Проверка безопасности
+## Security audit
 
 ```bash
-# Проверка на утечку секретов
+# Checking for secret leaks
 git log --all -p -S 'AKIA'  # AWS Access Keys
 git log --all -p -S 'sk_live'  # Stripe keys
 git log --all -p -S 'BEGIN RSA PRIVATE KEY'  # Private keys
 
-# Инструменты
+# Tools
 # - git-secrets
 # - truffleHog
 # - git-leaks
@@ -416,7 +416,7 @@ git log --all -p -S 'BEGIN RSA PRIVATE KEY'  # Private keys
 
 ---
 
-## Процесс инцидента: утечка секрета
+## Incident process: secret leak
 
 ```bash
 #!/bin/bash
@@ -424,38 +424,38 @@ git log --all -p -S 'BEGIN RSA PRIVATE KEY'  # Private keys
 
 echo "🚨 INCIDENT: SECRET LEAK DETECTED"
 
-# 1. Отзываем секрет
+# 1. Revoke secret
 vault lease revoke -prefix secret/data/production/app
 
-# 2. Генерируем новый
+# 2. Generate new
 vault kv put secret/production/app/new_key value=$(generate_secret)
 
-# 3. Обновляем все сервисы
+# 3. Update all services
 kubectl rollout restart deployment/app
 
-# 4. Анализируем утечку
+# 4. Analyze the leak
 git log --all -p | grep -C 5 "$LEAKED_SECRET"
 
-# 5. Удаляем из Git history (опасно!)
-# Использовать BFG Repo-Cleaner или git-filter-repo
+# 5. Remove from Git history (dangerous!)
+# Use BFG Repo-Cleaner or git-filter-repo
 ```
 
 ---
 
-## Сравнение решений
+## Solution comparison
 
-| Решение | Сложность | Стоимость | Best For | Управление кластером |
+| Solution | Complexity | Cost | Best For | Management |
 |---------|-----------|-----------|----------|---------------------|
-| Environment Variables | Низкая | Бесплатно | Разработка, простые приложения | Self-managed |
-| Files Mounted | Средняя | Бесплатно | Containers, Kubernetes | Self-managed |
-| HashiCorp Vault | Высокая | Бесплатно / Enterprise | Large scale, on-premise | Self-managed |
-| AWS Secrets Manager | Средняя | Paid per secret | AWS workloads | AWS-managed |
-| GCP Secret Manager | Средняя | Paid per secret | GCP workloads | GCP-managed |
-| Azure Key Vault | Средняя | Paid per operation | Azure workloads | Azure-managed |
-| Docker Secrets | Средняя | Free | Docker Swarm | Self-managed |
-| Kubernetes Secrets | Средняя | Free | Kubernetes only | Self-managed |
-| Sealed Secrets + GitOps | Средняя | Free | Kubernetes + GitOps | Self-managed |
+| Environment Variables | Low | Free | Development, simple applications | Self-managed |
+| Files Mounted | Medium | Free | Containers, Kubernetes | Self-managed |
+| HashiCorp Vault | High | Free / Enterprise | Large scale, on-premise | Self-managed |
+| AWS Secrets Manager | Medium | Paid per secret | AWS workloads | AWS-managed |
+| GCP Secret Manager | Medium | Paid per secret | GCP workloads | GCP-managed |
+| Azure Key Vault | Medium | Paid per operation | Azure workloads | Azure-managed |
+| Docker Secrets | Medium | Free | Docker Swarm | Self-managed |
+| Kubernetes Secrets | Medium | Free | Kubernetes only | Self-managed |
+| Sealed Secrets + GitOps | Medium | Free | Kubernetes + GitOps | Self-managed |
 
 ---
 
-*Secrets Management - практика безопасного хранения и управления чувствительными данными*
+*Secrets Management - practice of secure storage and management of sensitive data*

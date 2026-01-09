@@ -44,36 +44,36 @@
 
 | Спецификация | Приоритет | Сложность | Обоснование сложности |
 |--------------|-----------|-----------|----------------------|
-| [SRS-029 Secrets Management](specs/SRS-029%20Secrets%20Management.md) | P2 | Medium | Требует интеграции с Vault или облачными Secret Manager |
-| [SRS-031 Audit Logging](specs/SRS-031%20Audit%20Logging.md) | P2 | Medium | Требует настройки структурированного логирования и хранилища |
-| [SRS-040 Service Authentication](specs/SRS-040%20Service%20Authentication.md) | P2 | Medium | Требует реализации JWT/OAuth2 и управления секретами |
-| [SRS-041 Authorization Pattern](specs/SRS-041%20Authorization%20Pattern.md) | P2 | Medium | Требует реализации RBAC или Policy-based access control |
+| [SRS-029 Secrets Management](specs/SRS-029%20Secrets%20Management.ru.md) | P2 | Medium | Требует интеграции с Vault или облачными Secret Manager |
+| [SRS-031 Audit Logging](specs/SRS-031%20Audit%20Logging.ru.md) | P2 | Medium | Требует настройки структурированного логирования и хранилища |
+| [SRS-040 Service Authentication](specs/SRS-040%20Service%20Authentication.ru.md) | P2 | Medium | Требует реализации JWT/OAuth2 и управления секретами |
+| [SRS-041 Authorization Pattern](specs/SRS-041%20Authorization%20Pattern.ru.md) | P2 | Medium | Требует реализации RBAC или Policy-based access control |
 
 ### Наблюдаемость (Observability)
 
 | Спецификация | Приоритет | Сложность | Обоснование сложности |
 |--------------|-----------|-----------|----------------------|
-| [SRS-004 Environment Variables Usage](specs/SRS-004%20Environment%20Variables%20Usage.md) | P1 | Low | Переход на конфигурацию через env vars |
-| [SRS-005 Application Versioning](specs/SRS-005%20Application%20Versioning.md) | P1 | Low | Добавление версии к сборке через CI/CD |
-| [SRS-007 Expose Application Version](specs/SRS-007%20Expose%20Application%20Version.md) | P1 | Low | Добавление эндпоинта /version |
-| [SRS-008 Logging (Журналирование)](specs/SRS-008%20Logging%20.md) | P1 | Low | Простая интеграция с библиотеками логирования |
-| [SRS-009 Error Tracking](specs/SRS-009%20Error%20Tracking.md) | P1 | Low | Интеграция с Sentry/Rollbar |
-| [SRS-021 Liveness probes over command](specs/SRS-021%20Liveness%20probes%20over%20command.md) | P1 | Low | Настройка liveness probes через command |
-| [SRS-006 Metrics Collection](specs/SRS-006%20Metrics%20Collection.md) | P2 | Low | Настройка сбора метрик (Prometheus/Grafana) |
-| [SRS-012 Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.md) | P2 | Medium | Требует реализации паттерна Circuit Breaker и настройки порогов |
-| [SRS-026 Alerting Rules](specs/SRS-026%20Alerting%20Rules.md) | P2 | Low | Настройка правил алертинга в Prometheus/Grafana |
-| [SRS-032 SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.md) | P2 | Medium | Требует определения SLI и расчета SLO |
-| [SRS-019 Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.md) | P2 | Medium | Подготовка контейнеров без host-зависимостей |
-| [SRS-011 Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.md) | P3 | High | Требует интеграции с Jaeger/Zipkin и инструментария всех сервисов |
-| [SRS-033 Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.md) | P3 | Medium | Настройка синтетических проверок и локаций |
+| [SRS-004 Environment Variables Usage](specs/SRS-004%20Environment%20Variables%20Usage.ru.md) | P1 | Low | Переход на конфигурацию через env vars |
+| [SRS-005 Application Versioning](specs/SRS-005%20Application%20Versioning.ru.md) | P1 | Low | Добавление версии к сборке через CI/CD |
+| [SRS-007 Expose Application Version](specs/SRS-007%20Expose%20Application%20Version.ru.md) | P1 | Low | Добавление эндпоинта /version |
+| [SRS-008 Logging (Журналирование)](specs/SRS-008%20Logging%20.ru.md) | P1 | Low | Простая интеграция с библиотеками логирования |
+| [SRS-009 Error Tracking](specs/SRS-009%20Error%20Tracking.ru.md) | P1 | Low | Интеграция с Sentry/Rollbar |
+| [SRS-021 Liveness probes over command](specs/SRS-021%20Liveness%20probes%20over%20command.ru.md) | P1 | Low | Настройка liveness probes через command |
+| [SRS-006 Metrics Collection](specs/SRS-006%20Metrics%20Collection.ru.md) | P2 | Low | Настройка сбора метрик (Prometheus/Grafana) |
+| [SRS-012 Circuit Breaker](specs/SRS-012%20Circuit%20Breaker.ru.md) | P2 | Medium | Требует реализации паттерна Circuit Breaker и настройки порогов |
+| [SRS-026 Alerting Rules](specs/SRS-026%20Alerting%20Rules.ru.md) | P2 | Low | Настройка правил алертинга в Prometheus/Grafana |
+| [SRS-032 SLI/SLO/SLA](specs/SRS-032%20SLI%20SLO%20SLA.ru.md) | P2 | Medium | Требует определения SLI и расчета SLO |
+| [SRS-019 Stand-Independent Images](specs/SRS-019%20Stand-Independent%20Images.ru.md) | P2 | Medium | Подготовка контейнеров без host-зависимостей |
+| [SRS-011 Distributed Tracing](specs/SRS-011%20Distributed%20Tracing.ru.md) | P3 | High | Требует интеграции с Jaeger/Zipkin и инструментария всех сервисов |
+| [SRS-033 Synthetic Monitoring](specs/SRS-033%20Synthetic%20Monitoring.ru.md) | P3 | Medium | Настройка синтетических проверок и локаций |
 
 ### DevOps & Operations
 
 | Спецификация | Приоритет | Сложность | Обоснование сложности |
 |--------------|-----------|-----------|----------------------|
-| [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.md) | P1 | Medium | Требует настройки резервного копирования и восстановления |
-| [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.md) | P2 | Medium | Требует настройки ротаций, escalation policies и runbook'ов |
-| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.md) | P2 | High | Требует настройки фреймворка миграций и тестирования откатов |
+| [SRS-036 Backup & Recovery](specs/SRS-036%20Backup%20&%20Recovery.ru.md) | P1 | Medium | Требует настройки резервного копирования и восстановления |
+| [SRS-034 On-Call & Incident Response](specs/SRS-034%20On-Call%20&%20Incident%20Response.ru.md) | P2 | Medium | Требует настройки ротаций, escalation policies и runbook'ов |
+| [SRS-035 Database Migrations](specs/SRS-035%20Database%20Migrations.ru.md) | P2 | High | Требует настройки фреймворка миграций и тестирования откатов |
 
 ### Статус реализации
 

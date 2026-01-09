@@ -1,27 +1,27 @@
 # SRS-023 Load Balancing Patterns
 
-## Определение
+## Definition
 
-Load Balancing - распределение входящего сетевого трафика между несколькими экземплярами сервиса для оптимизации ресурсов, максимизации throughput, минимизации latency и обеспечения отказоустойчивости.
+Load Balancing is the distribution of incoming network traffic between multiple service instances to optimize resources, maximize throughput, minimize latency, and provide fault tolerance.
 
-## Типы балансировки
+## Load balancing types
 
 ### 1. DNS Round Robin
 ```
-Простое переключение между IP-адресами
-Уровень: DNS
-Плюсы: Просто, не требует дополнительного ПО
-Минусы: Нет health checks, кеширование DNS проблематично
+Simple rotation between IP addresses
+Level: DNS
+Pros: Simple, doesn't require additional software
+Cons: No health checks, DNS caching problematic
 ```
 
 ### 2. Layer 4 (L4) - Transport Layer
 ```
-Работает с TCP/UDP, по IP и порту
-Примеры: HAProxy (TCP mode), NLB (AWS), Cloudflare Spectrum
-Плюсы: Быстрый, эффективный
-Минусы: Не видит содержимого запроса
+Works with TCP/UDP, by IP and port
+Examples: HAProxy (TCP mode), NLB (AWS), Cloudflare Spectrum
+Pros: Fast, efficient
+Cons: Doesn't see request content
 
-Пример HAProxy:
+HAProxy example:
 listen app
     bind *:443
     mode tcp
@@ -31,59 +31,59 @@ listen app
 
 ### 3. Layer 7 (L7) - Application Layer
 ```
-Работает с содержимым запроса (HTTP, HTTPS)
-Примеры: ALB (AWS), Nginx, HAProxy (HTTP mode)
-Плюсы: Может маршрутизировать по URL, headers, cookies
-Минусы: Медленнее L4, больше ресурсов ЦП
+Works with request content (HTTP, HTTPS)
+Examples: ALB (AWS), Nginx, HAProxy (HTTP mode)
+Pros: Can route by URL, headers, cookies
+Cons: Slower than L4, more CPU resources
 ```
 
-## Алгоритмы балансировки
+## Balancing algorithms
 
 ### 1. Round Robin
 ```
-Запрос 1 → Server 1
-Запрос 2 → Server 2
-Запрос 3 → Server 3
-Запрос 4 → Server 1
+Request 1 → Server 1
+Request 2 → Server 2
+Request 3 → Server 3
+Request 4 → Server 1
 
-Работает когда: Все серверы равны по мощности
+Works when: All servers have equal capacity
 ```
 
 ### 2. Least Connections
 ```
-Новый запрос → Сервер с наименьшим количеством активных соединений
-Работает когда: Запросы имеют разную продолжительность
+New request → Server with fewest active connections
+Works when: Requests have different duration
 ```
 
 ### 3. Least Response Time
 ```
-Новый запрос → Сервер с наименьшим средним временем ответа
-Работает когда: Нужна адаптация под производительность
+New request → Server with lowest average response time
+Works when: Need to adapt to performance
 ```
 
 ### 4. IP Hash
 ```
 hash(client_ip) % number_of_servers = server_id
-Работает когда: Нужна session affinity (sticky sessions)
+Works when: Need session affinity (sticky sessions)
 ```
 
-### 5. Weighted (Взвешенный)
+### 5. Weighted
 ```
 Server 1: weight 3
 Server 2: weight 1
 Server 3: weight 2
 
-Распределение: 3:1:2
+Distribution: 3:1:2
 
-Работает когда: Серверы имеют разную производительность
+Works when: Servers have different performance
 ```
 
 ### 6. Random with Two Choices
 ```
-Выбираем случайно 2 сервера
-Отправляем запрос на сервер с меньшей нагрузкой
+Randomly select 2 servers
+Send request to server with less load
 
-Работает когда: Нужна простота и хорошее распределение
+Works when: Need simplicity and good distribution
 ```
 
 ## Health Checks
@@ -114,27 +114,27 @@ Server 3: weight 2
 }
 ```
 
-### Критерии unhealthy
+### Unhealthy criteria
 * 3 consecutive failures
 * Response time > 5 seconds
 * Connection refused
 * 5xx errors
 
-## Сессионная привязность (Session Affinity)
+## Session Affinity
 
-Способность балансировщика направлять последующие запросы того же клиента на тот же сервер.
+Ability of load balancer to direct subsequent requests from the same client to the same server.
 
 ```yaml
 # Nginx sticky sessions
 upstream backend {
-    ip_hash;  # Использовать IP адрес клиента
+    ip_hash;  # Use client IP address
 
     server backend1.example.com;
     server backend2.example.com;
     server backend3.example.com;
 }
 
-# Или с куками
+# Or with cookies
 upstream backend {
     sticky cookie srv_id expires=1h domain=.example.com path=/;
 
@@ -143,22 +143,22 @@ upstream backend {
 }
 ```
 
-⚠️ **НЕ рекомендуется** - нарушает stateless архитектуру. Вместо этого использовать:
+⚠️ **NOT recommended** - violates stateless architecture. Instead use:
 * Session storage (Redis)
-* JWT токены
+* JWT tokens
 * Centralized sessions
 
-## Конфигурация
+## Configuration
 
 ### Nginx
 ```nginx
 http {
     upstream app {
-        least_conn;  # Или round_robin, ip_hash
+        least_conn;  # Or round_robin, ip_hash
 
         server app1:8080 max_fails=3 fail_timeout=30s weight=3;
         server app2:8080 max_fails=3 fail_timeout=30s weight=2;
-        server app3:8080 max_fails=3 fail_timeout=30s backup;  # Только если все основные упали
+        server app3:8080 max_fails=3 fail_timeout=30s backup;  # Only if all main servers are down
 
         keepalive 32;
     }
@@ -184,7 +184,7 @@ http {
 ### HAProxy
 ```haproxy
 backend app
-    balance leastconn  # Или roundrobin, source (IP hash)
+    balance leastconn  # Or roundrobin, source (IP hash)
 
     # Health checks
     option httpchk GET /health
@@ -195,7 +195,7 @@ backend app
     server app2 10.0.1.11:8080 check weight 2
     server app3 10.0.1.12:8080 check weight 2
 
-    # Параметры
+    # Parameters
     timeout connect 5s
     timeout server 60s
     timeout check 5s
@@ -215,42 +215,42 @@ spec:
     targetPort: 8080
   type: LoadBalancer
 
-  # Session affinity (НЕ рекомендуется)
+  # Session affinity (NOT recommended)
   sessionAffinity: ClientIP
   sessionAffinityConfig:
     clientIP:
       timeoutSeconds: 10800
 ```
 
-## Проблемы и решения
+## Problems and solutions
 
 ### Thundering Herd
 
-Проблема: Все серверы стартуют одновременно, балансировщик перегружен
+Problem: All servers start simultaneously, load balancer is overloaded
 
-Решение: Gradual rollout, connection rate limiting
+Solution: Gradual rollout, connection rate limiting
 
 ### Uneven Load
 
-Проблема: Неравномерная нагрузка из-за long-lived connections
+Problem: Uneven load due to long-lived connections
 
-Решение: Least connections algorithm, keep alive timeout
+Solution: Least connections algorithm, keep alive timeout
 
 ### Health Check Flooding
 
-Проблема: Балансировщик слишком часто проверяет health
+Problem: Load balancer checks health too frequently
 
-Решение: Настроить интервал 10-30s, использовать shared health state
+Solution: Configure interval 10-30s, use shared health state
 
 ### Connection Draining
 
-При остановке сервера нужно время, чтобы завершить активные запросы:
+When stopping a server, need time to complete active requests:
 
 ```haproxy
 server app1 10.0.1.10:8080 check weight 3
-    # Дождаться завершения в течение 30s
-    # Перестать отправлять НОВЫЕ запросы
-    # После 30s закрыть соединения
+    # Wait for completion for 30s
+    # Stop sending NEW requests
+    # After 30s close connections
 ```
 
 ## Multizone / Geographic Balancing
@@ -285,7 +285,7 @@ Primary Region (100% traffic)
 Backup Region (0% traffic, hot standby)
 ```
 
-## Метрики
+## Metrics
 
 ```
 load_balancer_requests_total (counter)
@@ -295,13 +295,13 @@ load_balancer_request_duration_seconds (histogram)
 load_balancer_backend_errors_total (counter)
 ```
 
-## Конфигурация через переменные окружения
+## Configuration via environment variables
 
 ```
-# Алгоритм
+# Algorithm
 LB_ALGORITHM=least_conn  # round_robin, least_conn, ip_hash
 
-# Параметры
+# Parameters
 LB_HEALTH_CHECK_INTERVAL=10s
 LB_HEALTH_CHECK_TIMEOUT=5s
 LB_MAX_FAILS=3
@@ -320,22 +320,22 @@ LB_RATE_LIMIT_BURST=200
 
 ## Best practices
 
-✅ **Делать**
-* Health checks на всех backend-серверах
-* Использовать least connections для неравных запросов
-* Настраивать timeouts
+✅ **Do**
+* Health checks on all backend servers
+* Use least connections for requests of unequal duration
+* Configure timeouts
 * Log failed requests
-* Мониторить backend health
-* Иметь backup-серверы
+* Monitor backend health
+* Have backup servers
 
-❌ **Не делать**
-* IP Hash без необходимости
-* Sticky sessions (при наличии альтернатив)
-* Отправлять трафик на unhealthy серверы
-* Игнорировать настройку timeouts
-* Health check слишком часто или редко
+❌ **Don't**
+* IP Hash without necessity
+* Sticky sessions (if alternatives exist)
+* Send traffic to unhealthy servers
+* Ignore timeout configuration
+* Health check too frequently or infrequently
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [HAProxy Documentation](https://www.haproxy.org/documentation/)
 * [NGINX Load Balancing](https://nginx.org/en/docs/http/load_balancing.html)

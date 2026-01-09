@@ -1,100 +1,100 @@
-# SRS-028 Database Connection Pooling (Пул соединений с базой данных)
+# SRS-028 Database Connection Pooling
 
-## Определение
+## Definition
 
-Connection Pool - это набор повторно используемых соединений с базой данных, который позволяет избежать накладных расходов на установку нового соединения для каждого запроса.
+Connection Pool is a set of reusable database connections that avoids the overhead of establishing a new connection for each request.
 
-## Зачем нужен пул
+## Why pool is needed
 
-Без пула:
+Without pool:
 ```
-Запрос 1: Установить соединение (50ms) → Выполнить запрос (5ms) → Закрыть (5ms) = 60ms
-Запрос 2: Установить соединение (50ms) → Выполнить запрос (5ms) → Закрыть (5ms) = 60ms
-Запрос 3: Установить соединение (50ms) → Выполнить запрос (5ms) → Закрыть (5ms) = 60ms
+Request 1: Establish connection (50ms) → Execute query (5ms) → Close (5ms) = 60ms
+Request 2: Establish connection (50ms) → Execute query (5ms) → Close (5ms) = 60ms
+Request 3: Establish connection (50ms) → Execute query (5ms) → Close (5ms) = 60ms
 
 Total: 180ms
 ```
 
-С пулом:
+With pool:
 ```
-Инициализация пула: Установить 10 соединений (500ms)
+Pool initialization: Establish 10 connections (500ms)
 
-Запрос 1: Взять из пула (0ms) → Выполнить (5ms) → Вернуть в пул (0ms) = 5ms
-Запрос 2: Взять из пула (0ms) → Выполнить (5ms) → Вернуть в пул (0ms) = 5ms
-Запрос 3: Взять из пула (0ms) → Выполнить (5ms) → Вернуть в пул (0ms) = 5ms
+Request 1: Take from pool (0ms) → Execute (5ms) → Return to pool (0ms) = 5ms
+Request 2: Take from pool (0ms) → Execute (5ms) → Return to pool (0ms) = 5ms
+Request 3: Take from pool (0ms) → Execute (5ms) → Return to pool (0ms) = 5ms
 
-Total: 500ms (один раз при старте) + 15ms = 515ms
-```
-
-## Размер пула
-
-### Минимальный размер
-```
-DB_POOL_MIN_SIZE=5  # Количество соединений, которые всегда открыты
+Total: 500ms (once at startup) + 15ms = 515ms
 ```
 
-P.S. Для микросервиса с малым трафиком можно использовать 2-5.
+## Pool size
 
-### Максимальный размер
+### Minimum size
 ```
-DB_POOL_MAX_SIZE=20  # Максимальное количество соединений
+DB_POOL_MIN_SIZE=5  # Connections that are always open
 ```
 
-Формула расчета:
+Note: For microservices with low traffic, 2-5 can be used.
+
+### Maximum size
+```
+DB_POOL_MAX_SIZE=20  # Maximum number of connections
+```
+
+Calculation formula:
 ```
 max_connections = (CORES * 2) + EFFECTIVE_SPINDLE_COUNT
 
-Где:
-- CORES: Количество ядер CPU
-- EFFECTIVE_SPINDLE_COUNT: Для дисковых систем (обычно 1)
+Where:
+- CORES: Number of CPU cores
+- EFFECTIVE_SPINDLE_COUNT: For disk systems (usually 1)
 
-Пример:
-4 ядра → (4 * 2) + 1 = 9 соединений
-16 ядер → (16 * 2) + 1 = 33 соединения
+Example:
+4 cores → (4 * 2) + 1 = 9 connections
+16 cores → (16 * 2) + 1 = 33 connections
 ```
 
-Для микросервисов обычно 10-30 достаточно.
+For microservices, 10-30 is usually sufficient.
 
-### Размер очереди ожидания
+### Queue size
 ```
-DB_POOL_QUEUE_SIZE=50  # Сколько запросов могут ждать в очереди
+DB_POOL_QUEUE_SIZE=50  # How many requests can wait in queue
 ```
 
-Если очередь переполнена, запросы отклоняются.
+If queue is full, requests are rejected.
 
-## Timeout-ы
+## Timeouts
 
 ### Connection Timeout
 ```
 DB_POOL_CONNECTION_TIMEOUT=5000  # milliseconds
 ```
 
-Время ожидания установления соединения с БД.
+Time to wait for connection establishment to DB.
 
 ### Idle Timeout
 ```
 DB_POOL_IDLE_TIMEOUT=600000  # 10 minutes
 ```
 
-Время, после которого неиспользуемое соединение закрывается.
+Time after which unused connections are closed.
 
 ### Max Lifetime
 ```
 DB_POOL_MAX_LIFETIME=1800000  # 30 minutes
 ```
 
-Максимальное время жизни соединения (предотвращает утечки).
+Maximum lifetime of a connection (prevents leaks).
 
 ### Acquire Timeout
 ```
 DB_POOL_ACQUIRE_TIMEOUT=5000  # milliseconds
 ```
 
-Время ожидания свободного соединения из пула.
+Time to wait for a free connection from the pool.
 
-## Конфигурация по фреймворкам
+## Framework configuration
 
-### Java (HikariCP - рекомендуется)
+### Java (HikariCP - recommended)
 
 ```properties
 # Connection
@@ -110,7 +110,7 @@ spring.datasource.hikari.idleTimeout=600000
 spring.datasource.hikari.maxLifetime=1800000
 spring.datasource.hikari.leakDetectionThreshold=60000
 
-# Параметры соединения
+# Connection parameters
 spring.datasource.hikari.connectionTestQuery=SELECT 1
 spring.datasource.hikari.validationTimeout=3000
 ```
@@ -197,18 +197,18 @@ defer cancel()
 err = db.PingContext(ctx)
 ```
 
-## Метрики
+## Metrics
 
 ```
-db_pool_active_connections (gauge)    # активные соединения
-db_pool_idle_connections (gauge)      # простаивающие соединения
-db_pool_pending_requests (gauge)      # запросы в очереди
-db_pool_acquired_total (counter)      # получено из пула
-db_pool_released_total (counter)      # возвращено в пул
-db_pool_created_total (counter)       # создано новых
-db_pool_closed_total (counter)        # закрыто
-db_pool_acquire_duration (histogram)  # время получения
-db_pool_exceptions_total (counter)    # ошибки
+db_pool_active_connections (gauge)    # active connections
+db_pool_idle_connections (gauge)      # idle connections
+db_pool_pending_requests (gauge)      # requests in queue
+db_pool_acquired_total (counter)      # acquired from pool
+db_pool_released_total (counter)      # returned to pool
+db_pool_created_total (counter)       # new connections created
+db_pool_closed_total (counter)        # closed
+db_pool_acquire_duration (histogram)  # acquisition time
+db_pool_exceptions_total (counter)    # errors
 ```
 
 ## Health Checks
@@ -216,101 +216,101 @@ db_pool_exceptions_total (counter)    # ошибки
 ### Connection Test Query
 
 ```sql
--- Легкий запрос для проверки соединения
+-- Lightweight query for connection test
 SELECT 1 AS health_check;
 
--- Для PostgreSQL можно использовать
+-- For PostgreSQL you can use
 SELECT pg_postmaster_start_time();
 
--- Для MySQL
+-- For MySQL
 SELECT VERSION();
 ```
 
-### Периодическая проверка (Pool)
+### Periodic check (Pool)
 
-Если соединение не использовалось N секунд, проверить его перед использованием.
+If a connection hasn't been used for N seconds, test it before use.
 
 ```
 DB_POOL_VALIDATION_TIMEOUT=3000  # milliseconds
 DB_POOL_VALIDATION_INTERVAL=30000  # every 30 seconds
 ```
 
-## Проблемы и решения
+## Problems and solutions
 
 ### Connection Leaks
 
-Проблема: Соединения не возвращаются в пул.
+Problem: Connections aren't returned to pool.
 
-Решения:
+Solutions:
 * Always close connections (try/finally)
 * Use leak detection (HikariCP)
 * Set max lifetime
 
 ```
-HikariCP leakDetectionThreshold=60000  # логировать если соединение > 60 сек
+HikariCP leakDetectionThreshold=60000  # log if connection > 60 sec
 ```
 
 ### Pool Exhaustion
 
-Проблема: Все соединения заняты, новые запросы ждут.
+Problem: All connections are busy, new requests wait.
 
-Решения:
-* Увеличить max pool size
-* Уменьшить query time
-* Использовать connection timeout
+Solutions:
+* Increase max pool size
+* Reduce query time
+* Use connection timeout
 * Implement circuit breaker
 * Check slow queries
 
 ```
-DB_POOL_ACQUIRE_TIMEOUT=5000  # отказать после 5 сек ожидания
+DB_POOL_ACQUIRE_TIMEOUT=5000  # reject after 5 sec waiting
 ```
 
 ### Idle Connections
 
-Проблема: Соединения простаивают и база их закрывает.
+Problem: Connections idle and database closes them.
 
-Решения:
-* Установить idle timeout < database idle timeout
+Solutions:
+* Set idle timeout < database idle timeout
 * Use keep alive
-* Set min pool size вместо pre-allocating
+* Set min pool size instead of pre-allocating
 
 ```
-DB_POOL_IDLE_TIMEOUT=600000  # закрывать если простаивает 10 минут
+DB_POOL_IDLE_TIMEOUT=600000  # close if idle for 10 minutes
 ```
 
 ### Connection Storm
 
-Проблема: Много запросов одновременно создают новые соединения.
+Problem: Many requests simultaneously create new connections.
 
-Решения:
+Solutions:
 * Pre-allocate connections (min pool size)
 * Set connection creation rate limit
 * Use queue for requests
 
 ## Best practices
 
-✅ **Делать**
-* Всегда использовать пул соединений
-* Настроить min и max pool size
-* Устанавливать timeouts (connection, acquire, idle)
+✅ **Do**
+* Always use connection pool
+* Configure min and max pool size
+* Set timeouts (connection, acquire, idle)
 * Enable connection health checks
 * Monitor pool metrics
 * Test pool under load
 * Use prepared statements
 * Close connections in finally
 * Set max lifetime (prevents leaks)
-* Enable leak detection в development
+* Enable leak detection in development
 
-❌ **Не делать**
-* Создавать новые соединения для каждого запроса
-* Игнорировать ошибки пула
-* Использовать unlimited pool size
-* Игнорировать timeout настройки
-* Share pool между разными БД
-* Хранить state в connection
-* Игнорировать метрики пула
+❌ **Don't**
+* Create new connections for each request
+* Ignore pool errors
+* Use unlimited pool size
+* Ignore timeout configuration
+* Share pool between different databases
+* Store state in connection
+* Ignore pool metrics
 
-## Настройки по умолчанию
+## Default settings
 
 ```
 DB_POOL_MIN_SIZE=5
@@ -323,7 +323,7 @@ DB_POOL_QUEUE_SIZE=50
 DB_POOL_VALIDATION_INTERVAL=30000
 ```
 
-## Конфигурация в Kubernetes
+## Configuration in Kubernetes
 
 ```yaml
 apiVersion: v1
@@ -353,29 +353,29 @@ stringData:
   DB_URL: postgresql://user:pass@db:5432/mydb
 ```
 
-## Размер пула по окружениям
+## Pool size by environment
 
 **Development:**
 ```
-min: 2, max: 5  # Мало запросов в dev
+min: 2, max: 5  # Few requests in dev
 ```
 
 **Staging:**
 ```
-min: 3, max: 10  # Средняя нагрузка
+min: 3, max: 10  # Medium load
 ```
 
 **Production:**
 ```
-min: 5, max: 20  # Высокая нагрузка
+min: 5, max: 20  # High load
 ```
 
 **High Load Production:**
 ```
-min: 10, max: 50  # Очень высокая нагрузка
+min: 10, max: 50  # Very high load
 ```
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [HikariCP Configuration](https://github.com/brettwooldridge/HikariCP)
 * [PostgreSQL Connection Pooling](https://www.postgresql.org/docs/current/libpq-pgpass.html)

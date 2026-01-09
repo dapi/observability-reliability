@@ -1,40 +1,40 @@
-# SRS-027 Rate Limiting (Ограничение частоты запросов)
+# SRS-027 Rate Limiting
 
-Rate limiting - это механизм контроля скорости обработки запросов, который ограничивает количество запросов, которые клиент может сделать к сервису за определенный период времени.
+Rate limiting is a request processing speed control mechanism that limits the number of requests a client can make to a service within a specified period of time.
 
-## Зачем нужен Rate Limiting?
+## Why Rate Limiting is needed?
 
-### Защита от перегрузки
-Предотвращает перегрузку сервиса большим количеством запросов, которые он не может обработать.
+### Protection from overload
+Prevents service overload with a large number of requests it cannot handle.
 
-### Предотвращение DoS-атак
-Защищает от злонамеренных атак, направленных на недоступность сервиса.
+### DoS attack prevention
+Protects against malicious attacks aimed at service unavailability.
 
-### Обеспечение честного использования
-Гарантирует, что ресурсы распределяются равномерно между всеми пользователями.
+### Ensuring fair usage
+Guarantees that resources are distributed evenly among all users.
 
-### Контроль затрат
-Ограничивает использование платных API и ресурсов.
+### Cost control
+Limits the use of paid APIs and resources.
 
-## Алгоритмы Rate Limiting
+## Rate Limiting algorithms
 
-### 1. Fixed Window Counter (Фиксированное окно)
+### 1. Fixed Window Counter (Fixed window)
 
-Простой счетчик запросов в фиксированном временном окне.
+Simple counter of requests in a fixed time window.
 
 ```
-Окно: 1 минута
-Лимит: 100 запросов
+Window: 1 minute
+Limit: 100 requests
 
-12:00:00 - 12:00:59: 100 запросов ✅
-12:01:00 - 12:01:59: 100 запросов ✅
+12:00:00 - 12:00:59: 100 requests ✅
+12:01:00 - 12:01:59: 100 requests ✅
 ```
 
-**Проблема**: "Всплеск в конце окна" - клиент может сделать 100 запросов в 12:00:59 и еще 100 в 12:01:00 (200 запросов за 2 секунды).
+**Problem**: "Burst at end of window" - client can make 100 requests at 12:00:59 and another 100 at 12:01:00 (200 requests in 2 seconds).
 
-### 2. Sliding Window Log (Скользящее окно с логом)
+### 2. Sliding Window Log (Sliding window with log)
 
-Хранит временную метку каждого запроса.
+Stores timestamp of each request.
 
 ```python
 class SlidingWindowLog:
@@ -45,7 +45,7 @@ class SlidingWindowLog:
 
     def is_allowed(self, client_id):
         now = time.time()
-        # Удаляем старые запросы
+        # Remove old requests
         self.requests = [req for req in self.requests if now - req < self.window_size]
 
         if len(self.requests) < self.limit:
@@ -54,39 +54,39 @@ class SlidingWindowLog:
         return False
 ```
 
-**Плюсы**: Точный учет
-**Минусы**: Большой объем хранения
+**Pros**: Accurate accounting
+**Cons**: Large storage volume
 
-### 3. Sliding Window Counter (Скользящее окно с счетчиком)
+### 3. Sliding Window Counter (Sliding window with counter)
 
-Комбинация Fixed Window и Sliding Window Log.
+Combination of Fixed Window and Sliding Window Log.
 
 ```
-Текущее окно: 12:00:00 - 12:01:00
-Предыдущее окно: 11:59:00 - 12:00:00
+Current window: 12:00:00 - 12:01:00
+Previous window: 11:59:00 - 12:00:00
 
-Запрос в 12:00:45:
-Запросов в текущем окне: 80
-Запросов в предыдущем окне: 100
-Процент времени в текущем окне: 75%
+Request at 12:00:45:
+Requests in current window: 80
+Requests in previous window: 100
+Percentage of time in current window: 75%
 
-Оценка = 80 + (100 * 0.75) = 155 запросов
-Лимит = 100 запросов
-Результат: BLOCKED ❌
+Estimate = 80 + (100 * 0.75) = 155 requests
+Limit = 100 requests
+Result: BLOCKED ❌
 ```
 
-**Плюсы**: Хороший баланс точности и эффективности
-**Минусы**: Может быть небольшое превышение лимита
+**Pros**: Good balance of accuracy and efficiency
+**Cons**: Slight limit overrun possible
 
-### 4. Token Bucket (Ведро токенов)
+### 4. Token Bucket (Token bucket)
 
-Алгоритм с токенами, которые пополняются со временем.
+Algorithm with tokens that refill over time.
 
 ```python
 class TokenBucket:
     def __init__(self, capacity, refill_rate):
-        self.capacity = capacity        # Максимум токенов
-        self.refill_rate = refill_rate  # Токенов в секунду
+        self.capacity = capacity        # Maximum tokens
+        self.refill_rate = refill_rate  # Tokens per second
         self.tokens = capacity
         self.last_refill = time.time()
 
@@ -107,61 +107,61 @@ class TokenBucket:
         self.last_refill = now
 ```
 
-**Плюсы**: Позволяет всплески запросов до `capacity`
-**Минусы**: Может быть сложно настроить optimal capacity
+**Pros**: Allows request bursts up to `capacity`
+**Cons**: Can be difficult to configure optimal capacity
 
-### 5. Leaky Bucket (Протекающее ведро)
+### 5. Leaky Bucket (Leaking bucket)
 
-Запросы "течут" через ведро с фиксированной скоростью.
-
-```
-Запросы → [Ведро] → Обработка (фиксированная скорость)
-```
-
-**Плюсы**: Гарантированная скорость обработки
-**Минусы**: Не позволяет всплески
-
-## Стратегии ограничения
-
-### По IP-адресу
-```
-Ограничение по IP: 1000 запросов в час с одного IP
-```
-
-### По пользователю
-```
-Ограничение по API key: 10000 запросов в день
-```
-
-### По endpoint
-```
-GET /api/users: 100 запросов в минуту
-POST /api/users: 10 запросов в минуту
-```
-
-### По сервису (глобальное)
-```
-Всего запросов к сервису: 100000 в минуту
-```
-
-## HTTP заголовки ответа
-
-Сервис должен возвращать заголовки:
+Requests "leak" through a bucket at a fixed rate.
 
 ```
-X-RateLimit-Limit: 100          # Лимит запросов
-X-RateLimit-Remaining: 85       # Осталось запросов
-X-RateLimit-Reset: 1640000000  # Unix timestamp когда лимит сбросится
-Retry-After: 3600               # Секунд до повторной попытки (при 429)
+Requests → [Bucket] → Processing (fixed rate)
 ```
 
-## HTTP статусы
+**Pros**: Guaranteed processing rate
+**Cons**: Doesn't allow bursts
 
-- **200 OK** - запрос успешен
-- **429 Too Many Requests** - лимит превышен
-- **503 Service Unavailable** - сервис перегружен (circuit breaker)
+## Limiting strategies
 
-## Реализация на Redis
+### By IP address
+```
+Limit by IP: 1000 requests per hour from one IP
+```
+
+### By user
+```
+Limit by API key: 10000 requests per day
+```
+
+### By endpoint
+```
+GET /api/users: 100 requests per minute
+POST /api/users: 10 requests per minute
+```
+
+### By service (global)
+```
+Total requests to service: 100000 per minute
+```
+
+## HTTP response headers
+
+Service must return headers:
+
+```
+X-RateLimit-Limit: 100          # Request limit
+X-RateLimit-Remaining: 85       # Requests remaining
+X-RateLimit-Reset: 1640000000  # Unix timestamp when limit resets
+Retry-After: 3600               # Seconds until retry (on 429)
+```
+
+## HTTP status codes
+
+- **200 OK** - request successful
+- **429 Too Many Requests** - limit exceeded
+- **503 Service Unavailable** - service overloaded (circuit breaker)
+
+## Implementation in Redis
 
 ```python
 import redis
@@ -177,16 +177,16 @@ class RedisRateLimiter:
         now = int(time.time() * 1000)  # milliseconds
         window_start = now - (window_size * 1000)
 
-        # Удаляем старые запросы
+        # Remove old requests
         self.redis.zremrangebyscore(key, '-inf', window_start)
 
-        # Получаем количество запросов в окне
+        # Get number of requests in window
         request_count = self.redis.zcard(key)
 
         if request_count < limit:
-            # Добавляем текущий запрос
+            # Add current request
             self.redis.zadd(key, {str(now): now})
-            # Устанавливаем TTL
+            # Set TTL
             self.redis.expire(key, window_size)
             return True
 
@@ -207,81 +207,81 @@ class RedisRateLimiter:
         }
 ```
 
-## Конфигурация
+## Configuration
 
-Через переменные окружения:
+Via environment variables:
 ```
 RATE_LIMIT_ENABLED=true
 RATE_LIMIT_ALGORITHM=sliding_window
-RATE_LIMIT_DEFAULT=1000  # запросов
-RATE_LIMIT_WINDOW=3600   # секунд (1 час)
+RATE_LIMIT_DEFAULT=1000  # requests
+RATE_LIMIT_WINDOW=3600   # seconds (1 hour)
 RATE_LIMIT_PER_IP=100
 RATE_LIMIT_PER_USER=10000
-RATE_LIMIT_BURST=50      # для token bucket
+RATE_LIMIT_BURST=50      # for token bucket
 ```
 
-## Обработка превышения лимита
+## Handling limit exceeded
 
-### Стратегии
-1. **Жесткий отказ** - немедленный ответ 429
-2. **Очередь** - запросы ставятся в очередь (опасно!)
-3. **Prioritization** - высокоприоритетные запросы проходят
+### Strategies
+1. **Hard reject** - immediate 429 response
+2. **Queue** - requests are queued (dangerous!)
+3. **Prioritization** - high-priority requests pass
 
 ### Circuit Breaker + Rate Limiter
 ```python
 def handle_request(request):
-    # 1. Проверяем rate limit
+    # 1. Check rate limit
     if not rate_limiter.is_allowed(request.client_id):
         return 429, "Rate limit exceeded"
 
-    # 2. Проверяем circuit breaker
+    # 2. Check circuit breaker
     if circuit_breaker.is_open():
         return 503, "Service unavailable"
 
-    # 3. Обрабатываем запрос
+    # 3. Process request
     return process_request(request)
 ```
 
 ## Best practices
 
-✅ **Делать**
-- Возвращать четкие HTTP заголовки
-- Документировать лимиты в API documentation
-- Использовать разные лимиты для разных пользователей
-- Мониторить количество отклоненных запросов
-- Предоставлять способ увеличить лимит
-- Тестировать поведение при превышении лимита
+✅ **Do**
+- Return clear HTTP headers
+- Document limits in API documentation
+- Use different limits for different users
+- Monitor number of rejected requests
+- Provide way to increase limit
+- Test limit exceeded behavior
 
-❌ **Не делать**
-- Возвращать 403 Forbidden (это про авторизацию, не rate limit)
-- Сбрасывать лимит сразу в начале нового окна
-- Использовать один лимит для всех endpoint'ов
-- Игнорировать burst трафика
-- Блокировать навсегда (всегда давайте TTL)
+❌ **Don't**
+- Return 403 Forbidden (this is about authorization, not rate limit)
+- Reset limit immediately at new window start
+- Use one limit for all endpoints
+- Ignore burst traffic
+- Block forever (always give TTL)
 
-## Метрики
+## Metrics
 
 ```
-ratelimit_requests_total (counter)        # всего запросов
-ratelimit_requests_allowed (counter)      # разрешенных
-ratelimit_requests_blocked (counter)      # отклоненных
-ratelimit_current_usage (gauge)           # текущее использование
-ratelimit_avg_response_time (histogram)   # время проверки лимита
+ratelimit_requests_total (counter)        # total requests
+ratelimit_requests_allowed (counter)      # allowed
+ratelimit_requests_blocked (counter)      # blocked
+ratelimit_current_usage (gauge)           # current usage
+ratelimit_avg_response_time (histogram)   # check time
 ```
 
-## Стоимость реализации
+## Implementation cost
 
-| Алгоритм | Сложность | Память | Точность |
+| Algorithm | Complexity | Memory | Accuracy |
 |----------|-----------|--------|----------|
-| Fixed Window | Низкая | Низкая | Средняя |
-| Sliding Window Log | Средняя | Высокая | Высокая |
-| Sliding Window Counter | Средняя | Средняя | Высокая |
-| Token Bucket | Низкая | Низкая | Высокая |
-| Leaky Bucket | Средняя | Средняя | Высокая |
+| Fixed Window | Low | Low | Medium |
+| Sliding Window Log | Medium | High | High |
+| Sliding Window Counter | Medium | Medium | High |
+| Token Bucket | Low | Low | High |
+| Leaky Bucket | Medium | Medium | High |
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [IETF: Rate Limit Fields for HTTP](https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/)
 * [Stripe API: Rate Limits](https://stripe.com/docs/rate-limits)
 * [GitHub API: Rate Limiting](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
-* [CloudFlare: Rate Limiting продукта](https://www.cloudflare.com/rate-limiting/)
+* [CloudFlare: Rate Limiting product](https://www.cloudflare.com/rate-limiting/)

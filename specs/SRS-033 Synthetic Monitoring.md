@@ -1,28 +1,28 @@
-# SRS-033 Synthetic Monitoring (Синтетический мониторинг)
+# SRS-033 Synthetic Monitoring
 
-Synthetic Monitoring - это метод мониторинга, который использует автоматизированные скрипты для эмуляции поведения пользователей и проверки работоспособности системы с внешней точки зрения.
+Synthetic Monitoring is a monitoring method that uses automated scripts to emulate user behavior and verify system health from an external perspective.
 
 ---
 
-## Чем отличается от других типов мониторинга
+## How It Differs from Other Monitoring Types
 
-| Тип | Как работает | Где запускается | Что видит | Примеры |
+| Type | How It Works | Where It Runs | What It Sees | Examples |
 |-----|--------------|-----------------|-----------|---------|
-| **Synthetic** | Эмулирует пользователя | Извне (разные локации) | Пользовательский путь полностью | Login → Browse → Checkout |
-| **Real User** | Собирает метрики реальных юзеров | В браузерах юзеров | Реальное пользовательское поведение | Page Load Time, Core Web Vitals |
-| **Application** | Метрики из приложения | Внутри приложения | Производительность кода | HTTP Duration, Error Rates |
-| **Infrastructure** | Метрики системы | На хостах | Ресурсы системы | CPU, Memory, Disk |
+| **Synthetic** | Emulates user | From outside (different locations) | Complete user journey | Login → Browse → Checkout |
+| **Real User** | Collects metrics from real users | In user browsers | Real user behavior | Page Load Time, Core Web Vitals |
+| **Application** | Metrics from application | Inside application | Code performance | HTTP Duration, Error Rates |
+| **Infrastructure** | System metrics | On hosts | System resources | CPU, Memory, Disk |
 
 ---
 
-## Типы Synthetic Checks
+## Types of Synthetic Checks
 
-### 1. HTTP/HTTPS Checks (Проверки HTTP)
+### 1. HTTP/HTTPS Checks (Health Checks)
 
-Простые HTTP запросы для проверки доступности и производительности endpoints.
+Simple HTTP requests to check endpoint availability and performance.
 
 ```bash
-# Пример с curl
+# Example with curl
 #!/bin/bash
 # check-health.sh
 
@@ -43,15 +43,15 @@ else
 fi
 ```
 
-**Что проверять:**
+**What to check:**
 - HTTP status codes (200, 4xx, 5xx)
 - Response time (P50, P95, P99)
 - SSL certificate validity
-- Content verification (проверка наличия ключевых слов)
+- Content verification (checking for keywords)
 - HTTP headers
 
 ```python
-# Пример на Python
+# Python example
 import requests
 import time
 import ssl
@@ -99,7 +99,7 @@ class HTTPHealthCheck:
             }
 
     def _verify_ssl(self):
-        """Проверка SSL сертификата"""
+        """SSL certificate verification"""
         try:
             hostname = self.url.split('//')[1].split('/')[0]
             ctx = ssl.create_default_context()
@@ -111,7 +111,7 @@ class HTTPHealthCheck:
             return False
 ```
 
-### 2. SSL Certificate Checks (Проверка сертификатов)
+### 2. SSL Certificate Checks (Certificate Checks)
 
 ```python
 import ssl
@@ -123,19 +123,19 @@ class SSLChecker:
         self.hostname = hostname
 
     def check_certificate(self):
-        """Проверяет SSL сертификат"""
+        """Checks SSL certificate"""
         try:
             context = ssl.create_default_context()
             with socket.create_connection((self.hostname, 443), timeout=10) as sock:
                 with context.wrap_socket(sock, server_hostname=self.hostname) as ssock:
                     cert = ssock.getpeercert()
 
-                    # Извлекаем даты
+                    # Extract dates
                     not_before = datetime.strptime(cert['notBefore'], '%b %d %H:%M:%S %Y %Z')
                     not_after = datetime.strptime(cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
                     now = datetime.now()
 
-                    # Проверяем валидность
+                    # Check validity
                     days_remaining = (not_after - now).days
                     is_valid = not_before <= now <= not_after
 
@@ -155,14 +155,14 @@ class SSLChecker:
                 'error': str(e)
             }
 
-# Использование
+# Usage
 checker = SSLChecker('api.example.com')
 result = checker.check_certificate()
 print(f"Certificate valid: {result['valid']}")
 print(f"Days remaining: {result['days_remaining']}")
 ```
 
-### 3. TCP Checks (Проверки TCP соединения)
+### 3. TCP Checks (TCP Connection Checks)
 
 ```python
 import socket
@@ -206,7 +206,7 @@ class TCPHealthCheck:
             }
 ```
 
-### 4. DNS Checks (Проверки DNS)
+### 4. DNS Checks
 
 ```python
 import dns.resolver
@@ -221,21 +221,21 @@ class DNSChecker:
         checks = {}
 
         try:
-            # Проверка A записи
+            # Check A record
             answers = dns.resolver.resolve(self.domain, 'A')
             checks['A'] = {'status': 'ok', 'records': [str(r) for r in answers]}
         except Exception as e:
             checks['A'] = {'status': 'error', 'error': str(e)}
 
         try:
-            # Проверка MX записи
+            # Check MX record
             answers = dns.resolver.resolve(self.domain, 'MX')
             checks['MX'] = {'status': 'ok', 'records': [(str(r.preference), str(r.exchange)) for r in answers]}
         except Exception as e:
             checks['MX'] = {'status': 'error', 'error': str(e)}
 
         try:
-            # Проверка TXT записи (SPF)
+            # Check TXT record (SPF)
             answers = dns.resolver.resolve(self.domain, 'TXT')
             checks['TXT'] = {'status': 'ok', 'records': [str(r) for r in answers]}
         except Exception as e:
@@ -252,7 +252,7 @@ class DNSChecker:
         }
 ```
 
-### 5. Браузерные Checks (с Selenium/Puppeteer)
+### 5. Browser Checks (with Selenium/Puppeteer)
 
 **Puppeteer (JavaScript/Node.js):**
 ```javascript
@@ -275,40 +275,40 @@ async function runBrowserCheck() {
 
     const page = await browser.newPage();
 
-    // Отслеживание метрик
+    // Track metrics
     await page.metrics().then(metrics => {
       metrics.pageMetrics = metrics;
     });
 
-    // Отслеживание performance
+    // Track performance
     const performance = await page.evaluate(() => {
       return JSON.parse(JSON.stringify(window.performance.timing));
     });
 
-    // Навигация и ожидание
+    // Navigate and wait
     await page.goto('https://example.com', {
       waitUntil: 'networkidle2',
       timeout: 30000
     });
 
-    // Проверка конкретных элементов
+    // Check specific elements
     const loginButton = await page.$('#login-button');
     const isButtonVisible = await page.evaluate(button => {
       const style = window.getComputedStyle(button);
       return style.display !== 'none' && style.visibility !== 'hidden';
     }, loginButton);
 
-    // Ввод данных
+    // Input data
     await page.type('#username', 'test@example.com');
     await page.type('#password', 'password123');
 
-    // Клик и навигация
+    // Click and navigate
     await Promise.all([
       page.waitForNavigation(),
       page.click('#login-button')
     ]);
 
-    // Скриншот
+    // Screenshot
     await page.screenshot({ path: 'screenshot.png' });
 
     const duration = Date.now() - startTime;
@@ -364,22 +364,22 @@ class BrowserCheck:
             start = time.time()
             driver.get(self.url)
 
-            # Ожидание загрузки
+            # Wait for page load
             wait = WebDriverWait(driver, 10)
             wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
-            # Проверка заголовка
+            # Check title
             title = driver.title
 
             # Screenshot
             driver.save_screenshot('screenshot.png')
 
-            # Проверка корзины (пример для e-commerce)
+            # Check shopping cart (e-commerce example)
             try:
                 add_to_cart_btn = driver.find_element(By.ID, "add-to-cart")
                 add_to_cart_btn.click()
 
-                # Ожидание обновления корзины
+                # Wait for cart update
                 wait.until(EC.text_to_be_present_in_element(
                     (By.ID, "cart-count"), "1"
                 ))
@@ -410,7 +410,7 @@ class BrowserCheck:
             driver.quit()
 ```
 
-### 6. Multi-step API Checks (сценарии из нескольких шагов)
+### 6. Multi-step API Checks (multi-step scenarios)
 
 ```python
 class MultiStepAPICheck:
@@ -420,28 +420,28 @@ class MultiStepAPICheck:
         self.metrics = []
 
     def check_user_journey(self):
-        """Проверка полного пользовательского пути"""
+        """Complete user journey check"""
         start = time.time()
 
-        # Шаг 1: Login
+        # Step 1: Login
         result1 = self._login()
         if not result1['success']:
             return self._fail('login_failed', result1['error'])
         self.metrics.append(('login', result1['duration']))
 
-        # Шаг 2: Get user profile
+        # Step 2: Get user profile
         result2 = self._get_profile()
         if not result2['success']:
             return self._fail('profile_failed', result2['error'])
         self.metrics.append(('profile', result2['duration']))
 
-        # Шаг 3: Create order (e-commerce)
+        # Step 3: Create order (e-commerce)
         result3 = self._create_order()
         if not result3['success']:
             return self._fail('order_failed', result3['error'])
         self.metrics.append(('create_order', result3['duration']))
 
-        # Шаг 4: Payment
+        # Step 4: Payment
         result4 = self._process_payment()
         if not result4['success']:
             return self._fail('payment_failed', result4['error'])
@@ -450,7 +450,7 @@ class MultiStepAPICheck:
         return self._success()
 
     def _login(self):
-        """Login в систему"""
+        """System login"""
         start = time.time()
         try:
             response = self.session.post(
@@ -474,7 +474,7 @@ class MultiStepAPICheck:
             return {'success': False, 'error': str(e), 'duration': time.time() - start}
 
     def _get_profile(self):
-        """Получение профиля пользователя"""
+        """Get user profile"""
         start = time.time()
         try:
             response = self.session.get(
@@ -492,7 +492,7 @@ class MultiStepAPICheck:
             return {'success': False, 'error': str(e), 'duration': time.time() - start}
 
     def _create_order(self):
-        """Создание заказа"""
+        """Create order"""
         start = time.time()
         try:
             response = self.session.post(
@@ -519,7 +519,7 @@ class MultiStepAPICheck:
             return {'success': False, 'error': str(e), 'duration': time.time() - start}
 
     def _process_payment(self):
-        """Обработка платежа"""
+        """Process payment"""
         start = time.time()
         try:
             response = self.session.post(
@@ -562,7 +562,7 @@ class MultiStepAPICheck:
             'timestamp': time.time()
         }
 
-# Использование
+# Usage
 checker = MultiStepAPICheck('https://api.example.com')
 result = checker.check_user_journey()
 print(json.dumps(result, indent=2))
@@ -570,9 +570,9 @@ print(json.dumps(result, indent=2))
 
 ---
 
-## Места запуска probes
+## Probe Launch Locations
 
-### Из разных географических локаций
+### From Different Geographic Locations
 
 ```python
 import requests
@@ -585,7 +585,7 @@ LOCATIONS = {
 }
 
 def check_from_all_locations(url):
-    """Проверка с разных локаций"""
+    """Check from different locations"""
     results = {}
 
     for location, probe_url in LOCATIONS.items():
@@ -604,10 +604,10 @@ def check_from_all_locations(url):
 
 ---
 
-## Частота проверок
+## Check Frequency
 
 ```yaml
-# Проверки каждые 5 минут (baseline)
+# Checks every 5 minutes (baseline)
 basic_monitoring:
   http_health:
     interval: 5m
@@ -620,7 +620,7 @@ basic_monitoring:
   dns_records:
     interval: 30m
 
-# Проверки каждую минуту (critical services)
+# Checks every minute (critical services)
 critical_monitoring:
   payment_gateway:
     interval: 1m
@@ -630,7 +630,7 @@ critical_monitoring:
     interval: 1m
     locations: [multi-region]
 
-# Проверки раз в час (non-critical)
+# Checks every hour (non-critical)
 best_effort_monitoring:
   analytics_api:
     interval: 1h
@@ -639,9 +639,9 @@ best_effort_monitoring:
 
 ---
 
-## Инструменты
+## Tools
 
-### Купленные решения
+### Commercial Solutions
 
 **Datadog Synthetic Monitoring:**
 ```yaml
@@ -764,43 +764,43 @@ services:
 
 ---
 
-## Метрики synthetic мониторинга
+## Synthetic Monitoring Metrics
 
 ```python
 SYNTHETIC_METRICS = {
-    # Успешность
-    'synthetic_check_success': 'Должная доля успешных проверок',
-    'synthetic_check_duration': 'Время выполнения проверки',
-    'synthetic_check_failures_total': 'Количество неудач',
+    # Success rate
+    'synthetic_check_success': 'Share of successful checks',
+    'synthetic_check_duration': 'Check execution time',
+    'synthetic_check_failures_total': 'Number of failures',
 
-    # Сетевые метрики
-    'synthetic_dns_lookup_time': 'Время DNS разрешения',
-    'synthetic_tcp_connect_time': 'Время TCP подключения',
-    'synthetic_tls_handshake_time': 'Время TLS handshake',
-    'synthetic_time_to_first_byte': 'Время до первого байта',
-    'synthetic_content_download_time': 'Время загрузки контента',
+    # Network metrics
+    'synthetic_dns_lookup_time': 'DNS resolution time',
+    'synthetic_tcp_connect_time': 'TCP connection time',
+    'synthetic_tls_handshake_time': 'TLS handshake time',
+    'synthetic_time_to_first_byte': 'Time to first byte',
+    'synthetic_content_download_time': 'Content download time',
 
-    # HTTP метрики
+    # HTTP metrics
     'synthetic_http_status_code': 'HTTP status code',
-    'synthetic_http_content_length': 'Размер контента',
-    'synthetic_http_response_time': 'Время ответа',
+    'synthetic_http_content_length': 'Content size',
+    'synthetic_http_response_time': 'Response time',
 
-    # SSL метрики
-    'synthetic_ssl_days_until_expiry': 'Дней до истечения SSL',
-    'synthetic_ssl_cert_valid': 'Сертификат валиден',
+    # SSL metrics
+    'synthetic_ssl_days_until_expiry': 'Days until SSL expires',
+    'synthetic_ssl_cert_valid': 'Certificate is valid',
 
-    # Местоположение
-    'synthetic_check_location': 'Локация проверки',
-    'synthetic_check_by_location': 'Проверка по локации',
+    # Location
+    'synthetic_check_location': 'Check location',
+    'synthetic_check_by_location': 'Check by location',
 }
 ```
 
 ---
 
-## Алертинг
+## Alerting
 
 ```yaml
-# Алерты в Prometheus
+# Prometheus alerts
 alerting:
   - alert: SyntheticCheckFailureRate
     expr: |
@@ -835,4 +835,4 @@ alerting:
 
 ---
 
-*Synthetic Monitoring - метод мониторинга через эмуляцию пользовательского поведения*
+*Synthetic Monitoring - monitoring method through user behavior emulation*

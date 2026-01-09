@@ -1,32 +1,25 @@
 # SRS-005 Application Versioning
 
-Этот документ описывает подходы в версионировании разрабатываемых приложений в
-наших продуктах.
+This document describes the approaches to versioning developed applications in our products.
 
-Мы отделяем версию приложения (кода) и версю собранного образа который этот код
-представляет.
+We separate the application version (the code) and the version of the built image that this code represents.
 
-# Версия приложения (App Version)
+# Application Version (App Version)
 
-Версия приложения оформляетс согласно [semver 2.0](https://semver.org). Обратите
-внимание что речь идет не только о формате представления версии, но и о значении
-мажорной, минорной и патчевой части версии.
+The application version is formatted according to [semver 2.0](https://semver.org). Please note that we are talking not only about the version format, but also about the meaning of the major, minor, and patch parts of the version.
 
-Версия приложения хранится в коде репозтория в исходном коде.
+The application version is stored in the repository code in the source code.
 
-Версия приложения обновлятся разработчиком в ручном или автоматическое режиме в
-момент выпуска приложения.
+The application version is updated by the developer manually or automatically at the time of the application release.
 
-Пример: `v1.2.3`
+Example: `v1.2.3`
 
-# Версия образа (docker image tag)
+# Image Version (docker image tag)
 
-Это tag которым помечен docker-образ. Формат tag-а совпадает с semver, только
-без префикса `v` в начале. 
+This is the tag used to label the docker image. The tag format matches semver, only without the `v` prefix at the beginning.
 
-Как правило image tag совпадает с версией приложения, но может отличаться, так как устанавливается образу после сборки. 
+Usually the image tag matches the application version, but may differ, as it is assigned to the image after building.
 
-Приложение одной версии может собраться через различные пайплайны, которые присвоят результирующему образу различные теги.
+The same version of an application can be built through different pipelines, which will assign different tags to the resulting image.
 
-Напримем, мы имеем приложение версии `v1.2.3`, но собрали один побраз только с
-одной частью приложения и получили `1.2.3-webserver`
+For example, we have an application version `v1.2.3`, but we built a sub-image with only one part of the application and got `1.2.3-webserver`

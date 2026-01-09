@@ -1,38 +1,41 @@
-# SRS-006 Metrics Collection (Сбор метрик)
+# SRS-006 Metrics Collection
 
-## Определение
+## Definition
 
-Метрики - это количественные данные о поведении системы в production: количество запросов, время ответа, использование ресурсов и т.д.
+Metrics are quantitative data about system behavior in production: number of requests, response time, resource usage, etc.
 
-## Форматы метрик
+## Metric formats
 
-### Counter (Счетчик)
+### Counter
+
 ```
-Всегда увеличивается, никогда не уменьшается
-Используется для: Количества запросов, ошибок, выполненных задач
+Always increases, never decreases
+Used for: Number of requests, errors, completed tasks
 
-Примеры:
+Examples:
   http_requests_total{method="GET",status="200"} 12500
   http_requests_total{method="POST",status="500"} 5
 ```
 
-### Gauge (Измерение)
-```
-Может увеличиваться и уменьшаться
-Используется для: Текущих значений (память, коннекшны, температуры)
+### Gauge
 
-Примеры:
+```
+Can increase and decrease
+Used for: Current values (memory, connections, temperatures)
+
+Examples:
   memory_usage_bytes 1073741824
   active_connections 23
   queue_length 5
 ```
 
-### Histogram (Гистограмма)
-```
-Распределение значений (latency, размеры)
-Используется для: Времени ответа, размера запросов, времени обработки
+### Histogram
 
-Примеры:
+```
+Distribution of values (latency, sizes)
+Used for: Response time, request sizes, processing time
+
+Examples:
   http_request_duration_seconds_bucket{le="0.1"} 100
   http_request_duration_seconds_bucket{le="0.5"} 150
   http_request_duration_seconds_bucket{le="+Inf"} 200
@@ -40,12 +43,13 @@
   http_request_duration_seconds_count 200
 ```
 
-### Summary (Сводка)
-```
-Похож на histogram, но вычисляет quantiles
-Используется для: p50, p95, p99 latency
+### Summary
 
-Примеры:
+```
+Similar to histogram, but calculates quantiles
+Used for: p50, p95, p99 latency
+
+Examples:
   http_request_duration_seconds{quantile="0.5"} 0.05
   http_request_duration_seconds{quantile="0.95"} 0.15
   http_request_duration_seconds{quantile="0.99"} 0.25
@@ -53,11 +57,12 @@
   http_request_duration_seconds_count 200
 ```
 
-## Что собирать
+## What to collect
 
-### Обязательные метрики
+### Mandatory metrics
 
 #### HTTP API
+
 ```
 http_requests_total (counter)
   - method
@@ -74,6 +79,7 @@ http_response_size_bytes (histogram)
 ```
 
 #### Application
+
 ```
 process_cpu_seconds_total (counter)
 process_resident_memory_bytes (gauge)
@@ -89,6 +95,7 @@ app_info (gauge)
 ```
 
 #### Resources
+
 ```
 system_cpu_usage (gauge)
 system_memory_usage_bytes (gauge)
@@ -100,6 +107,7 @@ system_network_transmit_bytes_total (counter)
 ```
 
 #### Dependencies
+
 ```
 database_connections_active (gauge)
 database_connections_idle (gauge)
@@ -120,6 +128,7 @@ http_client_duration_seconds (histogram)
 ```
 
 #### Business Metrics
+
 ```
 orders_created_total (counter)
 orders_completed_total (counter)
@@ -132,7 +141,7 @@ payment_processed_total (counter)
 payment_amount_usd_total (counter)
 ```
 
-## Инструментация кода
+## Code instrumentation
 
 ### Python (FastAPI)
 
@@ -155,7 +164,7 @@ REQUEST_DURATION = Histogram(
 
 ACTIVE_REQUESTS = Gauge(
     'http_requests_active',
-    'Active requests'
+    'Number of active requests'
 )
 
 @app.middleware("http")
@@ -298,9 +307,9 @@ func metricsMiddleware(next http.Handler) http.Handler {
 }
 ```
 
-## Labels (теги)
+## Labels (tags)
 
-### Обязательные лейблы
+### Required labels
 
 ```
 environment: production|staging|development
@@ -310,7 +319,7 @@ version: 1.2.3|2.0.0
 region: us-east-1|eu-west-1
 ```
 
-### Optional лейблы
+### Optional labels
 
 ```
 customer_tier: free|basic|pro|enterprise
@@ -318,23 +327,23 @@ feature: checkout|reports|admin
 deployment: blue|green|canary
 ```
 
-⚠️ **Важно**: Не использовать высококардинальные лейблы:
+⚠️ **Important**: Do not use high-cardinality labels:
 ❌ user_id, request_id, timestamp, ip_address
 
-### Отладка
+### Debugging
 
-Для временной отладки можно использовать:
+For temporary debugging, you can use:
 ```python
-# Только в development
+# Only in development
 if os.getenv('ENVIRONMENT') == 'development':
     REQUEST_DURATION = Histogram(
         'http_request_duration_seconds',
         'Request duration',
-        ['method', 'endpoint', 'user_id']  # В проде не делать!
+        ['method', 'endpoint', 'user_id']  # Don't do this in production!
     )
 ```
 
-## Экспорт метрик
+## Metrics export
 
 ### Prometheus
 
@@ -415,14 +424,14 @@ scrape_configs:
     metrics_path: '/metrics'
 ```
 
-Плюсы:
-* Просто для Prometheus
-* Сервис не знает куда слать
-* Централизованное управление
+Pros:
+* Simple for Prometheus
+* Service doesn't know where to send
+* Centralized management
 
-Минусы:
-* Не для всех метрик подходит
-* Требует доступности сервиса
+Cons:
+* Not suitable for all metrics
+* Requires service availability
 
 ### Push (StatsD, OpenTelemetry)
 
@@ -431,16 +440,16 @@ scrape_configs:
 statsd.increment('orders.created', 1)
 ```
 
-Плюсы:
-* Подходит для batch jobs
-* Работает при недоступности агрегатора
-* Меньше нагрузки на сервис
+Pros:
+* Suitable for batch jobs
+* Works when aggregator is unavailable
+* Less load on the service
 
-Минусы:
-* Сервис должен знать куда слать
-* Сложнее отлаживать
+Cons:
+* Service must know where to send
+* Harder to debug
 
-## Retention (хранение)
+## Retention
 
 ### Prometheus
 
@@ -456,40 +465,40 @@ storage:
     retention.time: 30d
 ```
 
-### Стоимость хранения
+### Storage cost
 
-Базовое правило:
+Basic rule:
 ```
-1 метрика с 5 лейблами = 10 bytes/s
-10,000 метрик = 100,000 bytes/s = 8.64 GB/day
+1 metric with 5 labels = 10 bytes/s
+10,000 metrics = 100,000 bytes/s = 8.64 GB/day
 ```
 
-Уменьшение стоимости:
+Cost reduction:
 * Reducing cardinality
-* Downsampling (хранить только 1 point/minute)
+* Downsampling (store only 1 point/minute)
 * Shorter retention for high-cardinality metrics
 
 ## Best practices
 
-✅ **Делать**
-* Начать с базовых метрик (requests, errors, duration)
-* Использовать labels для фильтрации
-* Именовать метрики понятно
-* Экспонировать время ответа (histogram)
-* Мониторить использование ресурсов
-* Тестировать метрики
+✅ **Do**
+* Start with basic metrics (requests, errors, duration)
+* Use labels for filtering
+* Name metrics clearly
+* Expose response time (histogram)
+* Monitor resource usage
+* Test metrics
 * Document your metrics
 * Use consistent units (seconds, bytes)
 
-❌ **Не делать**
-* Логировать вместо метрик
-* Использовать high-cardinality labels
-* Смешивать лейблы метрик и логов
-* Игнорировать метрики в development
-* Создавать слишком много метрик
-* Использовать непонятные имена
+❌ **Don't**
+* Log instead of metrics
+* Use high-cardinality labels
+* Mix metric and log labels
+* Ignore metrics in development
+* Create too many metrics
+* Use unclear names
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [Prometheus Best Practices](https://prometheus.io/docs/practices/naming/)
 * [OpenTelemetry Metrics](https://opentelemetry.io/docs/concepts/signals/metrics/)

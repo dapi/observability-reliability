@@ -1,14 +1,14 @@
-# SRS-024 Auto-scaling (Автоматическое масштабирование)
+# SRS-024 Auto-scaling
 
-## Определение
+## Definition
 
-Auto-scaling - это автоматическое увеличение или уменьшение количества экземпляров сервиса в зависимости от текущей нагрузки и потребления ресурсов.
+Auto-scaling is the automatic increase or decrease of the number of service instances depending on current load and resource consumption.
 
-## Типы автомасштабирования
+## Types of auto-scaling
 
 ### 1. Horizontal Pod Autoscaler (HPA)
 
-Увеличение/уменьшение количества pod-ов.
+Increase/decrease the number of pods.
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -62,7 +62,7 @@ spec:
 
 ### 2. Vertical Pod Autoscaler (VPA)
 
-Увеличение/уменьшение ресурсов (CPU, Memory) для каждого pod-а.
+Increase/decrease resources (CPU, Memory) for each pod.
 
 ```yaml
 apiVersion: autoscaling.k8s.io/v1
@@ -75,7 +75,7 @@ spec:
     kind: Deployment
     name: app-deployment
   updatePolicy:
-    updateMode: "Auto"  # или "Off", "Initial", "Recreate"
+    updateMode: "Auto"  # or "Off", "Initial", "Recreate"
   resourcePolicy:
     containerPolicies:
     - containerName: app
@@ -90,7 +90,7 @@ spec:
 
 ### 3. Cluster Autoscaler
 
-Добавление/удаление узлов в кластере.
+Add/remove nodes in the cluster.
 
 ```yaml
 apiVersion: v1
@@ -99,24 +99,24 @@ metadata:
   name: cluster-autoscaler
   namespace: kube-system
 data:
-  # Минимальное и максимальное количество узлов
+  # Minimum and maximum number of nodes
   minNodes: "3"
   maxNodes: "50"
 
-  # Масштабировать при невозможности запланировать pod
+  # Scale when unable to schedule pod
   expander: least-waste
 
-  # Удалять узлы после 10 минут простоя
+  # Remove nodes after 10 minutes of idleness
   scale-down-unneeded-time: 10m
 
-  # Не удалять узлы с pods из kube-system
+  # Don't remove nodes with pods from kube-system
   skip-nodes-with-system-pods: true
 
-  # Границы масштабирования по зонам
+  # Scaling boundaries by zones
   balancing-ignore-label: topology.kubernetes.io/zone
 ```
 
-## Метрики для масштабирования
+## Scaling metrics
 
 ### CPU/Memory
 ```yaml
@@ -131,7 +131,7 @@ metrics:
 
 ### Custom Metrics
 
-Нужны для более точного масштабирования:
+Needed for more accurate scaling:
 
 ```yaml
 # Prometheus Adapter
@@ -179,51 +179,51 @@ metrics:
       averageValue: "10"  # 10 errors per second max
 ```
 
-## Пороги масштабирования
+## Scaling thresholds
 
-### Скорость масштабирования
+### Scaling speed
 
 ```yaml
 behavior:
   scaleUp:
-    # Не масштабировать, если только что масштабировали вниз
+    # Don't scale if we just scaled down
     stabilizationWindowSeconds: 60
 
-    # Правила масштабирования
+    # Scaling rules
     policies:
-    # Можно удвоить количество за 15 секунд
+    # Can double count in 15 seconds
     - type: Percent
       value: 100
       periodSeconds: 15
 
-    # Или добавить максимум 2 pod-а за 60 секунд
+    # Or add maximum 2 pods in 60 seconds
     - type: Pods
       value: 2
       periodSeconds: 60
 
-    # Выбирается наиболее консервативный (больший)
+    # Choose the most conservative (larger)
     selectPolicy: Max
 
   scaleDown:
-    # Ждать 5 минут перед уменьшением
+    # Wait 5 minutes before decreasing
     stabilizationWindowSeconds: 300
 
-    # Уменьшать не более чем на 10% за 60 секунд
+    # Reduce by no more than 10% in 60 seconds
     policies:
     - type: Percent
       value: 10
       periodSeconds: 60
 
-    # Выбирается наиболее агрессивный (меньший)
+    # Choose the most aggressive (smaller)
     selectPolicy: Min
 ```
 
-### Стратегии
+### Strategies
 
-**Conservative (консервативная):**
-- Медленно масштабировать вверх
-- Очень медленно масштабировать вниз
-- Подходит для стабильных сервисов
+**Conservative (conservative):**
+- Scale up slowly
+- Scale down very slowly
+- Suitable for stable services
 
 ```yaml
 scaleUp:
@@ -234,10 +234,10 @@ scaleUp:
     periodSeconds: 60
 ```
 
-**Aggressive (агрессивная):**
-- Быстро масштабировать вверх
-- Быстро масштабировать вниз
-- Подходит для спиковой нагрузки
+**Aggressive (aggressive):**
+- Scale up quickly
+- Scale down quickly
+- Suitable for spike load
 
 ```yaml
 scaleUp:
@@ -255,10 +255,10 @@ scaleDown:
     periodSeconds: 60
 ```
 
-## Конфигурация через переменные окружения
+## Configuration via environment variables
 
 ```
-# Основные настройки
+# Basic settings
 AUTOSCALING_ENABLED=true
 AUTOSCALING_MIN_REPLICAS=2
 AUTOSCALING_MAX_REPLICAS=20
@@ -282,9 +282,9 @@ AUTOSCALING_MAX_SCALEUP_PODS=2
 AUTOSCALING_MAX_SCALEUP_INTERVAL=60
 ```
 
-## Graceful Shutdown при масштабировании вниз
+## Graceful Shutdown when scaling down
 
-При уменьшении количества реплик важно корректно завершить работу:
+When decreasing the number of replicas, it's important to properly terminate work:
 
 ```python
 import signal
@@ -296,28 +296,28 @@ def handle_sigterm(signum, frame):
     global shutdown_in_progress
     shutdown_in_progress = True
 
-    # 1. Остановить принятие новых запросов
+    # 1. Stop accepting new requests
     stop_accepting_requests()
 
-    # 2. Дождаться завершения текущих запросов (30 секунд)
+    # 2. Wait for current requests to complete (30 seconds)
     wait_for_requests(timeout=30)
 
-    # 3. Завершить фоновые задачи
+    # 3. Stop background jobs
     stop_background_jobs()
 
-    # 4. Закрыть соединения
+    # 4. Close connections
     close_database_connections()
     close_redis_connections()
 
-    # 5. Выход
+    # 5. Exit
     sys.exit(0)
 
 signal.signal(signal.SIGTERM, handle_sigterm)
 ```
 
-## Мониторинг
+## Monitoring
 
-### Метрики
+### Metrics
 
 ```
 kube_horizontalpodautoscaler_spec_max_replicas (gauge)
@@ -325,7 +325,7 @@ kube_horizontalpodautoscaler_spec_min_replicas (gauge)
 kube_horizontalpodautoscaler_status_current_replicas (gauge)
 kube_horizontalpodautoscaler_status_desired_replicas (gauge)
 
-# Подробная информация о масштабировании
+# Detailed scaling information
 kube_horizontalpodautoscaler_status_condition (gauge)
   condition=AbleToScale
   condition=ScalingActive
@@ -334,10 +334,10 @@ kube_horizontalpodautoscaler_status_condition (gauge)
 
 ### Alerting
 
-Алерты должны срабатывать при:
+Alerts should fire when:
 
 ```yaml
-# ХПА на максимуме длительное время
+# HPA at maximum for extended time
 - alert: HPAAtMax
   expr: |
     kube_horizontalpodautoscaler_status_current_replicas
@@ -347,7 +347,7 @@ kube_horizontalpodautoscaler_status_condition (gauge)
   annotations:
     message: "HPA is at max replicas for more than 15 minutes"
 
-# Невозможность масштабировать
+# Unable to scale
 - alert: HPAScalingLimited
   expr: |
     kube_horizontalpodautoscaler_status_condition{condition="ScalingLimited",status="true"} == 1
@@ -355,7 +355,7 @@ kube_horizontalpodautoscaler_status_condition (gauge)
   annotations:
     message: "HPA is unable to scale"
 
-# ЦПУ выше целевого значения
+# CPU above target
 - alert: HighCPUUsage
   expr: |
     avg(container_cpu_usage_seconds_total{container!=""})
@@ -365,15 +365,15 @@ kube_horizontalpodautoscaler_status_condition (gauge)
     message: "High CPU usage detected"
 ```
 
-## Тестирование автомасштабирования
+## Testing auto-scaling
 
 ### Load Testing
 
 ```bash
-# Создаем нагрузку и проверяем масштабирование
+# Create load and check scaling
 k6 run --vus 100 --duration 5m script.js
 
-# Проверяем количество pod-ов
+# Check number of pods
 kubectl get pods -l app=my-app -w
 watch -n 1 kubectl get hpa
 ```
@@ -381,14 +381,14 @@ watch -n 1 kubectl get hpa
 ### Chaos Engineering
 
 ```bash
-# Симулируем отказ pod-ов
+# Simulate pod failures
 kubectl delete pods -l app=my-app --grace-period=0 --force
 
-# Проверяем, что новые pod-ы создаются
+# Check that new pods are created
 kubectl get pods -l app=my-app -w
 ```
 
-## Лимиты и ограничения
+## Limits and constraints
 
 ### Namespace Quotas
 
@@ -414,8 +414,8 @@ kind: PodDisruptionBudget
 metadata:
   name: app-pdb
 spec:
-  minAvailable: 2  # Минимум 2 pod-а должны быть доступны
-  # maxUnavailable: 1  # Или максимум 1 pod может быть недоступен
+  minAvailable: 2  # Minimum 2 pods must be available
+  # maxUnavailable: 1  # Or maximum 1 pod can be unavailable
   selector:
     matchLabels:
       app: my-app
@@ -423,22 +423,22 @@ spec:
 
 ## Best practices
 
-✅ **Делать**
-* Настраивать minReplicas для отказоустойчивости
-* Ограничивать maxReplicas по ресурсам/бюджету
-* Устанавливать readiness probes для корректного масштабирования
-* Использовать multiple metrics (CPU + custom)
-* Тестировать при нагрузке
-* Устанавливать PDBs
+✅ **Do**
+* Configure minReplicas for fault tolerance
+* Limit maxReplicas by resources/budget
+* Set readiness probes for correct scaling
+* Use multiple metrics (CPU + custom)
+* Test under load
+* Set PDBs
 
-❌ **Не делать**
-* maxReplicas без ограничений
-* Оставлять default settings без анализа
-* Масштабировать только по CPU
-* Игнорировать resource requests/limits
-* Отключать stabilization windows
+❌ **Don't**
+* Unlimited maxReplicas
+* Leave default settings without analysis
+* Scale only by CPU
+* Ignore resource requests/limits
+* Disable stabilization windows
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [Kubernetes HPA Documentation](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 * [Kubernetes VPA Documentation](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler)

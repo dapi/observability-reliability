@@ -1,29 +1,29 @@
-# SRS-016 Request Idempotency (Идемпотентность запросов)
+# SRS-016 Request Idempotency
 
-## Определение
+## Definition
 
-Идемпотентность - это свойство операции, при котором многократное выполнение операции с одинаковыми параметрами имеет тот же эффект, что и однократное выполнение.
+Idempotency is a property of an operation where multiple executions of the operation with the same parameters have the same effect as a single execution.
 
-Обязательно для:
-* GET, HEAD, OPTIONS, TRACE методы (по стандарту HTTP)
-* PUT, DELETE методы (обычно идемпотентны)
-* Для POST при реализации специальной логики
+Mandatory for:
+* GET, HEAD, OPTIONS, TRACE methods (per HTTP standard)
+* PUT, DELETE methods (usually idempotent)
+* For POST when implementing special logic
 
-## Проблема
+## The problem
 
 ```
-Клиент отправляет запрос → Сетевой сбой → Клиент не получает ответ
-Клиент повторяет запрос → Сервер обрабатывает ВТОРОЙ раз
-→ Двойной списание средств / дублирование данных
+Client sends request → Network failure → Client doesn't receive response
+Client retries request → Server processes SECOND time
+→ Double charge of funds / data duplication
 ```
 
 ## Idempotency Key
 
-Решение: клиент генерирует уникальный ключ для каждой операции.
+Solution: client generates a unique key for each operation.
 
 ```
 POST /payments HTTP/1.1
-Idempotency-Key: 7ba7c8d5-9c4c-4c8c-bf9e-5d5f5f5f5f5f
+Idempotency-Key: 7ba7c8d5-9c4c-4c8c-bf9e-5d5d5f5f5f5f
 
 {
   "amount": 1000,
@@ -32,20 +32,20 @@ Idempotency-Key: 7ba7c8d5-9c4c-4c8c-bf9e-5d5f5f5f5f5f
 }
 ```
 
-### Требования к ключу
+### Key requirements
 
-* Уникальный для каждой операции
-* Длиной минимум 8 символов, рекомендуется UUID v4
-* Сохраняется на стороне клиента для возможности повтора
-* Время жизни: минимум 24 часа, рекомендуется 7 дней
+* Unique for each operation
+* Minimum length of 8 characters, UUID v4 is recommended
+* Stored on the client side for retry capability
+* Time-to-live: minimum 24 hours, 7 days is recommended
 
-## Реализация на стороне сервера
+## Server-side implementation
 
-### 1. Хранение ключей
+### 1. Key storage
 
-Использовать для хранения сроком жизни:
-* Redis с TTL
-* Database с колонкой expires_at
+Use with time-to-live:
+* Redis with TTL
+* Database with expires_at column
 
 ```sql
 CREATE TABLE idempotency_keys (
@@ -59,119 +59,119 @@ CREATE TABLE idempotency_keys (
 CREATE INDEX ON idempotency_keys (expires_at);
 ```
 
-### 2. Обработка запроса
+### 2. Request processing
 
 ```python
 def handle_request(request):
     idempotency_key = request.headers.get('Idempotency-Key')
 
     if idempotency_key:
-        # Проверяем, обрабатывали ли уже
+        # Check if already processed
         cached = storage.get(idempotency_key)
 
         if cached:
-            # Возвращаем сохраненный ответ
+            # Return saved response
             return cached.response_status, cached.response_body
 
-    # Обрабатываем запрос
+    # Process request
     response = process_business_logic(request)
 
     if idempotency_key:
-        # Сохраняем ответ
+        # Save response
         storage.set(idempotency_key, response, ttl=24h)
 
     return response
 ```
 
-### 3. HTTP статусы
+### 3. HTTP status codes
 
-* **200 OK** - запрос обработан, ответ в теле
-* **201 Created** - ресурс создан
-* **409 Conflict** - запрос уже обрабатывается (concurrent request)
-* **400 Bad Request** - невалидный idempotency key
+* **200 OK** - request processed, response in body
+* **201 Created** - resource created
+* **409 Conflict** - request is already being processed (concurrent request)
+* **400 Bad Request** - invalid idempotency key
 
-## Конфигурация
+## Configuration
 
-Через переменные окружения:
+Via environment variables:
 ```
 IDEMPOTENCY_ENABLED=true
-IDEMPOTENCY_KEY_TTL=86400  # в секундах, 24 часа
-IDEMPOTENCY_STORAGE=redis  # или database
+IDEMPOTENCY_KEY_TTL=86400  # in seconds, 24 hours
+IDEMPOTENCY_STORAGE=redis  # or database
 IDEMPOTENCY_KEY_MIN_LENGTH=8
 ```
 
-## Метрики
+## Metrics
 
 ```
 idempotency_keys_stored (gauge)
-idempotency_hits (counter)      # повторные запросы с тем же ключом
-idempotency_misses (counter)    # новые запросы
-idempotency_errors (counter)    # ошибки при работе с ключами
+idempotency_hits (counter)      # repeated requests with the same key
+idempotency_misses (counter)    # new requests
+idempotency_errors (counter)    # errors when working with keys
 ```
 
-## Границы применения
+## Boundaries of application
 
-Идемпотентность НЕ применяется к:
-* Методу GET (идемпотентен по HTTP спецификации)
-* Запросам без тела
-* Health check запросам
-* WebSocket соединениям
+Idempotency is NOT applied to:
+* GET method (idempotent per HTTP specification)
+* Requests without body
+* Health check requests
+* WebSocket connections
 
-## Методы HTTP
+## HTTP methods
 
 ### GET, HEAD, PUT, DELETE
-Обычно идемпотентны по спецификации HTTP. Idempotency-Key не требуется.
+Usually idempotent per HTTP specification. Idempotency-Key is not required.
 
 ### POST
-Требует реализации с Idempotency-Key для критичных операций:
-* Платежи
-* Создание заказов
-* Регистрация пользователей
-* Отправка сообщений
+Requires implementation with Idempotency-Key for critical operations:
+* Payments
+* Order creation
+* User registration
+* Sending messages
 
 ### PATCH
-Зависит от семантики:
+Depends on semantics:
 ```
-PATCH /balance {"op": "add", "amount": 10}  # НЕ идемпотентен
-PATCH /profile {"name": "John"}               # Идемпотентен
-```
-
-## Конкурентные запросы
-
-Если два запроса с одним idempotency key приходят одновременно:
-
-Вариант 1 (пессимистичный):
-```
-Второй запрос получает 409 Conflict
-Первый запрос продолжает обработку
+PATCH /balance {"op": "add", "amount": 10}  # NOT idempotent
+PATCH /profile {"name": "John"}               # Idempotent
 ```
 
-Вариант 2 (оптимистичный):
+## Concurrent requests
+
+If two requests with the same idempotency key arrive simultaneously:
+
+Option 1 (pessimistic):
 ```
-Второй запрос ждет завершения первого
-Возвращает тот же результат
+Second request receives 409 Conflict
+First request continues processing
 ```
 
-Рекомендуется вариант 1 для простоты реализации.
+Option 2 (optimistic):
+```
+Second request waits for first to complete
+Returns the same result
+```
+
+Option 1 is recommended for implementation simplicity.
 
 ## Best practices
 
-✅ **Делать**
-* Генерировать ключ на клиенте до отправки
-* Использовать UUID v4
-* Валидировать формат ключа
-* Хранить ответы с ограниченным TTL
-* Возвращать одинаковый статус код
-* Документировать идемпотентные endpoints
+✅ **Do**
+* Generate key on the client before sending
+* Use UUID v4
+* Validate key format
+* Store responses with limited TTL
+* Return the same status code
+* Document idempotent endpoints
 
-❌ **Не делать**
-* Доверять генерацию ключа серверу
-* Хранить ответы вечно
-* Игнорировать дубликаты
-* Применять к не-POST запросам без необходимости
-* Разрешать слишком короткие ключи
+❌ **Don't**
+* Trust key generation to the server
+* Store responses forever
+* Ignore duplicates
+* Apply to non-POST requests without necessity
+* Allow too short keys
 
-## Пример реализации
+## Example implementation
 
 ```python
 import uuid
@@ -188,12 +188,12 @@ class IdempotencyHandler:
         if not self._is_valid_key(key):
             return 400, {"error": "Invalid idempotency key"}
 
-        # Проверяем кэш
+        # Check cache
         cached = self.redis.get(f"idemp:{key}")
         if cached:
             return 200, json.loads(cached)
 
-        # Ставим блокировку на время обработки
+        # Set lock during processing
         if not self.redis.set(f"idemp:lock:{key}", "1", nx=True, ex=300):
             return 409, {"error": "Request being processed"}
 
@@ -208,7 +208,7 @@ class IdempotencyHandler:
         return len(key) >= 8 and re.match(r'^[a-zA-Z0-9-]+$', key)
 ```
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [Stripe: Idempotent Requests](https://stripe.com/docs/api/idempotent_requests)
 * [PayPal: API Idempotency](https://developer.paypal.com/docs/api/reference/api-requests/#http-request-headers)

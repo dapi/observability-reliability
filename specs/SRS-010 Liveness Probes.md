@@ -1,49 +1,48 @@
 # SRS-010 Liveness Probes
 
-Приложение позволяет делать пробы своей работоспособности по HTTP или TCP-порту. 
+The application allows checking its health via HTTP or TCP port.
 
-При выполнении Liveness/Readiness проб приложение НЕ должно открывать новые сетевые соединения или
-делать запросы по сети. We probably shouldn't be checking the availability of our dependencies in readiness checks due to the potential for cascading failures. 
+When performing Liveness/Readiness probes, the application SHOULD NOT open new network connections or make network requests. We probably shouldn't be checking the availability of our dependencies in readiness checks due to the potential for cascading failures.
 
-Startup-проба может быть умной, сложной. Liveness проба должна быть очень простой. Относитесь к Liveness пробле как с способу узнать нужно ли приложние перезагрузать.
+Startup probe can be smart and complex. Liveness probe should be very simple. Treat Liveness probe as a way to know whether the application needs to be restarted.
 Readiness.
 
-Приложение пишел в log когда приходит за прос на пробу и результат ответа, но только в log-level=`debug`
+The application writes to log when a probe request arrives and the response result, but only at log-level=`debug`
 
-## Виды проб
+## Types of probes
 
-* Liveness (работоспособности) - для того, чтобы узнать что контейнер жив. Если эта проба не проходит, то pod перезапустят. Делается по пути `/live`
-* Readiness (готовности) - для того, чтобы узнать когда проверяемый контейнер будет готов принимать сетевой трафик. Если эта проба не проходит, то с pod-а снимут трафик. Делается по пути `/health`
-* Startup (запущено) - для того чтобы определить когда приложение запустилось и можно переходить к проверкам liveness/readiness. Пока эта проба не состоится, pod не пойдет дальше по жизненному циклу.
+* Liveness (health) - to know that the container is alive. If this probe fails, the pod will be restarted. Done on path `/live`
+* Readiness (ready) - to know when the checked container will be ready to accept network traffic. If this probe fails, traffic will be removed from the pod. Done on path `/health`
+* Startup (started) - to determine when the application has started and you can proceed to liveness/readiness checks. Until this probe succeeds, the pod will not proceed through the lifecycle.
 
-## HTTP-пробы
+## HTTP probes
 
-Если приложение поддерживает HTTP-пробы, то порт отвечающего сервера указыватся через переменную окружения `HEALTH_PORT`
+If the application supports HTTP probes, the port of the responding server is specified via the environment variable `HEALTH_PORT`
 
-* Liveness-проба делается по пути `/live`. Данный вид пробы желателен, но не обязателен. Если приложение не поддерживает такой endpoint, то шедулером используется `/health`
-* Readiness-проба делается по пути `/health`
-* Startup-проба делается по пути `/startup`. Желателен, но не обязателен.
+* Liveness probe is done on path `/live`. This type of probe is desirable but not mandatory. If the application does not support this endpoint, the scheduler uses `/health`
+* Readiness probe is done on path `/health`
+* Startup probe is done on path `/startup`. Desirable but not mandatory.
 
-Удачным считается любой ответ со статусом 200.
+Any response with status 200 is considered successful.
 
-HTTP-запрос должен укладываться в `30ms` и не зависеть от нагрузки на сервис.
+HTTP request must fit within `30ms` and not depend on service load.
 
-## TCP-пробы
+## TCP probes
 
-* Порт для liveness-пробы указывается через переменную окружения `LIVENESS_PORT`
-* Порт для readiness-пробы указывается через пременную окружения `HEALTH_PORT`
+* Port for liveness probe is specified via environment variable `LIVENESS_PORT`
+* Port for readiness probe is specified via environment variable `HEALTH_PORT`
 
-Успешной считается любая проба которая удачно открыла соединине на нужном порту.
+Any probe that successfully opened a connection on the required port is considered successful.
 
-## gRPC-пробы
+## gRPC probes
 
-Подробнее: https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+More details: https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 
-* Порт для liveness-пробы указывается через переменную окружения `LIVENESS_PORT`
-* Порт для readiness-пробы указывается через пременную окружения `HEALTH_PORT`
+* Port for liveness probe is specified via environment variable `LIVENESS_PORT`
+* Port for readiness probe is specified via environment variable `HEALTH_PORT`
 
 
-# Больше информации
+# More information
 
 <img src="https://andrewlock.net/content/images/2020/k8s_probes.svg" />
 
@@ -52,4 +51,4 @@ HTTP-запрос должен укладываться в `30ms` и не зав
 * [What is difference in Liveness Probe, Readiness Probe and Startup Probe in Kubernetes?](https://medium.com/@edu.ukulelekim/what-is-difference-in-liveness-probe-readiness-probe-and-startup-probe-in-kubernetes-e116c4563c13)
 * https://faun.pub/the-difference-between-liveness-readiness-and-startup-probes-781bd3141079
 * https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-6-adding-health-checks-with-liveness-readiness-and-startup-probes/
-  
+

@@ -1,51 +1,51 @@
-# SRS-035 Database Migrations (Миграции баз данных в production)
+# SRS-035 Database Migrations (Database Schema Management in Production)
 
-Database Migrations - это процесс управления схемой и данными базы данных путем применения упорядоченных изменений, который позволяет развивать структуру базы данных вместе с приложением, сохраняя целостность данных в production окружении.
+Database Migrations is the practice of managing database schema and data through ordered changes, allowing the database structure to evolve with the application while maintaining data integrity in production environments.
 
 ---
 
-## Антипаттерны миграций ❌
+## Migration Anti-Patterns ❌
 
-### ❌ Ручные изменения схемы
+### ❌ Manual Schema Changes
 ```bash
-# НЕ ДЕЛАТЬ!
+# DO NOT DO THIS!
 $ psql production_db
-> ALTER TABLE users ADD COLUMN email VARCHAR(255);  # Без резервной копии
-> DELETE FROM logs WHERE created_at < '2024-01-01';  # Без WHERE проверки
+> ALTER TABLE users ADD COLUMN email VARCHAR(255);  # Without backup
+> DELETE FROM logs WHERE created_at < '2024-01-01';  # Without WHERE check
 ```
-**Риски:**
-- Ошибки в production
-- Невозможность отката
-- Потеря данных
-- Несогласованность между окружениями
+**Risks:**
+- Errors in production
+- Impossible to rollback
+- Data loss
+- Inconsistency between environments
 
-### ❌ Без миграций (изменения вручную)
+### ❌ Without Migrations (Manual Changes)
 ```sql
--- База в каждом окружении - ручная работа
--- Невозможно отследить версии
--- Невозможно откатить
+-- Database in each environment - manual work
+-- Impossible to track versions
+-- Impossible to rollback
 ```
 
-### ❌ Без резервных копий
+### ❌ Without Backups
 ```bash
-# Единственная копия базы - это production
-# Нет тестирования restore процедуры
+# Only copy of database is production
+# No restore procedure testing
 ```
 
-### ❌ Выполнение миграций без downtime планирования
+### ❌ Migration Execution Without Downtime Planning
 ```bash
-# Запуск миграции в peak hours
-# Нет плана B
+# Running migration during peak hours
+# No plan B
 ```
 
 ---
 
-## Принципы управления миграциями ✅
+## Migration Management Principles ✅
 
-### 1. Версионирование схемы
+### 1. Schema Versioning
 
 ```bash
-# Структура репозитория
+# Repository structure
 db/
 ├── migrations/
 │   ├── 001_create_users.sql
@@ -57,16 +57,16 @@ db/
 │   └── test.sql
 ├── rollback/
 │   └── 003_add_user_email_rollback.sql
-└── schema.rb  # или schema.sql
+└── schema.rb  # or schema.sql
 ```
 
-### 2. Idempotent migrations
+### 2. Idempotent Migrations
 
 ```sql
 -- 003_add_user_email.sql
--- Идемпотентная миграция - можно запускать несколько раз
+-- Idempotent migration - can be run multiple times
 
--- Проверяем, не существует ли колонка
+-- Check if column doesn't exist
 DO $$
 BEGIN
     IF NOT EXISTS (
@@ -79,16 +79,16 @@ BEGIN
 END $$;
 ```
 
-### 3. Резервные копии (Always backup first!)
+### 3. Backups (Always backup first!)
 
 ```bash
 #!/bin/bash
 # backup-and-migrate.sh
 
-# Создаем резервную копию
+# Create backup
 pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME -F c -f backup-$(date +%Y%m%d_%H%M%S).bak
 
-# Валидация бэкапа
+# Validate backup
 if ! pg_restore --list backup-*.bak | head -10; then
     echo "❌ Backup validation failed!"
     exit 1
@@ -99,13 +99,13 @@ echo "✅ Backup created and validated"
 
 ---
 
-## Виды миграций
+## Migration Types
 
-### Type 1: Expand/Contract Pattern (Zero-downtime migrations)
+### Type 1: Expand/Contract Pattern (Zero-downtime Migrations)
 
 ```sql
--- Шаг 1: EXPAND - Добавляем новую колонку
--- Миграция: 005_add_new_column.sql
+-- Step 1: EXPAND - Add new column
+-- Migration: 005_add_new_column.sql
 -- Downtime: None
 -- Backward compatible: Yes
 
@@ -114,7 +114,7 @@ START TRANSACTION;
 ALTER TABLE users
 ADD COLUMN email_verified BOOLEAN DEFAULT false;
 
--- Создаем триггер для синхронизации данных
+-- Create trigger for data synchronization
 CREATE OR REPLACE FUNCTION sync_email_verified()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -131,48 +131,48 @@ COMMIT;
 ```
 
 ```sql
--- Шаг 2: DUAL WRITE - Пишем в обе колонки
--- Приложение обновлено для записи в обе колонки
--- Старые версии приложения все еще работают
+-- Step 2: DUAL WRITE - Write to both columns
+-- Application updated to write to both columns
+-- Old application versions still work
 
--- Приложение v1: Записывает в verified_at
--- Приложение v2: Записывает и в verified_at, и в email_verified
+-- Application v1: Writes to verified_at
+-- Application v2: Writes to both verified_at and email_verified
 
--- Миграция данных (в фоне)
+-- Data migration (in background)
 UPDATE users
 SET email_verified = (verified_at IS NOT NULL)
 WHERE email_verified IS NULL;
 ```
 
 ```sql
--- Шаг 3: CONTRACT - Удаляем старую колонку
--- Миграция: 006_remove_old_column.sql
--- Downtime: None (после того как все инстансы обновлены)
--- Backward compatible: No (после деплоя)
+-- Step 3: CONTRACT - Remove old column
+-- Migration: 006_remove_old_column.sql
+-- Downtime: None (after all instances are updated)
+-- Backward compatible: No (after deployment)
 
--- Сначала отключаем триггер
+-- First disable trigger
 DROP TRIGGER users_sync_verified ON users;
 DROP FUNCTION sync_email_verified();
 
--- Удаляем старую колонку
+-- Remove old column
 -- ALTER TABLE users DROP COLUMN verified_at;
 ```
 
 ### Type 2: Add-only Migrations (Safe)
 
 ```sql
--- Только добавляем, не удаляем
--- Всегда можно откатить
+-- Only add, never delete
+-- Can always rollback
 
--- Добавляем колонку (может быть NULL или имеет DEFAULT)
+-- Add column (can be NULL or has DEFAULT)
 ALTER TABLE users ADD COLUMN phone VARCHAR(20);
 
--- Создаем новую таблицу
+-- Create new table
 CREATE TABLE user_profiles (...);
 
--- Добавляем новый индекс
+-- Add new index
 CREATE INDEX CONCURRENTLY idx_users_phone ON users(phone);
--- CONCURRENTLY = без блокировки таблицы
+-- CONCURRENTLY = without table lock
 ```
 
 ### Type 3: Heavy Migrations (Split and Conquer)
@@ -181,8 +181,8 @@ CREATE INDEX CONCURRENTLY idx_users_phone ON users(phone);
 #!/usr/bin/env python3
 # large_migration.py
 
-# Для больших таблиц (миллионы записей)
-# Мигрируем в батчах для минимизации блокировок
+# For large tables (millions of records)
+# Migrate in batches to minimize locks
 
 import psycopg2
 import time
@@ -194,7 +194,7 @@ def migrate_large_table():
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     cursor = conn.cursor()
 
-    # Мигрируем в батчах
+    # Migrate in batches
     while True:
         cursor.execute(f"""
             UPDATE users
@@ -223,10 +223,10 @@ if __name__ == '__main__':
 ### Type 4: Backfill Migrations
 
 ```sql
--- Заполняем новую колонку данными из существующих
+-- Populate new column with data from existing columns
 
--- Подход 1: Online backfill (в фоне)
--- Запускаем после добавления колонки
+-- Approach 1: Online backfill (in background)
+-- Run after adding column
 
 CREATE OR REPLACE FUNCTION backfill_users_name()
 RETURNS void AS $$
@@ -247,7 +247,7 @@ BEGIN
             total_updated := total_updated + batch_size;
             last_id := (SELECT max(id) FROM users WHERE full_name IS NOT NULL);
             COMMIT;
-            PERFORM pg_sleep(0.1);  -- Небольшая пауза
+            PERFORM pg_sleep(0.1);  -- Small pause
         ELSE
             EXIT;
         END IF;
@@ -257,13 +257,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Запускаем в фоновом процессе
+-- Run in background process
 SELECT backfill_users_name();
 ```
 
 ---
 
-## Фреймворки миграций по языкам
+## Migration Frameworks by Language
 
 ### Ruby on Rails (Active Record)
 
@@ -281,10 +281,10 @@ class AddEmailToUsers < ActiveRecord::Migration[7.0]
   end
 end
 
-# Выполнение
+# Execution
 $ rails db:migrate
-$ rails db:rollback  # Откат последней миграции
-$ rails db:migrate:down VERSION=20240115000001  # Откат конкретной
+$ rails db:rollback  # Rollback last migration
+$ rails db:migrate:down VERSION=20240115000001  # Rollback specific
 ```
 
 ### Django
@@ -310,9 +310,9 @@ class Migration(migrations.Migration):
         ),
     ]
 
-# Выполнение
+# Execution
 $ python manage.py migrate
-$ python manage.py migrate users 0011  # Откат
+$ python manage.py migrate users 0011  # Rollback
 ```
 
 ### Node.js (Sequelize)
@@ -334,9 +334,9 @@ module.exports = {
   }
 };
 
-// Выполнение
+// Execution
 $ npx sequelize-cli db:migrate
-$ npx sequelize-cli db:migrate:undo  # Откат последней
+$ npx sequelize-cli db:migrate:undo  # Rollback last
 ```
 
 ### Elixir (Ecto)
@@ -366,10 +366,10 @@ end
 ### Go (golang-migrate)
 
 ```bash
-# Создание миграции
+# Create migration
 $ migrate create -ext sql -dir db/migrations add_email_to_users
 
-# Содержимое файлов:
+# File contents:
 # db/migrations/001_add_email_to_users.up.sql
 ALTER TABLE users ADD COLUMN email VARCHAR(255);
 CREATE INDEX idx_users_email ON users(email);
@@ -378,21 +378,21 @@ CREATE INDEX idx_users_email ON users(email);
 DROP INDEX idx_users_email;
 ALTER TABLE users DROP COLUMN email;
 
-# Выполнение
+# Execution
 $ migrate -database $DATABASE_URL -path db/migrations up
 $ migrate -database $DATABASE_URL -path db/migrations down 1
 ```
 
 ---
 
-## Стратегии деплоя миграций
+## Migration Deployment Strategies
 
 ### Strategy 1: Deploy → Migrate
 
 ```bash
-# Подход: Сначала деплоим код, потом миграцию
-# Риски: Приложение может не запуститься
-# Когда: Для обратно совместимых миграций
+# Approach: Deploy code first, then migration
+# Risks: Application may not start
+# When: For backward compatible migrations
 
 # Step 1: Deploy new code
 $ kubectl rollout restart deployment/app --image=new-version
@@ -405,8 +405,8 @@ $ kubectl run migration --rm -i --tty --image=app-migration \
 ### Strategy 2: Migrate → Deploy
 
 ```bash
-# Подход: Сначала миграция, потом код
-# Безопаснее, но нужно planning
+# Approach: Migration first, then code
+# Safer, but requires planning
 
 # Step 1: Run migrations
 $ ./migrate up
@@ -414,11 +414,11 @@ $ ./migrate up
 # Step 2: Verify migrations
 $ ./migrate verify
 
-# Step 3: Deploy code (после успешной миграции)
+# Step 3: Deploy code (after successful migration)
 $ kubectl rollout restart deployment/app --image=new-version
 ```
 
-### Strategy 3: Rolling Migrations (для zero-downtime)
+### Strategy 3: Rolling Migrations (for zero-downtime)
 
 ```yaml
 # deployment.yml
@@ -436,7 +436,7 @@ spec:
   template:
     spec:
       initContainers:
-        # Миграции выполняются перед стартом pod'а
+        # Migrations run before pod starts
         - name: db-migration
           image: app:latest
           command: ['npm', 'run', 'db:migrate']
@@ -456,32 +456,32 @@ spec:
 
 ---
 
-## Unsafe операции и безопасные альтернативы
+## Unsafe Operations and Safe Alternatives
 
-### ❌ Unsafe: ALTER TABLE на больших таблицах
+### ❌ Unsafe: ALTER TABLE on Large Tables
 ```sql
 ALTER TABLE million_rows_table ADD COLUMN new_col VARCHAR(255);
--- Блокирует таблицу на минуты/часы
--- Записи не могут быть вставлены/обновлены/удалены
+-- Blocks table for minutes/hours
+-- Records cannot be inserted/updated/deleted
 ```
 
 ### ✅ Safe: Using pg_repack or logical replication
 ```bash
-# Устанавливаем pg_repack
+# Install pg_repack
 $ pg_repack -d mydb -t users \
   --alter 'ADD COLUMN new_col VARCHAR(255)'
 
-# Конкурентно пересоздает таблицу
-# Без блокировок
-# Можно отменить
+# Concurrently recreates table
+# Without locks
+# Can be cancelled
 ```
 
 ### ❌ Unsafe: DROP COLUMN
 ```sql
 ALTER TABLE users DROP COLUMN old_column;
--- Потеря данных навсегда
--- Сложно откатить
--- Требует много I/O
+-- Data loss forever
+-- Difficult to rollback
+-- Requires heavy I/O
 ```
 
 ### ✅ Safe: Mark as deprecated first
@@ -489,7 +489,7 @@ ALTER TABLE users DROP COLUMN old_column;
 -- Step 1: Mark column as deprecated
 COMMENT ON COLUMN users.old_column IS 'DEPRECATED - Remove after 2024/Q2';
 
--- Step 2: Set column to NULL to освободить space
+-- Step 2: Set column to NULL to free space
 UPDATE users SET old_column = NULL WHERE old_column IS NOT NULL;
 
 -- Step 3: Remove after verifying no code uses it
@@ -499,34 +499,34 @@ UPDATE users SET old_column = NULL WHERE old_column IS NOT NULL;
 ### ❌ Unsafe: UPDATE without WHERE
 ```sql
 UPDATE users SET status = 'active';
--- Обновляет все записи
--- Лучше добавить WHERE существующих фильтров
+-- Updates all records
+-- Better to add WHERE clause
 ```
 
 ### ✅ Safe: Batch updates
 ```sql
--- Мигрируем в батчах
+-- Update in batches
 UPDATE users
 SET status = 'active'
 WHERE id BETWEEN 1 AND 10000
   AND status IS NULL;
 
--- Проверяем количество
+-- Check count
 SELECT COUNT(*) FROM users WHERE status IS NULL;
 
--- Повторяем до тех пор, пока не будет 0
+-- Repeat until 0
 ```
 
 ---
 
-## Мониторинг миграций
+## Migration Monitoring
 
 ```python
 class MigrationMonitoring:
     def monitor_migration(self, migration_id):
-        """Мониторим запущенную миграцию"""
+        """Monitor running migration"""
 
-        # Проверяем длительность и блокировки
+        # Check duration and locks
         locks = self.db.query("""
             SELECT * FROM pg_locks
             WHERE NOT granted
@@ -538,7 +538,7 @@ class MigrationMonitoring:
         if locks:
             self.send_alert('Migration causing locks', severity='warning')
 
-        # Проверяем deadlocks
+        # Check deadlocks
         deadlocks = self.db.query("""
             SELECT * FROM pg_stat_database
             WHERE deadlocks > 0
@@ -547,7 +547,7 @@ class MigrationMonitoring:
         if deadlocks:
             self.send_alert('Deadlocks detected during migration', severity='critical')
 
-        # Отмена миграции, если слишком долго
+        # Cancel migration if too long
         duration = self.get_migration_duration(migration_id)
         if duration > timedelta(minutes=30):
             self.cancel_migration(migration_id)
@@ -556,9 +556,9 @@ class MigrationMonitoring:
 
 ---
 
-## Резервное копирование перед миграциями
+## Backup Before Migrations
 
-### Автоматический бэкап
+### Automated Backup
 
 ```bash
 #!/bin/bash
@@ -572,7 +572,7 @@ BACKUP_BUCKET="${BACKUP_BUCKET:-myapp-backups}"
 
 echo "🔒 Creating backup of $DB_NAME..."
 
-# Создаем бэкап
+# Create backup
 pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME \
   --verbose \
   --no-password \
@@ -587,29 +587,29 @@ pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME \
 echo "✅ Backup created: /tmp/db_backup_$TIMESTAMP.dump"
 echo "📊 Size: $(du -h /tmp/db_backup_$TIMESTAMP.dump | cut -f1)"
 
-# Валидация бэкапа
+# Validate backup
 echo "🔍 Validating backup..."
 pg_restore --list /tmp/db_backup_$TIMESTAMP.dump | head -20
 echo "✅ Backup validated"
 
-# Сжимаем
+# Compress
 gzip /tmp/db_backup_$TIMESTAMP.dump
 echo "✅ Backup compressed"
 
-# Загружаем в S3
+# Upload to S3
 aws s3 cp /tmp/db_backup_$TIMESTAMP.dump.gz s3://$BACKUP_BUCKET/backups/
 echo "✅ Backup uploaded to S3"
 
-# Создаем запись в базе
+# Log in database
 echo "📝 Logging backup..."
 psql -h $DB_HOST -U $DB_USER -d $DB_NAME -c \
   "INSERT INTO db_backups (file_name, created_at, size_bytes) VALUES
    ('db_backup_$TIMESTAMP.dump.gz', NOW(), $(stat -c%s /tmp/db_backup_$TIMESTAMP.dump.gz));"
 
-# Очищаем старые бэкапы (оставляем последние 7 дней)
+# Clean old backups (keep last 7 days)
 find /tmp -name "db_backup_*.dump.gz" -mtime +7 -delete
 
-# Перемещаем в архив в S3
+# Move to archive in S3
 aws s3 mv s3://$BACKUP_BUCKET/backups/db_backup_$TIMESTAMP.dump.gz \
        s3://$BACKUP_BUCKET/archive/
 
@@ -618,28 +618,28 @@ echo "🎉 Backup process complete!"
 
 ---
 
-## Тестирование отката
+## Testing Rollback
 
 ```bash
 #!/bin/bash
 # test-rollback.sh
 
-# 1. Создаем тестовую базу
+# 1. Create test database
 psql -c "CREATE DATABASE test_restore;"
 
-# 2. Восстанавливаем бэкап
+# 2. Restore backup
 pg_restore -d test_restore /tmp/db_backup_test.dump
 
-# 3. Запускаем тесты приложения
+# 3. Run application tests
 ./run-tests.sh --database=test_restore
 
-# 4. Откатываем миграцию
+# 4. Rollback migration
 ./migrate down
 
-# 5. Проверяем, что приложение работает
+# 5. Check that application works
 ./run-tests.sh --database=test_restore
 
-# 6. Очищаем
+# 6. Cleanup
 dropdb test_restore
 
 echo "✅ Rollback test passed!"
@@ -647,7 +647,7 @@ echo "✅ Rollback test passed!"
 
 ---
 
-## Конфигурация через переменные окружения
+## Configuration via Environment Variables
 
 ```bash
 # .env.migrations
@@ -665,34 +665,34 @@ DB_STATEMENT_TIMEOUT=30000  # 30 seconds
 
 ---
 
-## Best practices ✅
+## Best Practices ✅
 
-### Хранение миграций
-- ✅ Версионировать в Git
-- ✅ Явные названия (YYYYMMMDD_description.sql)
-- ✅ Хранить up/down пары
-- ✅ Минимизировать ручные правки
+### Migration Storage
+- ✅ Version in Git
+- ✅ Explicit naming (YYYYMMMDD_description.sql)
+- ✅ Store up/down pairs
+- ✅ Minimize manual edits
 
-### Выполнение
-- ✅ Тестировать на dev/staging
-- ✅ Запускать в off-peak hours
-- ✅ Выполнять upgrade с downgrade планом
-- ✅ Отслеживать длительность
-- ✅ Выполнять в транзакциях (когда возможно)
+### Execution
+- ✅ Test on dev/staging
+- ✅ Run during off-peak hours
+- ✅ Execute upgrades with downgrade plan
+- ✅ Track duration
+- ✅ Execute in transactions (when possible)
 
-### Наблюдаемость
-- ✅ Мониторить locks
-- ✅ Мониторить I/O
-- ✅ Следить за disk space
-- ✅ Логировать ошибки
-- ✅ Alert на длительные миграции
+### Observability
+- ✅ Monitor locks
+- ✅ Monitor I/O
+- ✅ Watch disk space
+- ✅ Log errors
+- ✅ Alert on long migrations
 
-### Безопасность
-- ✅ Резервные копии перед каждой миграцией
-- ✅ Иметь откатный план
-- ✅ Не мигрировать напрямую в production
-- ✅ Иметь emergency procedures
+### Safety
+- ✅ Backup before every migration
+- ✅ Have rollback plan
+- ✅ Don't migrate directly to production
+- ✅ Have emergency procedures
 
 ---
 
-*Database Migrations - практика управления схемой базы данных в production*
+*Database Migrations - database schema management practice*

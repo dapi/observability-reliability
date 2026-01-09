@@ -1,56 +1,56 @@
-# SRS-013 Load Shedding (Отсечение нагрузки)
+# SRS-013 Load Shedding
 
-## Определение
+## Definition
 
-Load Shedding - это механизм активного отказа от обработки части запросов, когда сервис перегружен и не может обработать все входящие запросы.
+Load Shedding is a mechanism of actively refusing to process part of the requests when the service is overloaded and cannot handle all incoming requests.
 
-## Когда использовать
+## When to use
 
-Отсечение нагрузки необходимо, когда:
-* Сервис достигает лимита ресурсов (CPU, Memory, Connections)
-* Внешние зависимости недоступны или медленно отвечают
-* Система находится в состоянии восстановления после сбоя
-* Количество запросов превышает обработную способность
+Load shedding is necessary when:
+* Service reaches resource limits (CPU, Memory, Connections)
+* External dependencies are unavailable or respond slowly
+* System is in recovery state after failure
+* Number of requests exceeds processing capacity
 
-## Алгоритмы отсечения
+## Shedding algorithms
 
-### 1. Фиксированный лимит
+### 1. Fixed limit
 ```
 MAX_CONCURRENT_REQUESTS=100
-Отказывать в обслуживании, если активных запросов > 100
+Refuse service if active requests > 100
 ```
 
-### 2. Динамический лимит (адаптивное отсечение)
+### 2. Dynamic limit (adaptive shedding)
 ```
-Измерять latency и throughput
-Уменьшать лимит при увеличении latency
-Увеличивать лимит при улучшении показателей
+Measure latency and throughput
+Decrease limit when latency increases
+Increase limit when metrics improve
 ```
 
-### 3. Приоритет запросов
+### 3. Request priority
 ```
-HIGH PRIORITY: Платные пользователи, критичные операции
-MEDIUM PRIORITY: Авторизованные пользователи
-LOW PRIORITY: Гостевые запросы, batch операции
+HIGH PRIORITY: Paid users, critical operations
+MEDIUM PRIORITY: Authorized users
+LOW PRIORITY: Guest requests, batch operations
 ```
 
 ### 4. Circuit Breaker + Load Shedding
-Проверять состояние Circuit Breaker для внешних зависимостей:
+Check Circuit Breaker state for external dependencies:
 ```
 IF external_service.circuit_breaker.state == OPEN:
     shed_requests_dependent_on_that_service()
 ```
 
-## HTTP ответы
+## HTTP responses
 
-При отсечении нагрузки возвращать:
-* **503 Service Unavailable** - сервис перегружен
-* **429 Too Many Requests** - превышен лимит запросов
-* Retry-After заголовок с рекомендуемым временем повторной попытки
+When shedding load, return:
+* **503 Service Unavailable** - service is overloaded
+* **429 Too Many Requests** - request limit exceeded
+* Retry-After header with recommended retry time
 
-## Метрики
+## Metrics
 
-Отслеживать и экспонировать метрики:
+Track and expose metrics:
 ```
 lload_shedding_requests_total (counter)
 lload_shedding_requests_rejected (counter)
@@ -59,27 +59,27 @@ request_queue_length (gauge)
 resource_utilization (gauge)
 ```
 
-## Реализация
+## Implementation
 
-### Конфигурация через переменные окружения
+### Configuration via environment variables
 ```
 LOAD_SHEDDING_ENABLED=true
 MAX_CONCURRENT_REQUESTS=1000
 REQUEST_QUEUE_LIMIT=5000
-HIGH_PRIORITY_QUOTA=0.5  # 50% для высокоприоритетных
+HIGH_PRIORITY_QUOTA=0.5  # 50% for high-priority
 ```
 
-### Пример на псевдокоде
+### Example in pseudocode
 ```python
 def handle_request(request):
-    # Проверяем лимит
+    # Check limit
     if active_requests.count() >= MAX_CONCURRENT_REQUESTS:
         if request.priority == 'high':
-            # Проверяем квоту высокоприоритетных
+            # Check high-priority quota
             if high_priority_count < HIGH_PRIORITY_QUOTA * MAX_CONCURRENT_REQUESTS:
                 return process(request)
 
-        # Отсечение нагрузки
+        # Load shedding
         metrics.shed_request(request)
         return ErrorResponse(503, "Service temporarily overloaded")
 
@@ -88,35 +88,35 @@ def handle_request(request):
 
 ## Graceful Degradation
 
-При отсечении нагрузки использовать запасную логику:
-* Возвращать кэшированные ответы
-* Возвращать упрощенные ответы
-* Отключать некритичные функции
-* См. [SRS-022 Fallback](SRS-022%20Fallback.md)
+When shedding load, use fallback logic:
+* Return cached responses
+* Return simplified responses
+* Disable non-critical features
+* See [SRS-022 Fallback](SRS-022%20Fallback.md)
 
-## Мониторинг и Alerting
+## Monitoring and Alerting
 
-Алерты должны срабатывать при:
-* Load shedding активен > 5 минут
-* Отсечение > 10% запросов
-* Повторяющиеся события отсечения
+Alerts should fire when:
+* Load shedding is active > 5 minutes
+* Shedding > 10% of requests
+* Repeating shedding events
 
 ## Best practices
 
-✅ **Делать**
-* Отсекать запросы рано (на входе)
-* Возвращать понятные ошибки
-* Логировать отсеченные запросы (на debug уровне)
-* Предоставлять статистику через метрики
-* Тестировать при нагрузочном тестировании
+✅ **Do**
+* Shed requests early (at the entrance)
+* Return clear error messages
+* Log shed requests (at debug level)
+* Provide statistics via metrics
+* Test during load testing
 
-❌ **Не делать**
-* Отсечать критичные запросы без приоритизации
-* Затягивать запросы в очередь при отсечении
-* Игнорировать метрики отсечения
-* Включать отсечение по умолчанию без настройки
+❌ **Don't**
+* Shed critical requests without prioritization
+* Queue requests during shedding
+* Ignore shedding metrics
+* Enable shedding by default without configuration
 
-## Дополнительные ресурсы
+## Additional resources
 
 * [Netflix: Performance Under Load](https://netflixtechblog.com/performance-under-load-3e6fa9d2b512)
 * [Google SRE: Handling Overload](https://sre.google/sre-book/handling-overload/)

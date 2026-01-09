@@ -1,59 +1,59 @@
-# SRS-032 SLI/SLO/SLA (Уровни обслуживания)
+# SRS-032 SLI/SLO/SLA (Service Levels)
 
-SLI/SLO/SLA - это фреймворк для определения, измерения и управления надежностью и производительностью сервисов.
+SLI/SLO/SLA is a framework for defining, measuring, and managing service reliability and performance.
 
-- **SLI** (Service Level Indicator) - метрика, измеряющая уровень обслуживания
-- **SLO** (Service Level Objective) - целевое значение SLI
-- **SLA** (Service Level Agreement) - юридически обязывающее соглашение с клиентами
+- **SLI** (Service Level Indicator) - a metric that measures service level
+- **SLO** (Service Level Objective) - target value for SLI
+- **SLA** (Service Level Agreement) - legally binding agreement with customers
 
 ---
 
-## Основные концепции
+## Core Concepts
 
 ### Service Level Indicator (SLI)
 
-**Определение:** Количественная метрика, измеряющая уровень обслуживания.
+**Definition:** A quantitative metric that measures service level.
 
-**Формула:**
+**Formula:**
 ```
-SLI = (Хорошие события / Всего событий) × 100%
+SLI = (Good events / Total events) × 100%
 ```
 
-**Примеры SLI:**
+**Examples of SLIs:**
 
-| Категория | SLI | Формула |
+| Category | SLI | Formula |
 |-----------|-----|---------|
-| Доступность | Uptime % | `(Успешные запросы / Всего запросов) × 100` |
-| Производительность | Latency | `P99 < 200ms` |
-| Надежность | Error rate | `(5xx ошибки / Всего запросов) × 100` |
-| Пропускная способность | Throughput | `Запросов в секунду` |
-| Данные | Freshness | `Возраст данных < 5 минут` |
-| Корректность | Correctness | `(Правильные ответы / Всего) × 100` |
+| Availability | Uptime % | `(Successful requests / Total requests) × 100` |
+| Performance | Latency | `P99 < 200ms` |
+| Reliability | Error rate | `(5xx errors / Total requests) × 100` |
+| Throughput | Throughput | `Requests per second` |
+| Data | Freshness | `Data age < 5 minutes` |
+| Correctness | Correctness | `(Correct answers / Total) × 100` |
 
-**Практические SLI:**
+**Practical SLIs:**
 
 ```python
-# Пример вычисления SLI для HTTP API
+# Example of SLI calculation for HTTP API
 class SLICalculator:
     def __init__(self, lookback_window='28d'):
         self.lookback_window = lookback_window
 
     def calculate_availability(self):
-        """Доступность сервиса"""
+        """Service availability"""
         total_requests = metrics.get('http_requests_total')
         failed_requests = metrics.get('http_requests_5xx')
 
         return ((total_requests - failed_requests) / total_requests) * 100
 
     def calculate_latency_sli(self):
-        """Производительность по latency"""
+        """Performance by latency"""
         p99_latency = metrics.get('http_request_duration_p99')
         sla_target = 200  # ms
 
         return (sla_target / p99_latency) * 100 if p99_latency > 0 else 100
 
     def calculate_good_requests(self):
-        """"Хорошие" запросы по всеум параметрам"""
+        """"Good" requests across all parameters"""
         return metrics.query("""
             http_requests_total
             - http_requests_5xx
@@ -66,23 +66,23 @@ class SLICalculator:
 
 ### Service Level Objective (SLO)
 
-**Определение:** Целевое значение SLI за определенный период времени.
+**Definition:** Target value for SLI over a specified period of time.
 
-**Формат:**
+**Format:**
 ```
-SLO = (Хорошие события / Всего событий) ≥ Target%
+SLO = (Good events / Total events) ≥ Target%
 ```
 
-**Типичные SLO:**
+**Typical SLOs:**
 
-| Сервис | SLO | Период | Допустимый простой |
+| Service | SLO | Period | Acceptable Downtime |
 |--------|-----|--------|-------------------|
-| Пользовательский API | 99.9% uptime | 28 дней | 43 минуты в месяц |
-| Внутренний API | 99.5% uptime | 28 дней | 3.5 часа в месяц |
-| Платежный шлюз | 99.99% uptime | 28 дней | 4.3 минуты в месяц |
-| Фронтенд | P99 < 200ms | 7 дней | 1% запросов медленнее |
+| User API | 99.9% uptime | 28 days | 43 minutes per month |
+| Internal API | 99.5% uptime | 28 days | 3.5 hours per month |
+| Payment gateway | 99.99% uptime | 28 days | 4.3 minutes per month |
+| Frontend | P99 < 200ms | 7 days | 1% of requests slower |
 
-**Пример SLO:**
+**SLO Example:**
 
 ```yaml
 # slo-payment-service.yaml
@@ -92,7 +92,7 @@ metadata:
   name: payments-availability
 spec:
   service: payment-service
-  description: "Платежный шлюз должен быть доступен 99.99% времени"
+  description: "Payment gateway must be available 99.99% of the time"
   sli:
     availability:
       requestBased:
@@ -112,35 +112,35 @@ spec:
 ```
 Error Budget = 100% - SLO
 
-Для 99.9% SLO:
+For 99.9% SLO:
 Error Budget = 0.1%
-В месяц: 43.8 минут простоя / 10.1 часа в год
+Per month: 43.8 minutes of downtime / 10.1 hours per year
 ```
 
 ---
 
 ### Service Level Agreement (SLA)
 
-**Определение:** Юридически обязывающее соглашение с клиентами о компенсациях за невыполнение SLO.
+**Definition:** Legally binding agreement with customers about compensation for SLO violations.
 
-**Пример SLA:**
+**SLA Example:**
 
 ```markdown
-## Доступность API
+## API Availability
 
-**SLO:** 99.9% uptime в календарный месяц
+**SLO:** 99.9% uptime in calendar month
 
 **SLA:**
 
-| Уровень простоя | Кредит сервиса | Компенсация |
+| Downtime Level | Service Credit | Compensation |
 |-----------------|----------------|-------------|
 | < 0.1%          | 0%             | None        |
 | 0.1% - 0.5%     | 10%            | $100 credit |
 | 0.5% - 1%       | 25%            | $250 credit |
 | > 1%            | 50%            | $500 credit |
 
-**Исключения:**
-- Planned maintenance (объявлена за 7 дней)
+**Exclusions:**
+- Planned maintenance (announced 7 days in advance)
 - Force majeure
 - Third-party provider outages
 - Customer misuse
@@ -148,9 +148,9 @@ Error Budget = 0.1%
 
 ---
 
-## Процесс определения SLI/SLO/SLA
+## SLI/SLO/SLA Definition Process
 
-### Шаг 1: Определить критичность сервиса
+### Step 1: Define Service Criticality
 
 ```yaml
 service_classification:
@@ -170,24 +170,24 @@ service_classification:
     on_call: "business hours next day"
 ```
 
-### Шаг 2: Выбрать показатели (SLIs)
+### Step 2: Select Indicators (SLIs)
 
 **For API Services:**
 ```yaml
 slis:
   availability:
-    description: "Доля успешных запросов"
+    description: "Share of successful requests"
     query: 'rate(http_requests_success[5m]) / rate(http_requests_total[5m])'
 
   latency:
-    description: "Latency процентили"
+    description: "Latency percentiles"
     queries:
       p50: 'histogram_quantile(0.5, rate(http_request_duration_seconds_bucket[5m]))'
       p95: 'histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))'
       p99: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))'
 
   error_rate:
-    description: "Доля ошибочных запросов"
+    description: "Share of erroneous requests"
     query: 'rate(http_requests_5xx[5m]) / rate(http_requests_total[5m])'
 ```
 
@@ -195,15 +195,15 @@ slis:
 ```yaml
 slis:
   freshness:
-    description: "Возраст данных"
+    description: "Data age"
     query: 'time() - max(data_timestamp)'
 
   completeness:
-    description: "Полнота данных"
+    description: "Data completeness"
     query: 'count_valid_records / count_total_records'
 
   correctness:
-    description: "Корректность данных"
+    description: "Data correctness"
     query: 'count_correct_records / count_total_records'
 ```
 
@@ -211,45 +211,45 @@ slis:
 ```yaml
 slis:
   throughput:
-    description: "Сообщений в секунду"
+    description: "Messages per second"
     query: 'rate(queue_messages_processed[5m])'
 
   age:
-    description: "Возраст самого старого сообщения"
+    description: "Age of oldest message"
     query: 'max(queue_message_age_seconds)'
 
   error_rate:
-    description: "Доля ошибочных выполнений"
+    description: "Share of failed executions"
     query: 'rate(queue_jobs_failed[5m]) / rate(queue_jobs_total[5m])'
 ```
 
-### Шаг 3: Определить цели (SLOs)
+### Step 3: Define Objectives (SLOs)
 
 **90th percentile target:**
 ```yaml
-# Для большинства запросов
+# For most requests
 slo_90pct:
   slis: [availability, latency]
   targets:
-    availability: 99.9%  # 0.1% ошибок
+    availability: 99.9%  # 0.1% errors
     latency_p99: 200ms
     latency_p95: 100ms
     latency_p50: 50ms
 
   window: 28d
-  error_budget: 0.1%  # 43.8 минут в месяц
+  error_budget: 0.1%  # 43.8 minutes per month
 ```
 
-**Типичные SLO по индустрии:**
+**Industry Typical SLOs:**
 
-| Сервис | Доступность | Latency P99 | Error Rate |
+| Service | Availability | Latency P99 | Error Rate |
 |--------|-------------|-------------|------------|
 | Google Search | 99.99% | 200ms | 0.1% |
 | AWS S3 | 99.9% | 500ms | 0.1% |
 | Stripe API | 99.99% | 500ms | 0.01% |
 | Slack | 99.9% | 1000ms | 0.5% |
 
-### Шаг 4: Определить SLA
+### Step 4: Define SLA
 
 ```yaml
 sla_with_compensation:
@@ -274,7 +274,7 @@ sla_with_compensation:
 
 ---
 
-## Расчет Error Budget и Burn Rate
+## Error Budget and Burn Rate Calculation
 
 ### Error Budget
 
@@ -286,17 +286,17 @@ class ErrorBudgetCalculator:
         self.total_minutes = window_days * 24 * 60
 
     def calculate_budget(self):
-        """Вычисляем допустимое количество плохих минут"""
+        """Calculate the number of acceptable bad minutes"""
         return (1 - self.slo_target) * self.total_minutes
 
     def calculate_burn_rate(self, bad_minutes, window_hours=1):
-        """Вычисляем скорость сжигания бюджета"""
+        """Calculate the rate of budget depletion"""
         budget = self.calculate_budget()
         current_burn = bad_minutes / (window_hours * 60)
         return current_burn / budget
 
     def get_slo_status(self, bad_minutes):
-        """Получаем статус SLO"""
+        """Get SLO status"""
         budget = self.calculate_budget()
         remaining = budget - bad_minutes
         consumed = (bad_minutes / budget) * 100
@@ -310,13 +310,13 @@ class ErrorBudgetCalculator:
         }
 
 
-# Пример
+# Example
 slo_999 = ErrorBudgetCalculator(slo_target=0.999)
 status = slo_999.get_slo_status(bad_minutes=20)
 
 # Output
 {
-    'budget_total_minutes': 40.32,  # 28 дней × 24 часа × 60 минут × 0.1%
+    'budget_total_minutes': 40.32,  # 28 days × 24 hours × 60 minutes × 0.1%
     'budget_minutes_used': 20,
     'budget_minutes_remaining': 20.32,
     'budget_percent_consumed': 49.6,
@@ -327,22 +327,22 @@ status = slo_999.get_slo_status(bad_minutes=20)
 ### Burn Rate Alerts
 
 ```yaml
-# Правила алертинга на основе скорости сжигания бюджета
+# Burn rate based alerting rules
 alerting_rules:
   critical_fast_burn:
-    burn_rate: 14.4  # Сожжем весь бюджет за 2 часа
+    burn_rate: 14.4  # Will burn entire budget in 2 hours
     window: 1h
     severity: critical
     action: page_oncall
 
   critical_medium_burn:
-    burn_rate: 6  # Сожжем за 4 часа
+    burn_rate: 6  # Will burn in 4 hours
     window: 6h
     severity: warning
     action: create_incident
 
   warning_slow_burn:
-    burn_rate: 2  # Сожжем за 36 часов
+    burn_rate: 2  # Will burn in 36 hours
     window: 24h
     severity: info
     action: notify_team
@@ -408,7 +408,7 @@ alerting_rules:
 
 ## SLO Review Process
 
-### Ежеквартальный SLO Review
+### Quarterly SLO Review
 
 ```yaml
 slo_review_process:
@@ -417,22 +417,22 @@ slo_review_process:
 
   agenda:
     1_slo_performance:
-      - текущие значения SLI
-      - процент использования error budget
-      - incidents и their impact
+      - current SLI values
+      - error budget consumption percentage
+      - incidents and their impact
 
     2_trend_analysis:
-      - тренды за последние 3 месяца
-      - сезонные паттерны
-      - корреляция с releases
+      - trends over last 3 months
+      - seasonal patterns
+      - correlation with releases
 
     3_error_budget_policy:
-      - сколько budget осталось
+      - how much budget remains
       - frozen or normal mode
       - feature freeze decisions
 
     4_action_items:
-      - улучшения мониторинга
+      - monitoring improvements
       - reliability project prioritization
       - SLO adjustments
 ```
@@ -475,7 +475,7 @@ error_budget_policy:
 
 ---
 
-## Примеры SLI/SLO/SLA по сервисам
+## SLI/SLO/SLA Examples by Service
 
 ### E-commerce API
 
@@ -484,7 +484,7 @@ service_tiers:
   checkout_api:
     tier: critical
     slos:
-      availability: 99.99%  # 4.3 минуты в месяц
+      availability: 99.99%  # 4.3 minutes per month
       latency_p99: 500ms
       error_rate: 0.01%
     sla:
@@ -539,7 +539,7 @@ mobile_backend:
 
 ---
 
-## Использование Error Budget для принятия решений
+## Using Error Budget for Decision Making
 
 ```python
 class SLOBasedDecisionMaking:
@@ -547,7 +547,7 @@ class SLOBasedDecisionMaking:
         self.slo = slo_calculator
 
     def can_deploy_new_features(self):
-        """Можно ли деплоить новые фичи"""
+        """Whether new features can be deployed"""
         status = self.slo.get_slo_status()
 
         if status['budget_percent_remaining'] > 70:
@@ -560,7 +560,7 @@ class SLOBasedDecisionMaking:
             return False, "SLO depleted, focus on reliability improvements"
 
     def should_invest_in_reliability(self):
-        """Нужно ли инвестировать в надежность"""
+        """Whether to invest in reliability"""
         status = self.slo.get_slo_status()
 
         if status['budget_percent_consumed'] > 70:
@@ -573,7 +573,7 @@ class SLOBasedDecisionMaking:
             return False, "SLO healthy, maintain current reliability level"
 
     def get_recommendations(self):
-        """Получить рекомендации"""
+        """Get recommendations"""
         deploy_features, msg1 = self.can_deploy_new_features()
         invest_reliability, msg2 = self.should_invest_in_reliability()
 
@@ -586,11 +586,11 @@ class SLOBasedDecisionMaking:
 
 ---
 
-## Сравнение SLA по индустрии
+## Industry SLA Comparison
 
-| Компания | Услуга | Доступность | Latency | Компенсация |
+| Company | Service | Availability | Latency | Compensation |
 |----------|--------|-------------|---------|-------------|
-| AWS EC2 | Базовый | 99.5% | - | 10% credit |
+| AWS EC2 | Basic | 99.5% | - | 10% credit |
 | AWS S3 | Standard | 99.9% | - | 10-25% credit |
 | GCP Cloud Storage | Multi-regional | 99.95% | - | 10-50% credit |
 | Azure Storage | Standard | 99.9% | - | 10-25% credit |
@@ -602,26 +602,26 @@ class SLOBasedDecisionMaking:
 
 ---
 
-## Метрики SRE
+## SRE Metrics
 
-### Four Golden Signals (Четыре золотых сигнала)
+### Four Golden Signals
 
 ```yaml
 golden_signals:
   latency:
-    description: "Время обработки запросов"
+    description: "Request processing time"
     slis: [p50, p95, p99]
 
   traffic:
-    description: "Количество запросов"
+    description: "Number of requests"
     slis: [requests_per_second, active_connections]
 
   errors:
-    description: "Доля ошибок"
+    description: "Share of errors"
     slis: [error_rate, error_count_by_code]
 
   saturation:
-    description: "Загрузка системы"
+    description: "System load"
     slis: [cpu_percent, memory_percent, disk_io]
 ```
 
@@ -630,15 +630,15 @@ golden_signals:
 ```yaml
 red_method:
   rate:
-    description: "Запросов в секунду"
+    description: "Requests per second"
     formula: 'rate(http_requests_total[5m])'
 
   errors:
-    description: "Ошибочных запросов"
+    description: "Erroneous requests"
     formula: 'rate(http_requests_5xx[5m])'
 
   duration:
-    description: "Время обработки"
+    description: "Processing time"
     formula: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))'
 ```
 
@@ -647,21 +647,21 @@ red_method:
 ```yaml
 use_method:
   utilization:
-    description: "Использование ресурса"
+    description: "Resource utilization"
     examples: ['cpu_percent', 'memory_percent', 'disk_io_percent']
 
   saturation:
-    description: "Очередь на ресурс"
+    description: "Queue for resource"
     examples: ['load_average', 'queue_length', 'network_buffer']
 
   errors:
-    description: "Ошибки ресурса"
+    description: "Resource errors"
     examples: ['network_errors', 'disk_errors', 'memory_failures']
 ```
 
 ---
 
-## SLI/SLO Dashboard на Grafana
+## Grafana SLI/SLO Dashboard
 
 ```json
 {
@@ -710,4 +710,4 @@ use_method:
 
 ---
 
-*SLI/SLO/SLA - фреймворк для определения и управления надежностью сервисов*
+*SLI/SLO/SLA - framework for defining and managing service reliability*

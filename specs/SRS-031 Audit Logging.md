@@ -1,33 +1,33 @@
-# SRS-031 Audit Logging (Аудитные логи)
+# SRS-031 Audit Logging
 
-Audit Logging - это практика систематического записи аудитных событий, связанных с безопасностью, доступом и важными операциями в системе для последующего анализа и расследования инцидентов.
+Audit Logging is the practice of systematic recording of audit events related to security, access, and important operations in the system for subsequent analysis and incident investigation.
 
 ---
 
-## Цели аудитного логирования
+## Goals of audit logging
 
-### Безопасность
-- Обнаружение несанкционированного доступа
-- Расследование инцидентов безопасности
-- Соблюдение compliance требований (GDPR, HIPAA, PCI DSS, SOX)
-- Форензик анализ
+### Security
+- Detection of unauthorized access
+- Investigation of security incidents
+- Compliance with requirements (GDPR, HIPAA, PCI DSS, SOX)
+- Forensic analysis
 
-### Операционная прозрачность
-- Отслеживание важных операций
-- Восстановление цепочки действий
-- Анализ причинно-следственных связей
-- Доказательство выполнения операций
+### Operational transparency
+- Tracking important operations
+- Reconstructing action chains
+- Analyzing cause-and-effect relationships
+- Proof of operation execution
 
 ### Compliance
-- Сохранение истории по требованию регуляторов
-- Аудиты безопасности
-- Хранение данных в соответствии с законодательством
+- Preserving history as required by regulators
+- Security audits
+- Data storage in accordance with legislation
 
 ---
 
-## Что нужно логировать (Audit Events)
+## What to log (Audit Events)
 
-### Аутентификация и авторизация
+### Authentication and authorization
 ```json
 {
   "timestamp": "2024-01-15T10:30:00Z",
@@ -41,16 +41,16 @@ Audit Logging - это практика систематического зап�
 }
 ```
 
-Важные события:
-- `user.login` - успешный/неуспешный вход
-- `user.logout` - выход из системы
-- `session.created` - создание сессии
-- `session.destroyed` - уничтожение сессии
-- `privilege.escalation` - повышение привилегий
-- `access.denied` - отказ в доступе
-- `auth.failed` - неудачная аутентификация
+Important events:
+- `user.login` - successful/unsuccessful login
+- `user.logout` - logout
+- `session.created` - session creation
+- `session.destroyed` - session destruction
+- `privilege.escalation` - privilege escalation
+- `access.denied` - access denied
+- `auth.failed` - failed authentication
 
-### Доступ к данным
+### Data access
 
 ```json
 {
@@ -66,15 +66,15 @@ Audit Logging - это практика систематического зап�
 }
 ```
 
-Важные события:
-- `data.accessed` - доступ к данным
-- `data.created` - создание записи
-- `data.modified` - изменение данных
-- `data.deleted` - удаление данных
-- `data.exported` - экспорт данных
-- `data.shared` - предоставление доступа
+Important events:
+- `data.accessed` - data access
+- `data.created` - record creation
+- `data.modified` - data modification
+- `data.deleted` - data deletion
+- `data.exported` - data export
+- `data.shared` - access granting
 
-### Управление пользователями и правами
+### User and permission management
 
 ```json
 {
@@ -87,16 +87,16 @@ Audit Logging - это практика систематического зап�
 }
 ```
 
-Важные события:
-- `user.created` - создание пользователя
-- `user.modified` - изменение данных пользователя
-- `user.deleted` - удаление пользователя
-- `role.assigned` - назначение роли
-- `permission.granted` - предоставление прав
-- `permission.revoked` - отзыв прав
-- `group.membership.changed` - изменение в группах
+Important events:
+- `user.created` - user creation
+- `user.modified` - user data modification
+- `user.deleted` - user deletion
+- `role.assigned` - role assignment
+- `permission.granted` - permission granting
+- `permission.revoked` - permission revocation
+- `group.membership.changed` - group membership changes
 
-### Управление конфигурациями
+### Configuration management
 
 ```json
 {
@@ -114,7 +114,7 @@ Audit Logging - это практика систематического зап�
 }
 ```
 
-### Финансовые операции
+### Financial operations
 
 ```json
 {
@@ -130,7 +130,7 @@ Audit Logging - это практика систематического зап�
 }
 ```
 
-### Административные действия
+### Administrative actions
 
 ```json
 {
@@ -145,21 +145,21 @@ Audit Logging - это практика систематического зап�
 
 ---
 
-## Формат аудитных логов
+## Audit log format
 
-### Обязательные поля (Minimum Viable)
+### Required fields (Minimum Viable)
 
 ```json
 {
-  "timestamp": "2024-01-15T10:30:00Z",           # ISO 8601 с часовым поясом
-  "event_type": "user.login",                    # Тип события
-  "actor_id": "user_12345",                      # Кто выполнил действие
+  "timestamp": "2024-01-15T10:30:00Z",           # ISO 8601 with timezone
+  "event_type": "user.login",                    # Event type
+  "actor_id": "user_12345",                      # Who performed the action
   "result": "success",                           # success | failure
-  "correlation_id": "corr_abc123def456"          # Для трассировки
+  "correlation_id": "corr_abc123def456"          # For tracing
 }
 ```
 
-### Рекомендуемые поля (Standard)
+### Recommended fields (Standard)
 
 ```json
 {
@@ -184,7 +184,7 @@ Audit Logging - это практика систематического зап�
 }
 ```
 
-### Полный формат (Comprehensive)
+### Full format (Comprehensive)
 
 ```json
 {
@@ -254,37 +254,37 @@ Audit Logging - это практика систематического зап�
 
 ---
 
-## Уровни логирования
+## Logging levels
 
-### Level 0: Минимальный
-- Вход/выход пользователей
-- Неудачные аутентификации
-- Изменения прав доступа
+### Level 0: Minimal
+- User login/logout
+- Failed authentications
+- Permission changes
 
-### Level 1: Стандартный (рекомендуется)
-- Все события Level 0
-- Критические операции с данными
-- Финансовые транзакции
-- Изменения конфигурации
-- Административные действия
+### Level 1: Standard (recommended)
+- All Level 0 events
+- Critical data operations
+- Financial transactions
+- Configuration changes
+- Administrative actions
 
-### Level 2: Детальный
-- Все события Level 1
-- Доступ к чувствительным данным (PII, PHI)
-- Все изменения данных
-- Попытки доступа (успешные и неуспешные)
-- Все API вызовы с параметрами
+### Level 2: Detailed
+- All Level 1 events
+- Access to sensitive data (PII, PHI)
+- All data changes
+- Access attempts (successful and unsuccessful)
+- All API calls with parameters
 
-### Level 3: Debug (для forensics)
-- Все события Level 2
-- Все состояния до и после
-- Полные request/response (без секретов)
+### Level 3: Debug (for forensics)
+- All Level 2 events
+- All before/after states
+- Full request/response (without secrets)
 - Network activity
 - System calls
 
 ---
 
-## Интеграция в приложения
+## Integration in applications
 
 ### Django Middleware
 
@@ -296,7 +296,7 @@ class AuditLogMiddleware:
     def __call__(self, request):
         actor_id = request.user.id if request.user.is_authenticated else 'anonymous'
 
-        # Логируем запрос
+        # Log request
         logger.info({
             'event_type': 'request.received',
             'actor_id': actor_id,
@@ -307,7 +307,7 @@ class AuditLogMiddleware:
 
         response = self.get_response(request)
 
-        # Логируем ответ
+        # Log response
         logger.info({
             'event_type': 'response.sent',
             'actor_id': actor_id,
@@ -337,7 +337,7 @@ class AuditLog
   end
 end
 
-# Использование
+# Usage
 class PaymentsController < ApplicationController
   def create
     payment = Payment.new(payment_params)
@@ -360,7 +360,7 @@ const auditLogger = (req, res, next) => {
   const startTime = Date.now();
   const actorId = req.user ? req.user.id : 'anonymous';
 
-  // Логируем вход
+  // Log incoming request
   logger.info({
     event_type: 'request.start',
     actor_id: actorId,
@@ -370,7 +370,7 @@ const auditLogger = (req, res, next) => {
     user_agent: req.get('User-Agent')
   });
 
-  // Перехватываем ответ
+  // Intercept response
   const originalSend = res.send;
   res.send = function(body) {
     const duration = Date.now() - startTime;
@@ -396,12 +396,12 @@ app.use(auditLogger);
 
 ---
 
-## Настройка хранения
+## Storage configuration
 
 ### Elasticsearch
 
 ```python
-# Индекс с lifecycle policy
+# Index with lifecycle policy
 PUT /_index_template/audit_logs
 {
   "index_patterns": ["audit-logs-*"],
@@ -424,7 +424,7 @@ PUT /_index_template/audit_logs
 }
 ```
 
-### S3 для долгосрочного хранения
+### S3 for long-term storage
 
 ```python
 import boto3
@@ -450,9 +450,9 @@ class S3AuditStorage:
 
 ---
 
-## Анализ и мониторинг
+## Analysis and monitoring
 
-### Dashboard в Kibana
+### Dashboard in Kibana
 
 ```json
 {
@@ -461,17 +461,17 @@ class S3AuditStorage:
     "panels": [
       {
         "type": "timeseries",
-        "title": "Аутентификации за 24 часа",
+        "title": "Authentications 24h",
         "query": "event_type:user.login"
       },
       {
         "type": "metric",
-        "title": "Неудачных входов",
+        "title": "Failed logins",
         "query": "event_type:user.login AND result:failure"
       },
       {
         "type": "table",
-        "title": "Критические события",
+        "title": "Critical events",
         "query": "compliance.regulations:*"
       }
     ]
@@ -479,7 +479,7 @@ class S3AuditStorage:
 }
 ```
 
-### Оповещения
+### Alerts
 
 ```yaml
 # Elasticsearch Watcher
@@ -527,9 +527,9 @@ PUT _watcher/watch/failed_logins
 
 ---
 
-## Безопасность аудитных логов
+## Audit log security
 
-### Защита от подделки
+### Tamper protection
 
 ```python
 import hashlib
@@ -540,7 +540,7 @@ class AuditLogSigner:
         self.secret_key = secret_key.encode()
 
     def sign_entry(self, entry):
-        """Подписываем запись для защиты от подделки"""
+        """Sign entry to prevent tampering"""
         data = json.dumps(entry, sort_keys=True).encode()
         signature = hmac.new(self.secret_key, data, hashlib.sha256).hexdigest()
 
@@ -553,7 +553,7 @@ class AuditLogSigner:
         }
 
     def verify_entry(self, entry):
-        """Проверяем подпись записи"""
+        """Verify entry signature"""
         if '_metadata' not in entry:
             return False
 
@@ -565,10 +565,10 @@ class AuditLogSigner:
         return hmac.compare_digest(signature, expected)
 ```
 
-### Контроль доступа
+### Access control
 
 ```yaml
-# RBAC для аудитных логов
+# RBAC for audit logs
 - role: auditor
   permissions:
     - audit_logs:read
@@ -582,37 +582,37 @@ class AuditLogSigner:
   permissions:
     - audit_logs:*
   deny:
-    - audit_logs:delete  # Никто не может удалять
+    - audit_logs:delete  # Nobody can delete
 ```
 
 ---
 
-## Соответствие стандартам
+## Compliance with standards
 
 ### GDPR
-- Записи доступа к персональным данным (Article 30)
-- Минимум 6 месяцев хранения
-- Право на удаление (право быть забытым)
+- Access logs to personal data (Article 30)
+- Minimum 6 months retention
+- Right to deletion (right to be forgotten)
 
 ### HIPAA
-- Все доступы к PHI (Protected Health Information)
-- Минимум 6 лет хранения
+- All access to PHI (Protected Health Information)
+- Minimum 6 years retention
 - Integrity controls
 
 ### PCI DSS
-- Все доступы к карточным данным
-- Минимум 1 год хранения, 3 года доступности
-- Немодифицируемые логи
+- All access to cardholder data
+- Minimum 1 year retention, 3 years availability
+- Immutable logs
 
 ### SOX
-- Все финансовые операции
-- Все изменения в системах
-- Минимум 7 лет хранения
-- Невозможность изменения/удаления
+- All financial operations
+- All system changes
+- Minimum 7 years retention
+- Cannot be changed/deleted
 
 ---
 
-## Процесс анализа инцидента
+## Incident analysis process
 
 ```bash
 #!/bin/bash
@@ -621,30 +621,30 @@ class AuditLogSigner:
 INCIDENT_TIME="2024-01-15T10:30:00"
 USER_ID="suspicious_user_123"
 
-echo "=== Анализ инцидента ==="
-echo "Время: $INCIDENT_TIME"
-echo "Пользователь: $USER_ID"
+echo "=== Incident Analysis ==="
+echo "Time: $INCIDENT_TIME"
+echo "User: $USER_ID"
 
 echo ""
-echo "1. Все действия пользователя за 24 часа:"
+echo "1. All user actions for 24 hours:"
 esearch "actor_id:$USER_ID AND timestamp:[$INCIDENT_TIME-24h TO $INCIDENT_TIME+24h]"
 
 echo ""
-echo "2. Все входы:"
+echo "2. All logins:"
 esearch "actor_id:$USER_ID AND event_type:user.login"
 
 echo ""
-echo "3. Критические операции:"
+echo "3. Critical operations:"
 esearch "actor_id:$USER_ID AND (data.classification:PII OR data.classification:PCI)"
 
 echo ""
-echo "4. Изменения прав доступа:"
+echo "4. Access permission changes:"
 esearch "actor_id:$USER_ID AND event_type:permission.*"
 
 echo ""
-echo "Анализ завершен. Логи сохранены в incident_$USER_ID.json"
+echo "Analysis completed. Logs saved in incident_$USER_ID.json"
 ```
 
 ---
 
-*Audit Logging - практика систематического записи аудитных событий для безопасности и compliance*
+*Audit Logging - practice of systematic recording of audit events for security and compliance*

@@ -1,37 +1,36 @@
 # SRS-009 Error Tracking
 
-Приложения сообщают о возникших исключениях в Sentry.
+Applications report exceptions to Sentry.
 
-Адрес источника данных для Sentry указывается через переменную окружения
+The data source address for Sentry is specified through the environment variable
 `SENTRY_DSN`
 
-При отправке сведений в Sentry приложение указывает свою версию (AppVersion) и
-название (Service).
+When sending information to Sentry, the application specifies its version (AppVersion) and
+name (Service).
 
-# Бизнесовый HTTP-сервис
+# Business HTTP service
 
-Если приложение поддерживает HTTP-протокол для бизнес функций, то позволяет
-выполнить проверку отправки тестовых сообщений в sentry через специальный запрос
-вида:
+If the application supports the HTTP protocol for business functions, it allows
+testing the sending of test messages to sentry through a special request:
 
 ```
 curl -XPORT http://service/error?key=KEY
 ```
 
-В результате этого запроса отправляется сообщение в Sentry и приходит ответ со
-статусом `200`. 
+As a result of this request, a message is sent to Sentry and a response is received with
+status `200`.
 
-Либо сообщение об ошибке в текстомов виде со статусом `500`.
+Or an error message in text form with status `500`.
 
-Где
+Where:
 
-* `/error` - настраиваемый через переменную окружения `TEST_ERROR_PATH` путь. По-умолчанию
-  значение `/error`
-* `KEY` - значение ключа настраиваемое через переменную окружения
-  `TEST_ERROR_KEY`. Значение по-умолачнию `SRS-009`.
+* `/error` - path configurable through the `TEST_ERROR_PATH` environment variable. Default
+  value `/error`
+* `KEY` - key value configurable through the `TEST_ERROR_KEY` environment variable.
+  Default value `SRS-009`.
 
-# Сервис с метриками по HTTP
+# Service with HTTP metrics
 
-Если приложение не обслуживает бизнесовые HTTP запросы, но отдает
-prometheus-метрики, то должно поддерживать POST-запрос по пути `/error` на порт
-prometheus метрик.
+If the application does not handle business HTTP requests, but serves
+prometheus metrics, it must support a POST request to the `/error` path on the
+prometheus metrics port.

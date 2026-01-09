@@ -1,31 +1,31 @@
-# SRS-036 Backup & Recovery (Резервное копирование и восстановление данных)
+# SRS-036 Backup & Recovery
 
-Backup & Recovery - это комплексная стратегия создания резервных копий данных, их хранения, проверки и восстановления для защиты от потери данных, обеспечения непрерывности бизнеса и выполнения требований к хранению информации.
+Backup & Recovery is a comprehensive strategy for creating data backups, storing them, verifying, and restoring to protect against data loss, ensure business continuity, and meet information retention requirements.
 
 ---
 
-## Виды резервных копий
+## Backup Types
 
-### 1. Full Backup (Полное резервное копирование)
+### 1. Full Backup
 
-**Описание:** Копия всех данных в системе.
+**Description:** Copy of all data in the system.
 
-**Плюсы:**
-- Простое восстановление (один файл)
-- Полная целостность данных
-- Быстрый restore для небольших объемов
+**Pros:**
+- Simple restore (single file)
+- Complete data integrity
+- Fast restore for small volumes
 
-**Минусы:**
-- Долго создается
-- Занимает много места
-- Высокая нагрузка на систему
+**Cons:**
+- Takes long to create
+- Takes up a lot of space
+- High system load
 
-**Когда использовать:**
-- Первоначальное резервное копирование
-- Регулярно (раз в неделю/месяц)
-- Для критичных данных
+**When to use:**
+- Initial backup
+- Regularly (weekly/monthly)
+- For critical data
 
-**Пример:**
+**Example:**
 ```bash
 #!/bin/bash
 # full_backup.sh
@@ -47,17 +47,17 @@ pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME \
   --no-acl \
   --file $BACKUP_DIR/full_$DATE.sql
 
-# Проверка целостности
+# Integrity check
 if pg_restore --list $BACKUP_DIR/full_$DATE.sql > /dev/null 2>&1; then
   echo "✅ Backup validation passed"
 
-  # Сжатие
+  # Compression
   gzip $BACKUP_DIR/full_$DATE.sql
 
-  # Загрузка в S3
+  # Upload to S3
   aws s3 cp $BACKUP_DIR/full_$DATE.sql.gz $S3_BUCKET/full/
 
-  # Проверка в S3
+  # Verify in S3
   aws s3 ls $S3_BUCKET/full/full_$DATE.sql.gz
 
   echo "🎉 Full backup completed successfully"
@@ -69,20 +69,20 @@ fi
 
 ---
 
-### 2. Incremental Backup (Инкрементное резервное копирование)
+### 2. Incremental Backup
 
-**Описание:** Копирует только измененные данные с момента последней резервной копии (full или incremental).
+**Description:** Copies only changed data since the last backup (full or incremental).
 
-**Плюсы:**
-- Быстрое создание
-- Меньше занимает места
-- Меньше нагрузки на систему
+**Pros:**
+- Fast creation
+- Takes less space
+- Less system load
 
-**Минусы:**
-- Сложное восстановление (необходимо применить цепочку инкрементных копий)
-- Если одна копия повреждена — все последующие бесполезны
+**Cons:**
+- Complex restore (need to apply chain of incremental copies)
+- If one copy is corrupted — all subsequent are useless
 
-**Пример:**
+**Example:**
 ```bash
 #!/bin/bash
 # incremental_backup.sh
@@ -91,25 +91,25 @@ DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/backups/incremental"
 S3_BUCKET="s3://myapp-backups"
 
-# Дата последней полной копии
+# Date of last full backup
 LAST_FULL=$(ls -t /backups/full/full_*.sql.gz | head -1 | sed 's/.*full_//' | sed 's/.sql.gz//')
 
 echo "🔒 Starting incremental backup from $LAST_FULL"
 
-# PostgreSQL с WAL (Write-Ahead Logging)
-# Создаем базовую полную копию
+# PostgreSQL with WAL (Write-Ahead Logging)
+# Create base full copy
 gpg --basebackup -h $DB_HOST -U $DB_USER -D $BACKUP_DIR/base/
 
-# Создаем архив WAL
+# Create WAL archive
 psql -h $DB_HOST -U $DB_USER -c "SELECT pg_switch_wal();"
 
-# Копируем WAL файлы
+# Copy WAL files
 find /var/lib/postgresql/wal/ -newer $BACKUP_DIR/base/ -exec cp {} $BACKUP_DIR/incremental/ \;
 
-# Сжатие
+# Compression
 tar -czf $BACKUP_DIR/incremental_$DATE.tar.gz $BACKUP_DIR/incremental/
 
-# Загрузка в S3
+# Upload to S3
 aws s3 cp $BACKUP_DIR/incremental_$DATE.tar.gz $S3_BUCKET/incremental/
 
 echo "🎉 Incremental backup completed"
@@ -117,20 +117,20 @@ echo "🎉 Incremental backup completed"
 
 ---
 
-### 3. Differential Backup (Дифференциальное резервное копирование)
+### 3. Differential Backup
 
-**Описание:** Копирует все измененные данные с момента последней полной копии.
+**Description:** Copies all changed data since the last full backup.
 
-**Плюсы:**
-- Быстрое создание (меньше чем full, больше чем incremental)
-- Быстрое восстановление (нужен только full + последний differential)
-- Более надежное чем incremental
+**Pros:**
+- Fast creation (less than full, more than incremental)
+- Fast restore (need only full + latest differential)
+- More reliable than incremental
 
-**Минусы:**
-- Занимает больше места чем incremental
-- Размер растет по мере накопления изменений
+**Cons:**
+- Takes more space than incremental
+- Size grows as changes accumulate
 
-**Пример:**
+**Example:**
 ```bash
 #!/bin/bash
 # differential_backup.sh
@@ -139,7 +139,7 @@ DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/backups/differential"
 S3_BUCKET="s3://myapp-backups"
 
-# Дата последней полной копии
+# Date of last full backup
 LAST_FULL_DATE=$(ls -t /backups/full/full_*.sql.gz | head -1 | sed 's/.*full_//' | sed 's/.sql.gz//')
 
 echo "🔒 Starting differential backup from last full ($LAST_FULL_DATE)"
@@ -154,10 +154,10 @@ mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASS \
   --where="updated_at >= '$LAST_FULL_DATE'" \
   $DB_NAME > $BACKUP_DIR/differential_$DATE.sql
 
-# Сжатие
+# Compression
 gzip $BACKUP_DIR/differential_$DATE.sql
 
-# Загрузка в S3
+# Upload to S3
 aws s3 cp $BACKUP_DIR/differential_$DATE.sql.gz $S3_BUCKET/differential/
 
 echo "🎉 Differential backup completed"
@@ -167,34 +167,34 @@ echo "🎉 Differential backup completed"
 
 ### 4. Continuous Backup / Point-in-Time Recovery (PITR)
 
-**Описание:** Непрерывное резервное копирование журналов транзакций (WAL в PostgreSQL, binlog в MySQL).
+**Description:** Continuous backup of transaction logs (WAL in PostgreSQL, binlog in MySQL).
 
-**Плюсы:**
-- Восстановление до любой точки во времени
-- Минимальная потеря данных
-- Автоматический процесс
+**Pros:**
+- Restore to any point in time
+- Minimal data loss
+- Automatic process
 
-**Минусы:**
-- Сложная настройка
-- Требует хранения больших журналов
-- Зависит от базовой полной копии
+**Cons:**
+- Complex setup
+- Requires storage of large logs
+- Depends on base full backup
 
 **PostgreSQL PITR:**
 ```bash
-# 1. Настройка postgresql.conf
+# 1. Configure postgresql.conf
 wal_level = replica
 archive_mode = on
 archive_command = 'test ! -f /var/lib/postgresql/wal/%f && cp %p /var/lib/postgresql/wal/%f'
 
-# 2. Создание base backup
+# 2. Create base backup
 pg_basebackup -h $DB_HOST -U $DB_USER -D /backups/base/ -P -v
 
-# 3. Архивирование WAL
+# 3. Archive WAL
 cd /var/lib/postgresql/wal/
 find . -type f -name "*.wal" -exec gzip {} \;
 aws s3 sync . s3://myapp-backups/wal/
 
-# 4. Восстановление до точки во времени
+# 4. Restore to point in time
 # recovery.conf
 restore_command = 'cp s3://myapp-backups/wal/%f %p'
 recovery_target_time = '2024-01-15 14:30:00'
@@ -203,9 +203,9 @@ recovery_target_action = 'promote'
 
 ---
 
-## Расписание резервного копирования
+## Backup Schedule
 
-### Пример расписания
+### Example Schedule
 
 ```yaml
 backup_schedule:
@@ -237,19 +237,19 @@ backup_schedule:
 
 ---
 
-## Хранение резервных копий
+## Backup Storage
 
-### 3-2-1 Rule (золотой стандарт)
+### 3-2-1 Rule (Golden Standard)
 
 ```yaml
 storage_strategy:
   rule_3_2_1:
-    3_copies: true  # Три копии данных
-    2_different_media: true  # Два разных типа носителя
-      # 1: Оригинал (production)
-      # 2: Резервная копия (диски/HDD)
-      # 3: Резервная копия (cloud/offline)
-    1_offsite: true  # Одна копия внешнего хранения
+    3_copies: true  # Three copies of data
+    2_different_media: true  # Two different storage types
+      # 1: Original (production)
+      # 2: Backup (disks/HDD)
+      # 3: Backup (cloud/offline)
+    1_offsite: true  # One offsite copy
 
   locations:
     primary:
@@ -269,7 +269,7 @@ storage_strategy:
       provider: "aws_s3"
       bucket: "myapp-backups"
       region: "us-west-2"
-      storage_class: "glacier_deep_archive"  # Для данных старше 90 дней
+      storage_class: "glacier_deep_archive"  # For data older than 90 days
       retention: "7 years"  # Compliance requirements
       access_speed: "slow"
       cost: "$0.00099/GB/month"
@@ -277,9 +277,9 @@ storage_strategy:
 
 ---
 
-## Восстановление
+## Recovery
 
-### Стратегии восстановления
+### Recovery Strategies
 
 #### Strategy 1: Full Restore (Full + Differential + Incremental)
 
@@ -295,18 +295,18 @@ mkdir -p $RESTORE_DIR
 
 echo "🔄 Restoring database to $RESTORE_DATE"
 
-# 1. Скачиваем полную копию
+# 1. Download full backup
 aws s3 cp $S3_BUCKET/full/full_20240114_020000.sql.gz $RESTORE_DIR/
 gunzip $RESTORE_DIR/full_20240114_020000.sql.gz
 
-# 2. Восстанавливаем полную копию
+# 2. Restore full backup
 psql -h $DB_HOST -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS myapp_restore;"
 psql -h $DB_HOST -U $DB_USER -d postgres -c "CREATE DATABASE myapp_restore;"
 
 psql -h $DB_HOST -U $DB_USER -d myapp_restore \
   < $RESTORE_DIR/full_20240114_020000.sql
 
-# 3. Скачиваем и применяем дифференциальные копии
+# 3. Download and apply differential backups
 for diff in $(aws s3 ls $S3_BUCKET/differential/ --recursive | grep "20240114" | awk '{print $4}'); do
   aws s3 cp $S3_BUCKET/$diff $RESTORE_DIR/
   gunzip $RESTORE_DIR/$(basename $diff)
@@ -314,7 +314,7 @@ for diff in $(aws s3 ls $S3_BUCKET/differential/ --recursive | grep "20240114" |
     < $RESTORE_DIR/$(basename $diff .gz)
 done
 
-# 4. Скачиваем и применяем инкрементальные копии
+# 4. Download and apply incremental backups
 for inc in $(aws s3 ls $S3_BUCKET/incremental/ --recursive | grep "20240115" | awk '{print $4}'); do
   aws s3 cp $S3_BUCKET/$inc $RESTORE_DIR/
   tar -xzf $RESTORE_DIR/$(basename $inc)
@@ -337,25 +337,25 @@ S3_BUCKET="s3://myapp-backups"
 
 echo "🔄 Point-in-Time Recovery to $TARGET_TIME"
 
-# 1. Останавливаем PostgreSQL
+# 1. Stop PostgreSQL
 systemctl stop postgresql
 
-# 2. Скачиваем base backup
+# 2. Download base backup
 aws s3 cp $S3_BUCKET/base/base_20240114.tar.gz $RESTORE_DIR/
 tar -xzf $RESTORE_DIR/base_20240114.tar.gz -C $RESTORE_DIR/
 
-# 3. Настройка recovery
+# 3. Configure recovery
 cat > $RESTORE_DIR/recovery.conf <<EOF
-restore_command = 'aws s3 cp $S3_BUCKET/wal/%f %p'
+restore_command = 'cp s3://myapp-backups/wal/%f %p'
 recovery_target_time = '$TARGET_TIME'
 recovery_target_action = 'promote'
 recovery_target_inclusive = false
 EOF
 
-# 4. Запускаем PostgreSQL с recovery
+# 4. Start PostgreSQL with recovery
 systemctl start postgresql
 
-# 5. Следим за логами
+# 5. Monitor logs
 while true; do
   if grep -q "database system is ready to accept connections" /var/log/postgresql/postgresql-14-main.log; then
     echo "✅ Database recovered to $TARGET_TIME"
@@ -378,28 +378,28 @@ S3_BUCKET="s3://myapp-backups"
 
 echo "🔄 Restoring table $TABLE_NAME to $RESTORE_DATE"
 
-# 1. Создаем временную базу для восстановления
+# 1. Create temporary database for restore
 psql -h $DB_HOST -U $DB_USER -d postgres -c "DROP DATABASE IF EXISTS temp_restore;"
 psql -h $DB_HOST -U $DB_USER -d postgres -c "CREATE DATABASE temp_restore;"
 
-# 2. Восстанавливаем полную копию во временную базу
+# 2. Restore full backup to temporary database
 aws s3 cp $S3_BUCKET/full/full_20240114_020000.sql.gz $RESTORE_DIR/
 gunzip $RESTORE_DIR/full_20240114_020000.sql.gz
 
 psql -h $DB_HOST -U $DB_USER -d temp_restore \
   < $RESTORE_DIR/full_20240114_020000.sql
 
-# 3. Экспортируем нужную таблицу
+# 3. Export needed table
 pg_dump -h $DB_HOST -U $DB_USER -d temp_restore \
   --table=$TABLE_NAME \
   --data-only \
   > $RESTORE_DIR/table_$TABLE_NAME.sql
 
-# 4. Восстанавливаем таблицу в production
+# 4. Restore table to production
 psql -h $DB_HOST -U $DB_USER -d myapp_production \
   < $RESTORE_DIR/table_$TABLE_NAME.sql
 
-# 5. Очищаем временную базу
+# 5. Clean up temporary database
 psql -h $DB_HOST -U $DB_USER -d postgres -c "DROP DATABASE temp_restore;"
 
 echo "✅ Table $TABLE_NAME restored successfully"
@@ -407,9 +407,9 @@ echo "✅ Table $TABLE_NAME restored successfully"
 
 ---
 
-## Проверка резервных копий (Backup Verification)
+## Backup Verification (Verification)
 
-### Автоматическая проверка
+### Automated Verification
 
 ```python
 #!/usr/bin/env python3
@@ -421,20 +421,20 @@ import os
 from datetime import datetime, timedelta
 
 def verify_latest_backup():
-    """Проверяем последнюю резервную копию"""
+    """Verify latest backup"""
 
-    # Находим последнюю копию
+    # Find latest backup
     latest_backup = get_latest_backup()
     print(f"🔍 Verifying backup: {latest_backup}")
 
-    # 1. Проверяем целостность файла
+    # 1. Check file integrity
     if not verify_file_integrity(latest_backup):
         send_alert("Backup file corrupted", severity="critical")
         return False
 
     print("✅ File integrity check passed")
 
-    # 2. Восстанавливаем в тестовую базу
+    # 2. Restore to test database
     test_db_name = "verify_backup_" + datetime.now().strftime("%Y%m%d_%H%M%S")
     create_test_database(test_db_name)
 
@@ -445,14 +445,14 @@ def verify_latest_backup():
 
         print("✅ Restore test passed")
 
-        # 3. Запускаем базовые тесты
+        # 3. Run basic tests
         if not run_basic_tests(test_db_name):
             send_alert("Backup data validation failed", severity="critical")
             return False
 
         print("✅ Data validation tests passed")
 
-        # 4. Проверяем актуальность
+        # 4. Check freshness
         backup_age = get_backup_age(latest_backup)
         if backup_age > timedelta(hours=25):
             send_alert(f"Backup is too old: {backup_age}", severity="warning")
@@ -466,7 +466,7 @@ def verify_latest_backup():
         cleanup_test_database(test_db_name)
 
 def get_latest_backup():
-    """Находим последнюю резервную копию"""
+    """Find latest backup"""
     result = subprocess.run(
         ["aws", "s3", "ls", "s3://myapp-backups/full/", "--recursive"],
         capture_output=True,
@@ -478,16 +478,16 @@ def get_latest_backup():
     return latest.split()[-1]
 
 def verify_file_integrity(backup_path):
-    """Проверяем целостность файла"""
-    # Скачиваем файл
+    """Check file integrity"""
+    # Download file
     local_path = f"/tmp/{os.path.basename(backup_path)}"
     subprocess.run(["aws", "s3", "cp", f"s3://myapp-backups/{backup_path}", local_path])
 
-    # Проверяем контрольную сумму
+    # Check checksum
     result = subprocess.run(["md5sum", local_path], capture_output=True, text=True)
     md5 = result.stdout.split()[0]
 
-    # Сравниваем с ранее сохраненной контрольной суммой
+    # Compare with previously saved checksum
     with open(f"{local_path}.md5", "r") as f:
         expected_md5 = f.read().strip()
 
@@ -495,14 +495,14 @@ def verify_file_integrity(backup_path):
     return md5 == expected_md5
 
 def restore_to_test(backup_path, test_db_name):
-    """Восстанавливаем в тестовую базу"""
+    """Restore to test database"""
     local_path = f"/tmp/{os.path.basename(backup_path)}"
 
-    # Скачиваем и распаковываем
+    # Download and unzip
     subprocess.run(["aws", "s3", "cp", f"s3://myapp-backups/{backup_path}", local_path])
     subprocess.run(["gunzip", local_path])
 
-    # Восстанавливаем
+    # Restore
     result = subprocess.run(
         ["pg_restore", "-h", os.getenv("DB_HOST"), "-U", os.getenv("DB_USER"), "-d", test_db_name, local_path[:-3]],
         capture_output=True
@@ -512,7 +512,7 @@ def restore_to_test(backup_path, test_db_name):
     return result.returncode == 0
 
 def run_basic_tests(db_name):
-    """Запускаем базовые тесты на восстановленных данных"""
+    """Run basic tests on restored data"""
     conn = psycopg2.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
@@ -523,16 +523,16 @@ def run_basic_tests(db_name):
     cursor = conn.cursor()
 
     try:
-        # Тест 1: Проверяем подключение
+        # Test 1: Check connection
         cursor.execute("SELECT 1")
         assert cursor.fetchone()[0] == 1
 
-        # Тест 2: Проверяем количество пользователей
+        # Test 2: Check user count
         cursor.execute("SELECT COUNT(*) FROM users")
         user_count = cursor.fetchone()[0]
         assert user_count > 0, "No users found"
 
-        # Тест 3: Проверям индексы
+        # Test 3: Check indexes
         cursor.execute("""
             SELECT tablename, indexname
             FROM pg_indexes
@@ -541,7 +541,7 @@ def run_basic_tests(db_name):
         indexes = cursor.fetchall()
         assert len(indexes) > 0, "No indexes found"
 
-        # Тест 4: Проверяем foreign keys
+        # Test 4: Check foreign keys
         cursor.execute("""
             SELECT conname
             FROM pg_constraint
@@ -559,7 +559,7 @@ def run_basic_tests(db_name):
         conn.close()
 
 def get_backup_age(backup_path):
-    """Получаем время создания резервной копии"""
+    """Get backup creation time"""
     result = subprocess.run(
         ["aws", "s3", "ls", f"s3://myapp-backups/{backup_path}"],
         capture_output=True,
@@ -573,21 +573,21 @@ def get_backup_age(backup_path):
     return datetime.now() - backup_time
 
 def create_test_database(db_name):
-    """Создаем тестовую базу"""
+    """Create test database"""
     subprocess.run([
         "psql", "-h", os.getenv("DB_HOST"), "-U", os.getenv("DB_USER"), "-d", "postgres",
         "-c", f"CREATE DATABASE {db_name};"
     ], check=True)
 
 def cleanup_test_database(db_name):
-    """Очищаем тестовую базу"""
+    """Clean up test database"""
     subprocess.run([
         "psql", "-h", os.getenv("DB_HOST"), "-U", os.getenv("DB_USER"), "-d", "postgres",
         "-c", f"DROP DATABASE IF EXISTS {db_name};"
     ], check=True)
 
 def send_alert(message, severity):
-    """Отправляем alert"""
+    """Send alert"""
     webhook_url = os.getenv("SLACK_WEBHOOK")
 
     payload = {
@@ -605,7 +605,7 @@ if __name__ == "__main__":
 
 ---
 
-## Восстановление после инцидента
+## Post-Incident Recovery
 
 ### Disaster Recovery Plan
 
@@ -654,7 +654,7 @@ disaster_recovery:
 
 ---
 
-## Стоимость хранения
+## Storage Costs
 
 ```yaml
 storage_cost_analysis:
@@ -691,7 +691,7 @@ storage_cost_analysis:
 
 ---
 
-## Автоматизация
+## Automation
 
 ### Backup Orchestration
 
@@ -743,7 +743,7 @@ tasks:
 
 ---
 
-## Конфигурация
+## Configuration
 
 ```bash
 # .env.backups
@@ -786,38 +786,38 @@ SIGNATURE_ALGORITHM=SHA256
 
 ## Best Practices ✅
 
-### Хранение
-- ✅ 3-2-1 rule (3 копии, 2 носителя, 1 внешний)
-- ✅ Проверяйте бэкапы автоматически каждый день
-- ✅ Тестируйте process восстановления каждый месяц
-- ✅ Используйте шифрование (at rest и in transit)
-- ✅ Регулярно ротируйте ключи шифрования
-- ✅ Сохраняйте проверочные суммы (md5/sha256)
+### Storage
+- ✅ 3-2-1 rule (3 copies, 2 media, 1 offsite)
+- ✅ Verify backups automatically every day
+- ✅ Test restore process monthly
+- ✅ Use encryption (at rest and in transit)
+- ✅ Regularly rotate encryption keys
+- ✅ Keep checksums (md5/sha256)
 
-### Восстановление
-- ✅ Документируйте все процедуры восстановления
-- ✅ Практикуйте disaster recovery каждый квартал
-- ✅ Измеряйте RTO и RPO
-- ✅ Поддерживайте runbooks в актуальном состоянии
-- ✅ Имейте clear ownership
+### Recovery
+- ✅ Document all recovery procedures
+- ✅ Practice disaster recovery quarterly
+- ✅ Measure RTO and RPO
+- ✅ Keep runbooks up-to-date
+- ✅ Have clear ownership
 
-### Безопасность
-- ✅ RBAC для доступа к бэкапам
-- ✅ Audit logs всех операций
-- ✅ MFA для доступа к хранилищу
-- ✅ Network isolation для бэкап-серверов
+### Security
+- ✅ RBAC for backup access
+- ✅ Audit logs of all operations
+- ✅ MFA for storage access
+- ✅ Network isolation for backup servers
 - ✅ Regular penetration testing
 
-### Процессы
+### Processes
 - ✅ Review and test disaster recovery plan quarterly
-- ✅ Update runbooks after каждого инцидента
-- ✅ Train new team members на процедуры восстановления
-- ✅ Conduct blameless postmortems для failures
-- ✅ Automate где возможно
+- ✅ Update runbooks after each incident
+- ✅ Train new team members on recovery procedures
+- ✅ Conduct blameless postmortems for failures
+- ✅ Automate where possible
 
 ---
 
-## Инструменты
+## Tools
 
 ### Cloud-Native Tools
 - **AWS Backup**: Managed backup service
@@ -846,4 +846,4 @@ SIGNATURE_ALGORITHM=SHA256
 
 ---
 
-*Backup & Recovery - практика создания резервных копий данных и восстановления для обеспечения непрерывности бизнеса*
+*Backup & Recovery - data backup and recovery practice*
