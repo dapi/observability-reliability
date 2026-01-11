@@ -1,4 +1,4 @@
-# SRS-006 Metrics Collection (Сбор метрик)
+# SRG-001 Metrics Collection (Сбор метрик)
 
 ## Определение
 

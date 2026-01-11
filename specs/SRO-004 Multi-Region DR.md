@@ -1,4 +1,4 @@
-# SRS-046 Multi-Region Disaster Recovery
+# SRO-004 Multi-Region DR
 
 Multi-Region DR is a business continuity strategy that distributes infrastructure across multiple geographic regions.
 

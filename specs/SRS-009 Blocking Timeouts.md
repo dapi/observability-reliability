@@ -1,4 +1,4 @@
-# SRS-015 Blocking Timeouts
+# SRS-009 Blocking Timeouts
 
 When interacting, it is necessary to provide configurable timeouts on both the service provider side and the service consumer side. Default timeout values should be provided.
 
@@ -13,4 +13,4 @@ Using a timeout on the service consumer side allows regulating the response wait
 
 # Additionally
 
-See also [SRS-020 Retryier](SRS-020%20Retryier.md)
+See also [SRS-013 Retry Pattern](SRS-013%20Retry%20Pattern.md)

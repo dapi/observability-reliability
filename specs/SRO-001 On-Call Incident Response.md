@@ -1,4 +1,4 @@
-# SRS-034 On-Call & Incident Management
+# SRO-001 On-Call & Incident Response
 
 On-Call & Incident Management is the practice of organizing 24/7 support for services, rapid incident response, and their effective resolution to minimize impact on users.
 

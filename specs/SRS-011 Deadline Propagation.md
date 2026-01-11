@@ -1,4 +1,4 @@
-# SRS-017 Deadline Propagation
+# SRS-011 Deadline Propagation
 
 Using Timeouts in Cascading Calls (Deadline Propagation)
 

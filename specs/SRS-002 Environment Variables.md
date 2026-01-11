@@ -1,4 +1,4 @@
-# SRS-004 Environment Variables Usage in Applications
+# SRS-002 Environment Variables
 
 By adopting this standard, the .env-example file becomes the single source of truth for environment variables for application users. A pipeline is added to each project that verifies that ALL environment variables used in the code are described in .env-example, and also that ONLY those environment variables that are used in the code are described there. With each commit, the pipeline clearly tells the developer what is missing in .env-example or what is redundant.
 

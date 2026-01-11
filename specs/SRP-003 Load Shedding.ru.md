@@ -1,4 +1,4 @@
-# SRS-013 Load Shedding (Отсечение нагрузки)
+# SRP-003 Load Shedding (Отсечение нагрузки)
 
 ## Определение
 
@@ -92,7 +92,7 @@ def handle_request(request):
 * Возвращать кэшированные ответы
 * Возвращать упрощенные ответы
 * Отключать некритичные функции
-* См. [SRS-022 Fallback](SRS-022%20Fallback.md)
+* См. [SRS-014 Fallback](SRS-014%20Fallback.ru.md)
 
 ## Мониторинг и Alerting
 

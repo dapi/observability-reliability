@@ -1,4 +1,4 @@
-# SRS-052 Database Replication (Репликация баз данных)
+# SRG-013 Database Replication (Репликация баз данных)
 
 ## Определение
 

@@ -1,4 +1,4 @@
-# SRS-026 Alerting Rules
+# SRG-005 Alerting Rules
 
 ## Definition
 

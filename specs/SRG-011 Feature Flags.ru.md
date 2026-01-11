@@ -1,4 +1,4 @@
-# SRS-042 Feature Flags & Toggles
+# SRG-011 Feature Flags & Toggles
 
 Feature Flags (флаги функций) — механизм управления функциональностью приложения без деплоя нового кода.
 

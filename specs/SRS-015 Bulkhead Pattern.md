@@ -1,4 +1,4 @@
-# SRS-025 Bulkhead Pattern
+# SRS-015 Bulkhead Pattern
 
 ## Definition
 
@@ -194,6 +194,6 @@ bulkhead_wait_duration (histogram)
 ## Alternatives
 
 If Bulkhead is too complex:
-* [SRS-012 Circuit Breaker](SRS-012%20Circuit%20Breaker.md)
-* [SRS-015 Blocking Timeouts](SRS-015%20Blocking%20Timeouts.md)
-* [SRS-013 Load Shedding](SRS-013%20Load%20Shedding.md)
+* [SRS-007 Circuit Breaker](SRS-007%20Circuit%20Breaker.md)
+* [SRS-009 Blocking Timeouts](SRS-009%20Blocking%20Timeouts.md)
+* [SRP-003 Load Shedding](SRP-003%20Load%20Shedding.md)

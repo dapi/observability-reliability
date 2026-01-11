@@ -1,4 +1,4 @@
-# SRS-031 Audit Logging
+# SRG-006 Audit Logging
 
 Audit Logging is the practice of systematic recording of audit events related to security, access, and important operations in the system for subsequent analysis and incident investigation.
 

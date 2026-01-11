@@ -1,4 +1,4 @@
-# SRS-057 Table Partitioning (Партиционирование таблиц)
+# SRG-017 Table Partitioning (Партиционирование таблиц)
 
 ## Определение
 

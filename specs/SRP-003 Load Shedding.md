@@ -1,4 +1,4 @@
-# SRS-013 Load Shedding
+# SRP-003 Load Shedding
 
 ## Definition
 
@@ -92,7 +92,7 @@ When shedding load, use fallback logic:
 * Return cached responses
 * Return simplified responses
 * Disable non-critical features
-* See [SRS-022 Fallback](SRS-022%20Fallback.md)
+* See [SRS-014 Fallback](SRS-014%20Fallback.md)
 
 ## Monitoring and Alerting
 

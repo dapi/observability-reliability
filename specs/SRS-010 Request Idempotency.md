@@ -1,4 +1,4 @@
-# SRS-016 Request Idempotency
+# SRS-010 Request Idempotency
 
 ## Definition
 

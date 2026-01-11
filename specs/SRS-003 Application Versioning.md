@@ -1,4 +1,4 @@
-# SRS-005 Application Versioning
+# SRS-003 Application Versioning
 
 This document describes the approaches to versioning developed applications in our products.
 

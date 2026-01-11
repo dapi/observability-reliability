@@ -1,4 +1,4 @@
-# SRS-056 Database Sharding (Шардирование баз данных)
+# SRG-016 Database Sharding (Шардирование баз данных)
 
 ## Определение
 

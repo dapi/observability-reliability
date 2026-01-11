@@ -1,4 +1,4 @@
-# SRS-049 Platform Engineering
+# SRO-006 Platform Engineering
 
 | Field | Value |
 |-------|-------|
@@ -27,10 +27,10 @@ This specification covers:
 
 ### 1.3 Related Specifications
 
-- [SRS-044 Service Mesh](SRS-044%20Service%20Mesh.md) - Service networking
-- [SRS-050 GitOps](SRS-050%20GitOps.md) - GitOps practices
-- [SRS-032 SLI/SLO/SLA](SRS-032%20SLI%20SLO%20SLA.md) - Platform SLOs
-- [SRS-034 On-Call & Incident Response](SRS-034%20On-Call%20&%20Incident%20Response.md) - Platform support
+- [SRP-008 Service Mesh](SRP-008%20Service%20Mesh.md) - Service networking
+- GitOps (planned) - GitOps practices
+- [SRG-007 SLI SLO SLA](SRG-007%20SLI%20SLO%20SLA.md) - Platform SLOs
+- [SRO-001 On-Call & Incident Response](SRO-001%20On-Call%20Incident%20Response.md) - Platform support
 
 ## 2. Platform Engineering Fundamentals
 
@@ -2053,11 +2053,11 @@ class DeveloperSurveyAnalyzer:
 
 | Specification | Relationship |
 |--------------|--------------|
-| [SRS-044 Service Mesh](SRS-044%20Service%20Mesh.md) | Service networking for platform |
-| [SRS-050 GitOps](SRS-050%20GitOps.md) | GitOps integration |
-| [SRS-032 SLI/SLO/SLA](SRS-032%20SLI%20SLO%20SLA.md) | Platform SLOs |
-| [SRS-034 On-Call & Incident Response](SRS-034%20On-Call%20&%20Incident%20Response.md) | Platform support model |
-| [SRS-042 Feature Flags](SRS-042%20Feature%20Flags.md) | Feature management in templates |
+| [SRP-008 Service Mesh](SRP-008%20Service%20Mesh.md) | Service networking for platform |
+| GitOps (planned) | GitOps integration |
+| [SRG-007 SLI SLO SLA](SRG-007%20SLI%20SLO%20SLA.md) | Platform SLOs |
+| [SRO-001 On-Call & Incident Response](SRO-001%20On-Call%20Incident%20Response.md) | Platform support model |
+| [SRG-011 Feature Flags](SRG-011%20Feature%20Flags.md) | Feature management in templates |
 
 ---
 

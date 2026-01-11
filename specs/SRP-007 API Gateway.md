@@ -1,4 +1,4 @@
-# SRS-038 API Gateway
+# SRP-007 API Gateway
 
 API Gateway is a design pattern that serves as a single entry point for client requests, providing routing, authentication, rate limiting, caching, and other cross-cutting capabilities for microservice architectures.
 

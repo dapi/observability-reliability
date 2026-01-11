@@ -1,4 +1,4 @@
-# SRS-014 Graceful Shutdown
+# SRS-008 Graceful Shutdown
 
 To guarantee data consistency, resource management and system reliability, a service must be able to shut down gracefully.
 

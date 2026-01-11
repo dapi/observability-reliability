@@ -1,4 +1,4 @@
-# SRS-009 Error Tracking
+# SRG-003 Error Tracking
 
 Приложения сообщают о возникших исключениях в Sentry.
 

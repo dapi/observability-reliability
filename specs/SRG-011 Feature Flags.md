@@ -1,4 +1,4 @@
-# SRS-042 Feature Flags & Toggles
+# SRG-011 Feature Flags & Toggles
 
 Feature Flags (feature toggles) — a mechanism for controlling application functionality without deploying new code.
 

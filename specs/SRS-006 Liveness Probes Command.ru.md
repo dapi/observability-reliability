@@ -1,4 +1,4 @@
-# SRS-021 Liveness probes over commands
+# SRS-006 Liveness Probes Command
 
 ## Мотивация
 

@@ -1,4 +1,4 @@
-# SRS-002 Stateless Services
+# SRS-001 Stateless Services
 
 ## Definition of stateless
 

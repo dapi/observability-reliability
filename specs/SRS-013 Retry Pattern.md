@@ -1,4 +1,4 @@
-# SRS-020 Retryier (Request retry)
+# SRS-013 Retry Pattern (Request retry)
 
 Retry technique should be used on the consumer side in case of short-term unavailability of the provider. To use this technique, you must provide a configurable number of attempts and a configurable constant interval between attempts on the consumer side. Using increasing intervals between attempts with a small number of attempts is not recommended. Default parameter values should be provided.
 
@@ -17,4 +17,4 @@ It is recommended to use retry functionality for data read operations (typically
 
 Number of retries and intervals should be managed through environment variables.
 
-See also [SRS-015 Blocking Timeouts](SRS-015%20Blocking%20Timeouts.md)
+See also [SRS-009 Blocking Timeouts](SRS-009%20Blocking%20Timeouts.md)

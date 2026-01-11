@@ -1,4 +1,4 @@
-# SRS-036 Backup & Recovery
+# SRG-010 Backup & Recovery
 
 Backup & Recovery is a comprehensive strategy for creating data backups, storing them, verifying, and restoring to protect against data loss, ensure business continuity, and meet information retention requirements.
 

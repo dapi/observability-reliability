@@ -1,4 +1,4 @@
-# SRS-041 Authorization Pattern (Контроль доступа)
+# SRS-020 Authorization Pattern (Контроль доступа)
 
 ## Определение
 

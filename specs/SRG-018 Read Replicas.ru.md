@@ -1,4 +1,4 @@
-# SRS-058 Read Replicas & Load Balancing (Реплики чтения и балансировка нагрузки)
+# SRG-018 Read Replicas & Load Balancing (Реплики чтения и балансировка нагрузки)
 
 ## Определение
 

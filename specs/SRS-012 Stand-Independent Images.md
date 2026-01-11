@@ -1,4 +1,4 @@
-# SRS-019 Stand-Independent Images
+# SRS-012 Stand-Independent Images
 
 What is described here applies to front-end applications as of 12/17/2025
 

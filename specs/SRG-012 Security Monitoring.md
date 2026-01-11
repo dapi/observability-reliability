@@ -1,4 +1,4 @@
-# SRS-048 Security Monitoring
+# SRG-012 Security Monitoring
 
 | Field | Value |
 |-------|-------|
@@ -27,10 +27,10 @@ This specification covers:
 
 ### 1.3 Related Specifications
 
-- [SRS-008 Logging](SRS-008%20Logging.md) - General logging standards
-- [SRS-009 Error Tracking](SRS-009%20Error%20Tracking.md) - Error monitoring
-- [SRS-027 Alerting](SRS-027%20Alerting.md) - Alert management
-- [SRS-046 Multi-Region DR](SRS-046%20Multi-Region%20DR.md) - Disaster recovery
+- [SRG-002 Logging](SRG-002%20Logging.md) - General logging standards
+- [SRG-003 Error Tracking](SRG-003%20Error%20Tracking.md) - Error monitoring
+- [SRG-005 Alerting Rules](SRG-005%20Alerting%20Rules.md) - Alert management
+- [SRO-004 Multi-Region DR](SRO-004%20Multi-Region%20DR.md) - Disaster recovery
 
 ## 2. Security Observability Architecture
 
@@ -2092,11 +2092,11 @@ class ComplianceMonitor:
 
 | Specification | Relationship |
 |--------------|--------------|
-| [SRS-008 Logging](SRS-008%20Logging.md) | Foundation for security event logging |
-| [SRS-009 Error Tracking](SRS-009%20Error%20Tracking.md) | Integration with error monitoring |
-| [SRS-027 Alerting](SRS-027%20Alerting.md) | Security alert routing and escalation |
-| [SRS-046 Multi-Region DR](SRS-046%20Multi-Region%20DR.md) | DR for security infrastructure |
-| [SRS-043 Chaos Engineering](SRS-043%20Chaos%20Engineering.md) | Security chaos testing |
+| [SRG-002 Logging](SRG-002%20Logging.md) | Foundation for security event logging |
+| [SRG-003 Error Tracking](SRG-003%20Error%20Tracking.md) | Integration with error monitoring |
+| [SRG-005 Alerting Rules](SRG-005%20Alerting%20Rules.md) | Security alert routing and escalation |
+| [SRO-004 Multi-Region DR](SRO-004%20Multi-Region%20DR.md) | DR for security infrastructure |
+| [SRO-002 Chaos Engineering](SRO-002%20Chaos%20Engineering.md) | Security chaos testing |
 
 ---
 

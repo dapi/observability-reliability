@@ -1,4 +1,4 @@
-# SRS-001 Jobs Management
+# SRP-001 Jobs Management
 
 `job` - is an application that is started manually or automatically by timer/event and has a limited execution time.
 

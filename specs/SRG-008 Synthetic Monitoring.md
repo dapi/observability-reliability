@@ -1,4 +1,4 @@
-# SRS-033 Synthetic Monitoring
+# SRG-008 Synthetic Monitoring
 
 Synthetic Monitoring is a monitoring method that uses automated scripts to emulate user behavior and verify system health from an external perspective.
 

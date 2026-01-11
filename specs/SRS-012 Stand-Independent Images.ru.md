@@ -1,4 +1,4 @@
-# SRS-019 Stand-Independent Images
+# SRS-012 Stand-Independent Images
 
 Описываемое здесь касается фронт-приложений на 17.12.2025
 

@@ -1,4 +1,4 @@
-# SRS-023 Load Balancing Patterns
+# SRP-005 Load Balancing
 
 ## Definition
 

@@ -1,4 +1,4 @@
-# SRS-017 Deadline Propagation
+# SRS-011 Deadline Propagation
 
 Использование таймаутов в каскадных вызовах (deadline propagation)
 

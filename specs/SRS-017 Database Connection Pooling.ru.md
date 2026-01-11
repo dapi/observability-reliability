@@ -1,4 +1,4 @@
-# SRS-028 Database Connection Pooling (Пул соединений с базой данных)
+# SRS-017 Database Connection Pooling (Пул соединений с базой данных)
 
 ## Определение
 

@@ -1,4 +1,4 @@
-# SRS-047 Capacity Planning
+# SRO-005 Capacity Planning
 
 Capacity Planning is the process of determining the production capacity needed to meet current and future system demands.
 

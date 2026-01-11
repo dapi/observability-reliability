@@ -1,4 +1,4 @@
-# SRS-054 Query Optimization (Оптимизация запросов)
+# SRG-015 Query Optimization (Оптимизация запросов)
 
 ## Определение
 

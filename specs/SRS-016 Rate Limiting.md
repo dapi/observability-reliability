@@ -1,4 +1,4 @@
-# SRS-027 Rate Limiting
+# SRS-016 Rate Limiting
 
 Rate limiting is a request processing speed control mechanism that limits the number of requests a client can make to a service within a specified period of time.
 

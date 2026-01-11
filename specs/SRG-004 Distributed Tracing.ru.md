@@ -1,4 +1,4 @@
-# SRS-011 Distributed Tracing (Распределенный трейсинг)
+# SRG-004 Distributed Tracing (Распределенный трейсинг)
 
 ## Определение
 

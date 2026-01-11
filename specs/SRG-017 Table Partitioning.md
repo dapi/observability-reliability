@@ -1,4 +1,4 @@
-# SRS-057 Table Partitioning
+# SRG-017 Table Partitioning
 
 ## Definition
 

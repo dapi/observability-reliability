@@ -1,4 +1,4 @@
-# SRS-016 Request Idempotency (Идемпотентность запросов)
+# SRS-010 Request Idempotency (Идемпотентность запросов)
 
 ## Определение
 

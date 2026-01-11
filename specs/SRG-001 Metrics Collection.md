@@ -1,4 +1,4 @@
-# SRS-006 Metrics Collection
+# SRG-001 Metrics Collection
 
 ## Definition
 

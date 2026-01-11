@@ -1,4 +1,4 @@
-# SRS-010 Liveness Probes
+# SRS-005 Liveness Probes
 
 The application allows checking its health via HTTP or TCP port.
 
@@ -46,7 +46,7 @@ More details: https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 
 <img src="https://andrewlock.net/content/images/2020/k8s_probes.svg" />
 
-* [SRS-021 Liveness probes over command](SRS-021%20Liveness%20probes%20over%20command.md)
+* [SRS-006 Liveness Probes Command](SRS-006%20Liveness%20Probes%20Command.md)
 
 * [What is difference in Liveness Probe, Readiness Probe and Startup Probe in Kubernetes?](https://medium.com/@edu.ukulelekim/what-is-difference-in-liveness-probe-readiness-probe-and-startup-probe-in-kubernetes-e116c4563c13)
 * https://faun.pub/the-difference-between-liveness-readiness-and-startup-probes-781bd3141079

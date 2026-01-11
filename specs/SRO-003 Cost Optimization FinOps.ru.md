@@ -1,4 +1,4 @@
-# SRS-045 Cost Optimization & FinOps
+# SRO-003 Cost Optimization & FinOps
 
 FinOps (Cloud Financial Operations) — практика управления облачными затратами, объединяющая финансы, технологии и бизнес для принятия решений на основе данных.
 

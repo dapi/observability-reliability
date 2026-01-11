@@ -1,4 +1,4 @@
-# SRS-049 Platform Engineering
+# SRO-006 Platform Engineering
 
 | Поле | Значение |
 |------|----------|
@@ -27,10 +27,10 @@
 
 ### 1.3 Связанные спецификации
 
-- [SRS-044 Service Mesh](SRS-044%20Service%20Mesh.ru.md) - Сетевое взаимодействие сервисов
-- [SRS-050 GitOps](SRS-050%20GitOps.ru.md) - Практики GitOps
-- [SRS-032 SLI/SLO/SLA](SRS-032%20SLI%20SLO%20SLA.ru.md) - SLO платформы
-- [SRS-034 On-Call & Incident Response](SRS-034%20On-Call%20&%20Incident%20Response.ru.md) - Поддержка платформы
+- [SRP-008 Service Mesh](SRP-008%20Service%20Mesh.ru.md) - Сетевое взаимодействие сервисов
+- GitOps (запланирован) - Практики GitOps
+- [SRG-007 SLI SLO SLA](SRG-007%20SLI%20SLO%20SLA.ru.md) - SLO платформы
+- [SRO-001 On-Call & Incident Response](SRO-001%20On-Call%20Incident%20Response.ru.md) - Поддержка платформы
 
 ## 2. Основы Platform Engineering
 
@@ -2054,11 +2054,11 @@ class DeveloperSurveyAnalyzer:
 
 | Спецификация | Связь |
 |--------------|-------|
-| [SRS-044 Service Mesh](SRS-044%20Service%20Mesh.ru.md) | Сетевое взаимодействие для платформы |
-| [SRS-050 GitOps](SRS-050%20GitOps.ru.md) | Интеграция GitOps |
-| [SRS-032 SLI/SLO/SLA](SRS-032%20SLI%20SLO%20SLA.ru.md) | SLO платформы |
-| [SRS-034 On-Call & Incident Response](SRS-034%20On-Call%20&%20Incident%20Response.ru.md) | Модель поддержки платформы |
-| [SRS-042 Feature Flags](SRS-042%20Feature%20Flags.ru.md) | Управление фичами в шаблонах |
+| [SRP-008 Service Mesh](SRP-008%20Service%20Mesh.ru.md) | Сетевое взаимодействие для платформы |
+| GitOps (запланирован) | Интеграция GitOps |
+| [SRG-007 SLI SLO SLA](SRG-007%20SLI%20SLO%20SLA.ru.md) | SLO платформы |
+| [SRO-001 On-Call & Incident Response](SRO-001%20On-Call%20Incident%20Response.ru.md) | Модель поддержки платформы |
+| [SRG-011 Feature Flags](SRG-011%20Feature%20Flags.ru.md) | Управление фичами в шаблонах |
 
 ---
 

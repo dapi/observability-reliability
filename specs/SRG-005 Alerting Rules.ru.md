@@ -1,4 +1,4 @@
-# SRS-026 Alerting Rules (Правила алертинга)
+# SRG-005 Alerting Rules (Правила алертинга)
 
 ## Определение
 

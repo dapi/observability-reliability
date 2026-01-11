@@ -1,4 +1,4 @@
-# SRS-007 Expose Application Version
+# SRS-004 Expose Application Version
 
 To control the configuration of running applications in a microservice architecture,
 it is necessary to be able to obtain information about their version from the application.

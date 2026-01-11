@@ -1,4 +1,4 @@
-# SRS-048 Мониторинг безопасности
+# SRG-012 Мониторинг безопасности
 
 | Поле | Значение |
 |------|----------|
@@ -27,10 +27,10 @@
 
 ### 1.3 Связанные спецификации
 
-- [SRS-008 Логирование](SRS-008%20Logging.ru.md) - Общие стандарты логирования
-- [SRS-009 Отслеживание ошибок](SRS-009%20Error%20Tracking.ru.md) - Мониторинг ошибок
-- [SRS-027 Алертинг](SRS-027%20Alerting.ru.md) - Управление алертами
-- [SRS-046 Multi-Region DR](SRS-046%20Multi-Region%20DR.ru.md) - Аварийное восстановление
+- [SRG-002 Logging](SRG-002%20Logging.ru.md) - Общие стандарты логирования
+- [SRG-003 Error Tracking](SRG-003%20Error%20Tracking.ru.md) - Мониторинг ошибок
+- [SRG-005 Alerting Rules](SRG-005%20Alerting%20Rules.ru.md) - Управление алертами
+- [SRO-004 Multi-Region DR](SRO-004%20Multi-Region%20DR.ru.md) - Аварийное восстановление
 
 ## 2. Архитектура наблюдаемости безопасности
 
@@ -1547,11 +1547,11 @@ class ComplianceMonitor:
 
 | Спецификация | Связь |
 |--------------|-------|
-| [SRS-008 Логирование](SRS-008%20Logging.ru.md) | Основа для логирования событий безопасности |
-| [SRS-009 Отслеживание ошибок](SRS-009%20Error%20Tracking.ru.md) | Интеграция с мониторингом ошибок |
-| [SRS-027 Алертинг](SRS-027%20Alerting.ru.md) | Маршрутизация и эскалация алертов безопасности |
-| [SRS-046 Multi-Region DR](SRS-046%20Multi-Region%20DR.ru.md) | DR для инфраструктуры безопасности |
-| [SRS-043 Chaos Engineering](SRS-043%20Chaos%20Engineering.ru.md) | Хаос-тестирование безопасности |
+| [SRG-002 Logging](SRG-002%20Logging.ru.md) | Основа для логирования событий безопасности |
+| [SRG-003 Error Tracking](SRG-003%20Error%20Tracking.ru.md) | Интеграция с мониторингом ошибок |
+| [SRG-005 Alerting Rules](SRG-005%20Alerting%20Rules.ru.md) | Маршрутизация и эскалация алертов безопасности |
+| [SRO-004 Multi-Region DR](SRO-004%20Multi-Region%20DR.ru.md) | DR для инфраструктуры безопасности |
+| [SRO-002 Chaos Engineering](SRO-002%20Chaos%20Engineering.ru.md) | Хаос-тестирование безопасности |
 
 ---
 

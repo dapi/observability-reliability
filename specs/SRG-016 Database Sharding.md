@@ -1,4 +1,4 @@
-# SRS-056 Database Sharding
+# SRG-016 Database Sharding
 
 ## Definition
 

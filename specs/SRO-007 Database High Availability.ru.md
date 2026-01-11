@@ -1,4 +1,4 @@
-# SRS-055 Database High Availability (Высокая доступность баз данных)
+# SRO-007 Database High Availability (Высокая доступность баз данных)
 
 ## Определение
 

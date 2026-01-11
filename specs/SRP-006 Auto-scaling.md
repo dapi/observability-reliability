@@ -1,4 +1,4 @@
-# SRS-024 Auto-scaling
+# SRP-006 Auto-scaling
 
 ## Definition
 

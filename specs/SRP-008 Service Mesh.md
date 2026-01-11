@@ -1,4 +1,4 @@
-# SRS-044 Service Mesh
+# SRP-008 Service Mesh
 
 Service Mesh — an infrastructure layer for managing communication between microservices, providing observability, security, and traffic control.
 

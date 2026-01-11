@@ -1,4 +1,4 @@
-# SRS-029 Secrets Management
+# SRS-018 Secrets Management
 
 Secrets Management is the practice of securely storing, transmitting, and managing sensitive data (secrets) such as API keys, passwords, certificates, and access tokens.
 

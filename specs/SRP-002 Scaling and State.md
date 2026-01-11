@@ -1,4 +1,4 @@
-# SRS-003 Scaling and State
+# SRP-002 Scaling and State
 
 Applications can operate in one of two modes, which must be explicitly indicated when putting the service into production:
 

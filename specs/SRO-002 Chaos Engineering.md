@@ -1,4 +1,4 @@
-# SRS-043 Chaos Engineering
+# SRO-002 Chaos Engineering
 
 Chaos Engineering — a discipline of experimenting on distributed systems to uncover weaknesses and improve resilience to failures.
 

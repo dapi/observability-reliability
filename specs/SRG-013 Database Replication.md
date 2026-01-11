@@ -1,4 +1,4 @@
-# SRS-052 Database Replication
+# SRG-013 Database Replication
 
 ## Definition
 

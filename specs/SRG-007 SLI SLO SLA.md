@@ -1,4 +1,4 @@
-# SRS-032 SLI/SLO/SLA (Service Levels)
+# SRG-007 SLI/SLO/SLA (Service Levels)
 
 SLI/SLO/SLA is a framework for defining, measuring, and managing service reliability and performance.
 
